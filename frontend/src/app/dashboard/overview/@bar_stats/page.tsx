@@ -27,14 +27,17 @@ export default async function NetworkDistribution() {
 
   const total = stats.total_assets || 0;
   
-  // Usa escala proporcional com altura mínima
+  // Usa escala logarítmica para melhor visualização de dados com grande variação
   const maxCount = Math.max(...deviceTypes.map(d => d.count), 1);
   
-  const getProportionalHeight = (count: number, maxCount: number) => {
+  const getLogarithmicHeight = (count: number, maxCount: number) => {
     if (count === 0) return 0;
-    // Altura mínima de 8% para garantir visibilidade
-    const proportional = (count / maxCount) * 92; // 92% do espaço disponível
-    return Math.max(proportional, 8); // Mínimo 8%
+    // Escala logarítmica: log10(count + 1) / log10(maxCount + 1)
+    // Isso comprime valores grandes e expande valores pequenos
+    const logValue = Math.log10(count + 1);
+    const logMax = Math.log10(maxCount + 1);
+    const normalized = (logValue / logMax) * 92; // 92% do espaço
+    return Math.max(normalized, 8); // Mínimo 8% para visibilidade
   };
 
   return (
@@ -50,7 +53,7 @@ export default async function NetworkDistribution() {
       <CardContent className="px-2 sm:p-6">
         <div className="flex aspect-auto h-[280px] w-full items-end justify-around gap-1 pt-8">
           {deviceTypes.map((device) => {
-            const height = getProportionalHeight(device.count, maxCount);
+            const height = getLogarithmicHeight(device.count, maxCount);
             const percentage = ((device.count / total) * 100).toFixed(1);
             
             return (
@@ -62,12 +65,18 @@ export default async function NetworkDistribution() {
                   {percentage}%
                 </div>
                 <div 
-                  className={`w-full ${device.color} rounded-t transition-all hover:opacity-80 hover:scale-105`}
+                  className={`w-full ${device.color} rounded-t transition-all hover:opacity-80 hover:scale-105 cursor-pointer group relative`}
                   style={{ 
                     height: `${height}%`,
                     minHeight: '20px'
                   }}
-                ></div>
+                  title={`${device.name}: ${device.count.toLocaleString('pt-BR')} (${percentage}%)`}
+                >
+                  {/* Tooltip on hover */}
+                  <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                    {device.count.toLocaleString('pt-BR')} assets
+                  </div>
+                </div>
                 <div className="text-[10px] text-muted-foreground text-center leading-tight">
                   {device.name.replace('Network ', 'Net.')}
                 </div>
@@ -76,7 +85,7 @@ export default async function NetworkDistribution() {
           })}
         </div>
         <div className="mt-6 text-center text-xs text-brand-cyan font-medium">
-          ✓ Dados reais da rede - {deviceTypes.length} tipos • Escala proporcional
+          ✓ Dados reais da rede - {deviceTypes.length} tipos • Escala logarítmica (melhor visualização)
         </div>
       </CardContent>
     </Card>
