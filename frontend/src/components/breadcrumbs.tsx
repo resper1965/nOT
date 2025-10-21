@@ -8,7 +8,7 @@ import {
   BreadcrumbSeparator
 } from '@/components/ui/breadcrumb';
 import { useBreadcrumbs } from '@/hooks/use-breadcrumbs';
-import { IconSlash } from '@tabler/icons-react';
+import { ChevronRight } from 'lucide-react';
 import { Fragment } from 'react';
 
 export function Breadcrumbs() {
@@ -27,7 +27,7 @@ export function Breadcrumbs() {
             )}
             {index < items.length - 1 && (
               <BreadcrumbSeparator className='hidden md:block'>
-                <IconSlash />
+                <ChevronRight className="h-4 w-4" />
               </BreadcrumbSeparator>
             )}
             {index === items.length - 1 && (
