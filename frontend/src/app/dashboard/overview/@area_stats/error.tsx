@@ -1,16 +1,63 @@
 'use client';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { IconAlertCircle } from '@tabler/icons-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { AlertCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useTransition } from 'react';
 
-export default function AreaStatsError({ error }: { error: Error }) {
+interface StatsErrorProps {
+  error: Error;
+  reset: () => void;
+}
+
+export default function StatsError({ error, reset }: StatsErrorProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    // Log error to console in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Stats error:', error);
+    }
+  }, [error]);
+
+  const reload = () => {
+    startTransition(() => {
+      router.refresh();
+      reset();
+    });
+  };
+
   return (
-    <Alert variant='destructive'>
-      <IconAlertCircle className='h-4 w-4' />
-      <AlertTitle>Error</AlertTitle>
-      <AlertDescription>
-        Failed to load area statistics: {error.message}
-      </AlertDescription>
-    </Alert>
+    <Card className='border-red-500'>
+      <CardHeader className='flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row'>
+        <div className='flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6'>
+          <Alert variant='destructive' className='border-none'>
+            <AlertCircle className='h-4 w-4' />
+            <AlertTitle>Erro</AlertTitle>
+            <AlertDescription className='mt-2'>
+              Falha ao carregar estatísticas: {error.message}
+            </AlertDescription>
+          </Alert>
+        </div>
+      </CardHeader>
+      <CardContent className='flex h-[316px] items-center justify-center p-6'>
+        <div className='text-center'>
+          <p className='text-muted-foreground mb-4 text-sm'>
+            Não foi possível exibir as estatísticas no momento
+          </p>
+          <Button
+            onClick={() => reload()}
+            variant='outline'
+            className='min-w-[120px]'
+            disabled={isPending}
+          >
+            Tentar novamente
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
