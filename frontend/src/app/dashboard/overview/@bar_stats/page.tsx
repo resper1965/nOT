@@ -27,16 +27,15 @@ export default async function NetworkDistribution() {
 
   const total = stats.total_assets || 0;
   
-  // Usa escala logarítmica para melhor visualização
-  // (Network Device tem 13k, outros têm centenas)
-  const getLogHeight = (count: number, maxCount: number) => {
-    if (count === 0) return 0;
-    const logCount = Math.log10(count + 1);
-    const logMax = Math.log10(maxCount + 1);
-    return (logCount / logMax) * 100;
-  };
-  
+  // Usa escala proporcional com altura mínima
   const maxCount = Math.max(...deviceTypes.map(d => d.count), 1);
+  
+  const getProportionalHeight = (count: number, maxCount: number) => {
+    if (count === 0) return 0;
+    // Altura mínima de 8% para garantir visibilidade
+    const proportional = (count / maxCount) * 92; // 92% do espaço disponível
+    return Math.max(proportional, 8); // Mínimo 8%
+  };
 
   return (
     <Card>
@@ -44,14 +43,14 @@ export default async function NetworkDistribution() {
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
           <CardTitle>Distribuição de Assets TBE</CardTitle>
           <CardDescription>
-            {total.toLocaleString('pt-BR')} ativos reais importados • Escala logarítmica
+            {total.toLocaleString('pt-BR')} ativos reais importados • Escala proporcional
           </CardDescription>
         </div>
       </CardHeader>
       <CardContent className="px-2 sm:p-6">
         <div className="flex aspect-auto h-[280px] w-full items-end justify-around gap-1 pt-8">
           {deviceTypes.map((device) => {
-            const height = getLogHeight(device.count, maxCount);
+            const height = getProportionalHeight(device.count, maxCount);
             const percentage = ((device.count / total) * 100).toFixed(1);
             
             return (
@@ -65,7 +64,7 @@ export default async function NetworkDistribution() {
                 <div 
                   className={`w-full ${device.color} rounded-t transition-all hover:opacity-80 hover:scale-105`}
                   style={{ 
-                    height: `${Math.max(height, 5)}%`,
+                    height: `${height}%`,
                     minHeight: '20px'
                   }}
                 ></div>
@@ -77,7 +76,7 @@ export default async function NetworkDistribution() {
           })}
         </div>
         <div className="mt-6 text-center text-xs text-brand-cyan font-medium">
-          ✓ Dados reais da rede TBE - {deviceTypes.length} tipos • Escala log₁₀
+          ✓ Dados reais da rede TBE - {deviceTypes.length} tipos • Escala proporcional
         </div>
       </CardContent>
     </Card>

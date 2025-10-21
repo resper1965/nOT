@@ -48,3 +48,22 @@ export async function getAssetsList(limit = 100, offset = 0) {
   return res.json();
 }
 
+// Compliance API functions
+export async function getComplianceDocuments() {
+  const res = await fetch(`${API_BASE_URL}/api/compliance/documents`, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Failed to fetch compliance documents');
+  return res.json();
+}
+
+export async function getOnsControls() {
+  const res = await fetch(`${API_BASE_URL}/api/compliance/ons-controls`, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Failed to fetch ONS controls');
+  return res.json();
+}
+
+export async function getAneelRequirements() {
+  const res = await fetch(`${API_BASE_URL}/api/compliance/aneel-requirements`, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Failed to fetch ANEEL requirements');
+  return res.json();
+}
+
