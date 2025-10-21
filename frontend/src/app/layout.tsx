@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: META_THEME_COLORS.light
+  themeColor: META_THEME_COLORS.dark
 };
 
 export default async function RootLayout({
@@ -41,26 +41,15 @@ export default async function RootLayout({
 
   return (
     <ClerkProvider>
-      <html lang='pt-BR' suppressHydrationWarning>
+      <html lang='pt-BR' className="dark" suppressHydrationWarning>
         <head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
           <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                try {
-                  if (localStorage.theme === 'dark' || ((!('theme' in localStorage) || localStorage.theme === 'system') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    document.querySelector('meta[name="theme-color"]').setAttribute('content', '${META_THEME_COLORS.dark}')
-                  }
-                } catch (_) {}
-              `
-            }}
-          />
         </head>
         <body
           className={cn(
-            'bg-background overflow-hidden overscroll-none font-sans antialiased',
+            'dark bg-background overflow-hidden overscroll-none font-sans antialiased',
             activeThemeValue ? `theme-${activeThemeValue}` : '',
             isScaled ? 'theme-scaled' : '',
             fontVariables
