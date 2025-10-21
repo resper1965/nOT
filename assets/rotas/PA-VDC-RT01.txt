@@ -1,0 +1,143 @@
+PA-VDC-RT01#show running-config
+Building configuration...
+
+Current configuration : 3106 bytes
+!
+! Last configuration change at 17:55:23 BR Tue Jun 10 2025 by tbe
+! NVRAM config last updated at 17:55:25 BR Tue Jun 10 2025 by tbe
+!
+version 12.4
+no service pad
+service tcp-keepalives-in
+service tcp-keepalives-out
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log datetime msec localtime show-timezone
+service password-encryption
+!
+hostname PA-VDC-RT01
+!
+boot-start-marker
+boot-end-marker
+!
+logging buffered 524288
+enable secret 5 $1$zm7j$3LDJaAwUfIRHjZCyi35s61
+!
+no aaa new-model
+clock timezone BR 0
+ip cef
+!
+!
+!
+!
+ip domain name tbe.telecom.local
+ip name-server 10.2.1.80
+multilink bundle-name authenticated
+!
+!
+username tbe privilege 15 password 7 00101103244F09034C
+archive
+ log config
+  hidekeys
+!
+!
+!
+track 10 stub-object
+ default-state up
+ delay down 8 up 180
+!
+!
+!
+interface Loopback200
+ description GERENCIA TBE
+ ip address 10.200.200.53 255.255.255.255
+!
+interface FastEthernet0/0
+ description CONEXAO RAISECOM G0/0 => LINK P2P ELETRONORTE
+ no ip address
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/0.102
+ description CONEXAO RAISECOM G0/0 => LINK P2P ELETRONORTE MA-AC-RT01
+ encapsulation dot1Q 102
+ ip address 192.168.0.70 255.255.255.252
+!
+interface FastEthernet0/1
+ description CONEXAO PA-VDC-SW1 G0/0/9 #### REDE LAN ### IGBP PA-VDC-RT02
+ ip address 192.168.170.253 255.255.255.0 secondary
+ ip address 192.168.102.253 255.255.255.0
+ duplex auto
+ speed auto
+ standby 10 ip 192.168.102.252
+ standby 10 priority 110
+ standby 10 preempt
+ standby 10 track 10 decrement 10
+ standby 11 ip 192.168.170.252
+ standby 11 priority 110
+ standby 11 preempt
+ standby 11 track 10 decrement 10
+!
+interface Serial0/0/0
+ no ip address
+ shutdown
+ clock rate 2000000
+!
+interface Serial0/0/1
+ no ip address
+ shutdown
+ clock rate 2000000
+!
+router bgp 65073
+ no synchronization
+ bgp log-neighbor-changes
+ network 10.200.200.53 mask 255.255.255.255
+ network 192.168.0.68 mask 255.255.255.252
+ network 192.168.102.0
+ network 192.168.170.0
+ neighbor 192.168.0.69 remote-as 65000
+ neighbor 192.168.0.69 description MA-AC-RT01
+ neighbor 192.168.0.69 next-hop-self
+ neighbor 192.168.0.69 allowas-in
+ neighbor 192.168.0.69 soft-reconfiguration inbound
+ neighbor 192.168.102.254 remote-as 65073
+ neighbor 192.168.102.254 next-hop-self
+ neighbor 192.168.102.254 allowas-in
+ neighbor 192.168.102.254 soft-reconfiguration inbound
+ no auto-summary
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+!
+ip sla 10
+ icmp-echo 192.168.0.69 source-ip 192.168.0.70
+ request-data-size 32
+ timeout 1000
+ threshold 500
+ frequency 10
+ip sla schedule 10 life forever start-time now
+!
+!
+control-plane
+!
+banner motd ^CC
+################################################################
+# ATENCAO: ACESSO PERMITIDO PARA PESSOAL AUTORIZADO.           #
+#                 DESCONECTE-SE IMEDIATAMENTE                  #
+# ATTENTION: AUTHORIZED PERSONAL ONLY. DISCONNECT IMMEDIATELY. #
+################################################################
+^C
+!
+line con 0
+line aux 0
+line vty 0 4
+ login local
+ transport input all
+!
+scheduler allocate 20000 1000
+ntp clock-period 17178655
+ntp peer 10.2.1.98
+end
+
+PA-VDC-RT01#

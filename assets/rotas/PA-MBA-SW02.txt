@@ -1,0 +1,224 @@
+<PA-MBA-SW02>display current-configuration
+!Software Version V200R011C10SPC600
+#
+sysname PA-MBA-SW02
+#
+dns resolve
+dns server 10.2.1.80
+dns domain tbe.telecom.local
+#
+vlan batch 10 20 30
+#
+authentication-profile name default_authen_profile
+authentication-profile name dot1x_authen_profile
+authentication-profile name mac_authen_profile
+authentication-profile name portal_authen_profile
+authentication-profile name dot1xmac_authen_profile
+authentication-profile name multi_authen_profile
+#
+telnet server enable
+#
+clock timezone BR minus 00:00:00
+#
+radius-server template default
+#
+pki realm default
+ certificate-check none
+#
+free-rule-template name default_free_rule
+#
+portal-access-profile name portal_access_profile
+#
+aaa
+ authentication-scheme default
+ authentication-scheme radius
+  authentication-mode radius
+ authorization-scheme default
+ accounting-scheme default
+ local-aaa-user password policy administrator
+  password history record number 0
+  password expire 0
+ domain default
+  authentication-scheme radius
+  radius-server default
+ domain default_admin
+  authentication-scheme default
+ local-user tbe password irreversible-cipher $1a$Yw$"-%BT\>$,9yr%tQ}Q%m4f.L%t=wBed+O/m\9Q+{LTW4^bu97$
+ local-user tbe privilege level 15
+ local-user tbe service-type telnet terminal ssh
+ local-user admin password irreversible-cipher $1a$lTW\IumiV"$I_2A@InZ"<Gn!V%,z,^9o{~k;l:^lVd$Mq,><bK;$
+ local-user admin privilege level 15
+ local-user admin service-type terminal http
+ local-user aluizio password irreversible-cipher $1a$rq85W{6m7U$Im.+)e<1WYbfcIV='LXAwJM;/Vg8AT%&pC.=Ycc=$
+ local-user aluizio privilege level 15
+ local-user aluizio service-type telnet
+ local-user opengsi password irreversible-cipher $1a$C@SOX"}8E&$}PZj5}"1u7`<q}=Q'vlIhMA$XH[6M,.({X4k@\D:$
+ local-user opengsi privilege level 15
+ local-user opengsi service-type telnet terminal ssh
+#
+ntp-service server disable
+ntp-service ipv6 server disable
+ntp-service unicast-server 10.2.1.98
+ntp-service unicast-peer 192.168.90.199
+#
+interface Vlanif1
+ ip address 192.168.0.2 255.255.255.0
+#
+interface Vlanif10
+ ip address 192.168.103.22 255.255.255.0
+#
+interface Vlanif100
+#
+interface GigabitEthernet0/0/1
+ port link-type trunk
+ port trunk allow-pass vlan 2 to 4094
+#
+interface GigabitEthernet0/0/2
+ description CONEXAO PA-MBA-SW01 PA-MBA-SW01
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/3
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/4
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/5
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/6
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/7
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/8
+ description CONEXAO PA-MBA-RT02 G0/0/1
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/9
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/10
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/11
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/12
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/13
+ port link-type access
+ port default vlan 30
+#
+interface GigabitEthernet0/0/14
+ port link-type access
+ port default vlan 30
+#
+interface GigabitEthernet0/0/15
+ port link-type access
+ port default vlan 20
+#
+interface GigabitEthernet0/0/16
+ port link-type access
+ port default vlan 20
+#
+interface GigabitEthernet0/0/17
+ port link-type access
+ port default vlan 20
+#
+interface GigabitEthernet0/0/18
+ port link-type access
+ port default vlan 20
+#
+interface GigabitEthernet0/0/19
+ port link-type access
+ port default vlan 20
+#
+interface GigabitEthernet0/0/20
+ port link-type access
+ port default vlan 20
+#
+interface GigabitEthernet0/0/21
+ port link-type access
+ port default vlan 20
+#
+interface GigabitEthernet0/0/22
+ port link-type access
+ port default vlan 20
+#
+interface GigabitEthernet0/0/23
+ port link-type access
+ port default vlan 20
+#
+interface GigabitEthernet0/0/24
+ port link-type access
+ port default vlan 20
+#
+interface GigabitEthernet0/0/25
+ description CONEXAO PA-MBA-SW04 G0/0/25
+ port link-type trunk
+ port trunk allow-pass vlan 2 to 4094
+#
+interface GigabitEthernet0/0/26
+#
+interface GigabitEthernet0/0/27
+#
+interface GigabitEthernet0/0/28
+#
+interface NULL0
+#
+interface LoopBack0
+ ip address 1.1.2.2 255.255.255.255
+#
+ip route-static 0.0.0.0 0.0.0.0 192.168.103.252
+#
+header login information "################################################################
+# ATENCAO: ACESSO PERMITIDO PARA PESSOAL AUTORIZADO.           #
+#                 DESCONECTE-SE IMEDIATAMENTE                  #
+# ATTENTION: AUTHORIZED PERSONAL ONLY. DISCONNECT IMMEDIATELY. #
+################################################################
+"
+#
+nqa test-instance local 1
+ test-type icmp
+ destination-address ipv4 192.168.90.1
+ frequency 10
+ start now
+#
+user-interface maximum-vty 15
+user-interface con 0
+ authentication-mode none
+user-interface vty 0 4
+ authentication-mode aaa
+ user privilege level 15
+ idle-timeout 5 0
+ protocol inbound telnet
+user-interface vty 5 14
+ authentication-mode aaa
+ protocol inbound telnet
+user-interface vty 16 20
+#
+port-group 1
+ group-member GigabitEthernet0/0/4
+ group-member GigabitEthernet0/0/5
+ group-member GigabitEthernet0/0/6
+#
+dot1x-access-profile name dot1x_access_profile
+#
+mac-access-profile name mac_access_profile
+#
+return
+<PA-MBA-SW02>

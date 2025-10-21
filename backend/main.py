@@ -5,6 +5,7 @@ from api.network import router as network_router
 from api.assets_crud import router as assets_crud_router
 from api.vlans_crud import router as vlans_crud_router
 from api.compliance import router as compliance_router
+from api.routing import router as routing_router
 import os
 
 app = FastAPI(
@@ -28,6 +29,7 @@ app.include_router(network_router)
 app.include_router(assets_crud_router)
 app.include_router(vlans_crud_router)
 app.include_router(compliance_router)
+app.include_router(routing_router)
 
 @app.get("/")
 async def root():

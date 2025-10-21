@@ -1,0 +1,202 @@
+PA-SR-SW01#show running-config
+config-file-header
+PA-SR-SW01
+v1.3.0.62 / R750_NIK_1_3_647_260
+CLI v1.0
+set system mode switch
+
+file SSD indicator encrypted
+@
+ssd-control-start
+ssd config
+ssd file passphrase control unrestricted
+no ssd file integrity control
+ssd-control-end cb0a3fdb1f3a1af4e4430033719968c0
+!
+vlan database
+vlan 10,20,30,96,100,123,200,300,400,500,600,700,800,950,1030,1210
+vlan 1300
+exit
+voice vlan oui-table add 0001e3 Siemens_AG_phone________
+voice vlan oui-table add 00036b Cisco_phone_____________
+voice vlan oui-table add 00096e Avaya___________________
+voice vlan oui-table add 000fe2 H3C_Aolynk______________
+voice vlan oui-table add 0060b9 Philips_and_NEC_AG_phone
+voice vlan oui-table add 00d01e Pingtel_phone___________
+voice vlan oui-table add 00e075 Polycom/Veritel_phone___
+voice vlan oui-table add 00e0bb 3Com_phone______________
+hostname PA-SR-SW01
+username #erte password encrypted 561916de930dbc13a13ffb3402179564e01b3471
+username tbe password encrypted 944ba184eca7ec72dad379dbf4589507d81ea820 privilege 15
+ip ssh server
+snmp-server server
+snmp-server location "SANTA MARIA"
+snmp-server contact 0000000000000000
+clock timezone BR 0 minutes 0
+clock source sntp
+sntp unicast client enable
+sntp server 10.2.1.98
+ip domain name tbe.telecom.local
+ip name-server  10.2.1.80
+ip telnet server
+!
+interface vlan 96
+ name TRANS_ACAILANDIA
+!
+interface vlan 100
+ ip address 192.168.96.48 255.255.255.0
+ no ip address dhcp
+!
+interface vlan 123
+ name TRANS_TUCURUI_504
+!
+interface vlan 950
+ name TRANS_PRESI_DUTRA
+!
+interface vlan 1030
+ name TRANS_MARABA
+!
+interface vlan 1210
+ name TRANS_TUCURUI
+!
+interface vlan 1300
+ name TRANS_IMPERATRIZ
+!
+interface fastethernet1
+ switchport mode access
+ switchport access vlan 100
+!
+interface fastethernet2
+ switchport mode access
+ switchport access vlan 100
+!
+interface fastethernet3
+ switchport mode access
+ switchport access vlan 100
+!
+interface fastethernet4
+ switchport mode access
+ switchport access vlan 100
+!
+interface fastethernet5
+ switchport mode access
+ switchport access vlan 200
+!
+interface fastethernet6
+ shutdown
+ switchport mode access
+ switchport access vlan 200
+!
+interface fastethernet7
+ shutdown
+ switchport mode access
+ switchport access vlan 200
+!
+interface fastethernet8
+ switchport mode access
+ switchport access vlan 200
+!
+interface fastethernet9
+ switchport mode access
+ switchport access vlan 300
+!
+interface fastethernet10
+ shutdown
+ switchport mode access
+ switchport access vlan 300
+!
+interface fastethernet11
+ shutdown
+ switchport mode access
+ switchport access vlan 300
+!
+interface fastethernet12
+ shutdown
+ switchport mode access
+ switchport access vlan 300
+!
+interface fastethernet13
+ switchport mode access
+ switchport access vlan 400
+!
+interface fastethernet14
+ shutdown
+ switchport mode access
+ switchport access vlan 400
+!
+interface fastethernet15
+ shutdown
+ switchport mode access
+ switchport access vlan 400
+!
+interface fastethernet16
+ shutdown
+ switchport mode access
+ switchport access vlan 400
+!
+interface fastethernet17
+ switchport mode access
+ switchport access vlan 500
+!
+interface fastethernet18
+ shutdown
+ switchport mode access
+ switchport access vlan 500
+!
+interface fastethernet19
+ shutdown
+ switchport mode access
+ switchport access vlan 500
+!
+interface fastethernet20
+ shutdown
+ switchport mode access
+ switchport access vlan 500
+!
+interface fastethernet21
+ description "CONEXAO RAISECOM UNI 1"
+ switchport trunk allowed vlan add 10,20,30,96,100,123,200,300,400
+ switchport trunk allowed vlan add 500,700,800,950,1030,1210,1300
+ switchport trunk native vlan 600
+!
+interface fastethernet22
+ description DIR-SUPER-CASTANHAL
+ switchport mode access
+ switchport access vlan 600
+!
+interface fastethernet23
+ switchport mode access
+ switchport access vlan 700
+!
+interface fastethernet24
+ switchport mode access
+ switchport access vlan 700
+!
+interface gigabitethernet1
+ switchport mode access
+ switchport access vlan 800
+!
+interface gigabitethernet2
+ switchport mode access
+ switchport access vlan 800
+!
+interface gigabitethernet3
+ description "CONEXAO PA-CAS-SW03 G3 CASTANHAL"
+ switchport trunk allowed vlan add 96,100,123,200,300,400,500,600,800
+ switchport trunk allowed vlan add 950,1030,1210,1300
+ switchport trunk native vlan 700
+!
+interface gigabitethernet4
+ switchport mode access
+ switchport access vlan 700
+!
+exit
+banner login ^C
+################################################################
+# ATENCAO: ACESSO PERMITIDO PARA PESSOAL AUTORIZADO.           #
+#                 DESCONECTE-SE IMEDIATAMENTE                  #
+# ATTENTION: AUTHORIZED PERSONAL ONLY. DISCONNECT IMMEDIATELY. #
+################################################################
+^C
+ip default-gateway 192.168.96.252
+PA-SR-SW01#

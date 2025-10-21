@@ -1,0 +1,163 @@
+MA-IPZ-SW01#show running-config
+Building configuration...
+
+Current configuration : 4125 bytes
+!
+! Last configuration change at 19:17:08 BR Thu May 29 2025 by tbe
+! NVRAM config last updated at 19:17:09 BR Thu May 29 2025 by tbe
+!
+version 12.2
+no service pad
+service tcp-keepalives-in
+service tcp-keepalives-out
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log datetime msec localtime show-timezone
+service password-encryption
+!
+hostname MA-IPZ-SW01
+!
+boot-start-marker
+boot-end-marker
+!
+logging buffered 524288
+enable secret 5 $1$aFl9$DwqxZ2h7yEU.bUzJWFeUX/
+!
+username tbe privilege 15 password 7 120D0712321F0E0169
+!
+!
+no aaa new-model
+clock timezone BR 0
+system mtu routing 1500
+!
+!
+ip domain-name tbe.telecom.local
+ip name-server 10.2.1.80
+!
+!
+crypto pki trustpoint TP-self-signed-704385408
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-704385408
+ revocation-check none
+ rsakeypair TP-self-signed-704385408
+!
+!
+crypto pki certificate chain TP-self-signed-704385408
+ certificate self-signed 01
+  30820246 308201AF A0030201 02020101 300D0609 2A864886 F70D0101 04050030
+  30312E30 2C060355 04031325 494F532D 53656C66 2D536967 6E65642D 43657274
+  69666963 6174652D 37303433 38353430 38301E17 0D393330 33303130 30303130
+  355A170D 32303031 30313030 30303030 5A303031 2E302C06 03550403 1325494F
+  532D5365 6C662D53 69676E65 642D4365 72746966 69636174 652D3730 34333835
+  34303830 819F300D 06092A86 4886F70D 01010105 0003818D 00308189 02818100
+  BA71EC4F F8D31087 2F4C4F15 D6563879 BAE97193 2399DC95 FEEB0E92 A8E71BFC
+  931AF608 389B6C83 5F80D247 687D9BA9 097AEEF3 040B7660 E16FBC07 472923C5
+  E0727C30 BA2108F6 E3BD43D2 AC5C575A 37D3F38F 69AA5E03 75EF79CC 0736846E
+  F5739ED1 FC175B71 C1E9B487 29BDD347 CAD275CA D494B5CD 320AE35E 3151DB6F
+  02030100 01A37030 6E300F06 03551D13 0101FF04 05300301 01FF301B 0603551D
+  11041430 12821053 575F5769 72656C69 6E6B5F41 43442E30 1F060355 1D230418
+  30168014 99C01A67 C77EA307 2151370E 82AD022B 01970DB4 301D0603 551D0E04
+  16041499 C01A67C7 7EA30721 51370E82 AD022B01 970DB430 0D06092A 864886F7
+  0D010104 05000381 810068AE 583FB4CC 69E7FA12 475382E4 E377196F A5197DAA
+  2113DDD8 D9136A20 5ED21D1E 456AC766 EAF35EF2 974483E0 BF8E86A2 2FE967A3
+  AFE253B0 46529909 2B590ACE 83F06120 1DA51864 2F828447 AF830970 84B4AB75
+  AE70B0A7 20E1FF85 997F32F0 69A3C817 9F8CFC7F 600B1017 3C175643 A0A65DAF
+  6C3B8A0E 4C0B043A 9C6D
+  quit
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+lldp run
+!
+!
+interface FastEthernet0/1
+ description CONEXAO MA-IPZ-RT02 G0/0/0
+!
+interface FastEthernet0/2
+ description CONEXAO MA-IPZ-RT01 G0/0/0
+!
+interface FastEthernet0/3
+!
+interface FastEthernet0/4
+!
+interface FastEthernet0/5
+!
+interface FastEthernet0/6
+ description CONEXAO MA-IPZ-RDP ETH0
+!
+interface FastEthernet0/7
+!
+interface FastEthernet0/8
+!
+interface FastEthernet0/9
+!
+interface FastEthernet0/10
+!
+interface FastEthernet0/11
+!
+interface FastEthernet0/12
+!
+interface FastEthernet0/13
+!
+interface FastEthernet0/14
+!
+interface FastEthernet0/15
+!
+interface FastEthernet0/16
+!
+interface FastEthernet0/17
+!
+interface FastEthernet0/18
+!
+interface FastEthernet0/19
+!
+interface FastEthernet0/20
+!
+interface FastEthernet0/21
+!
+interface FastEthernet0/22
+!
+interface FastEthernet0/23
+!
+interface FastEthernet0/24
+!
+interface GigabitEthernet0/1
+ description CONEXA MA-IPZ-SW02 IP 192.168.130.101
+!
+interface GigabitEthernet0/2
+!
+interface Vlan1
+ ip address 192.168.130.103 255.255.255.0
+ no ip route-cache
+!
+ip default-gateway 192.168.130.253
+ip http server
+ip http secure-server
+banner motd ^CC
+################################################################
+# ATENCAO: ACESSO PERMITIDO PARA PESSOAL AUTORIZADO.           #
+#                 DESCONECTE-SE IMEDIATAMENTE                  #
+# ATTENTION: AUTHORIZED PERSONAL ONLY. DISCONNECT IMMEDIATELY. #
+################################################################
+^C
+!
+line con 0
+line vty 0 4
+ session-timeout 15
+ exec-timeout 15 0
+ login local
+ transport input telnet ssh
+line vty 5 15
+ session-timeout 15
+ exec-timeout 15 0
+ login local
+ transport input telnet ssh
+!
+ntp clock-period 36029424
+ntp peer 10.2.1.98
+end
+
+MA-IPZ-SW01#

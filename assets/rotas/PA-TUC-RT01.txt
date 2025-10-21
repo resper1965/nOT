@@ -1,0 +1,248 @@
+<PA-TUC-RT01>display current-configuration
+[V300R019C10SPC300]
+#
+ sysname PA-TUC-RT01
+ header login information "
+################################################################
+# ATENCAO: ACESSO PERMITIDO PARA PESSOAL AUTORIZADO.           #
+#                 DESCONECTE-SE IMEDIATAMENTE                  #
+# ATTENTION: AUTHORIZED PERSONAL ONLY. DISCONNECT IMMEDIATELY. #
+################################################################
+"
+#
+ drop illegal-mac alarm
+#
+ipv6
+#
+authentication-profile name default_authen_profile
+authentication-profile name dot1x_authen_profile
+authentication-profile name dot1xmac_authen_profile
+authentication-profile name mac_authen_profile
+authentication-profile name multi_authen_profile
+authentication-profile name portal_authen_profile
+#
+ lldp enable
+#
+dns resolve
+dns server 10.2.1.80
+dns domain tbe.telecom.local
+dns server source-ip 192.168.121.253
+#
+dhcp enable
+#
+radius-server template default
+#
+pki realm default
+#
+ssl policy default_policy type server
+ pki-realm default
+ version tls1.2
+ ciphersuite rsa_aes_128_cbc_sha rsa_aes_128_sha256 rsa_aes_256_sha256 ecdhe_rsa_aes128_gcm_sha256 ecdhe_rsa_aes256_gcm_sha384
+#
+ike proposal default
+ encryption-algorithm aes-256 aes-192 aes-128
+ dh group14
+ authentication-algorithm sha2-512 sha2-384 sha2-256
+ authentication-method pre-share
+ integrity-algorithm hmac-sha2-256
+ prf hmac-sha2-256
+#
+free-rule-template name default_free_rule
+#
+portal-access-profile name portal_access_profile
+#
+aaa
+ authentication-scheme default
+  authentication-mode local
+ authentication-scheme radius
+  authentication-mode radius
+ authorization-scheme default
+  authorization-mode local
+ accounting-scheme default
+  accounting-mode none
+ local-aaa-user password policy administrator
+ domain default
+  authentication-scheme default
+  accounting-scheme default
+ domain default_admin
+  authentication-scheme default
+  accounting-scheme default
+ local-user tbe password irreversible-cipher $1a$H"$~S~'MNR$$5gp0pXgKW[H"H03h(@VIxQK$|<dc$H[@o(33ApX$
+ local-user tbe privilege level 15
+ local-user tbe service-type telnet terminal ssh
+ local-user admin password irreversible-cipher $1a$HdOP/&Bw0"$os|3E;voF0ZIcQ>rQjZ0RFa+NwI~QYs"zoGI>hN6$
+ local-user admin privilege level 15
+ local-user admin service-type telnet terminal ssh http
+ local-user opengsi password irreversible-cipher $1a$JRNe/gVFd+$Qxd1,3aj3-}"[MCU6"GVAjOuNRt!NBM<a-Au'1CT$
+ local-user opengsi privilege level 15
+ local-user opengsi service-type telnet terminal ssh
+ local-user ronaltibruno password irreversible-cipher $1a$^Dd>%h=DG)$VXi]4[nB2'WLh[~dpKLWKQ+(+#7kBZ*zy~L=~)D3$
+ local-user ronaltibruno privilege level 15
+ local-user ronaltibruno service-type telnet terminal ssh
+#
+web
+#
+firewall zone Local
+#
+interface Vlanif1
+ ip address 192.168.1.1 255.255.255.0
+ dhcp select interface
+#
+interface GigabitEthernet0/0/0
+ undo portswitch
+ ip address 192.168.121.253 255.255.255.0
+ vrrp vrid 10 virtual-ip 192.168.121.252
+ vrrp vrid 10 priority 105
+#
+interface GigabitEthernet0/0/1
+ undo portswitch
+ description CONEXAO RAISECOM G0/0/3 => LINK P2P ELETRONORTE
+#
+interface GigabitEthernet0/0/1.121
+ description CONEXAO RAISECOM G0/1 => LINK P2P ELETRONORTE MA-AC-RT01 F0/1/1 ACAILANDIA
+ dot1q termination vid 121
+ ip address 192.168.0.34 255.255.255.252
+#
+interface GigabitEthernet0/0/1.1210
+ description CONEXAO RAISECOM UNI 1 => LINK P2P ELETRONORTE PA-CAS-RT01 G0/0/9 CASTANHAL
+ dot1q termination vid 1210
+ ip address 192.168.0.58 255.255.255.252
+#
+interface GigabitEthernet0/0/2
+ undo portswitch
+#
+interface GigabitEthernet0/0/3
+#
+interface GigabitEthernet0/0/4
+#
+interface GigabitEthernet0/0/5
+#
+interface GigabitEthernet0/0/6
+#
+interface GigabitEthernet0/0/7
+#
+interface GigabitEthernet0/0/8
+#
+interface GigabitEthernet0/0/9
+#
+interface GigabitEthernet0/0/10
+#
+interface GigabitEthernet0/0/11
+ description VirtualPort
+ ipv6 enable
+ ipv6 address auto link-local
+ ipv6 address auto global default
+ ip address dhcp-alloc
+ ipv6 address auto dhcp
+#
+interface XGigabitEthernet0/0/0
+#
+interface NULL0
+#
+interface LoopBack200
+ description GERENCIA TBE
+ ip address 10.200.200.39 255.255.255.255
+#
+bgp 65202
+ router-id 192.168.121.253
+ peer 192.168.0.33 as-number 65000
+ peer 192.168.0.33 description MA-AC-RT01
+ peer 192.168.0.33 connect-interface GigabitEthernet0/0/1.121
+ peer 192.168.0.57 as-number 65306
+ peer 192.168.0.57 description PA-CAS-RT01
+ peer 192.168.0.57 connect-interface GigabitEthernet0/0/1.1210
+ peer 192.168.121.254 as-number 65202
+ peer 192.168.121.254 description PA-TUC-RT02
+ peer 192.168.121.254 connect-interface GigabitEthernet0/0/0
+ #
+ ipv4-family unicast
+  undo synchronization
+  network 10.200.200.39 255.255.255.255
+  network 192.17.1.0 255.255.255.252
+  network 192.17.1.1 255.255.255.255
+  network 192.168.0.32 255.255.255.252
+  network 192.168.0.56 255.255.255.252
+  network 192.168.121.0
+  peer 192.168.0.33 enable
+  peer 192.168.0.57 enable
+  peer 192.168.121.254 enable
+ #
+ ipv6-family unicast
+  undo synchronization
+#
+ snmp-agent local-engineid 800007DB03048C166AD5DF
+ snmp-agent sys-info version v2c
+ snmp-agent target-host trap-hostname TBE_SPO@ address 192.168.36.55 udp-port 161 trap-paramsname TBE_SPO@
+ snmp-agent target-host trap-paramsname root@tbesec v2c securityname %^%#Gd$Z%"TmPC3Y!j~D9QI)VFdK"z3v2FI>%kFt,)gA%^%#
+ snmp-agent mib-view 1 include iso
+ snmp-agent trap enable
+ snmp-agent
+#
+ ssh client first-time enable
+ telnet server enable
+ telnet server permit interface GigabitEthernet0/0/0 GigabitEthernet0/0/1
+#
+ http secure-server ssl-policy default_policy
+ http secure-server enable
+ http server permit interface GigabitEthernet0/0/0
+#
+fib regularly-refresh disable
+#
+nqa test-instance aa NQA_VRRP
+ test-type icmp
+ destination-address ipv4 10.2.1.31
+ source-address ipv4 192.0.89.5
+ send-trap testfailure
+ frequency 30
+ timeout 1
+ probe-count 1
+ start now
+#
+user-interface con 0
+ authentication-mode aaa
+user-interface vty 0
+ authentication-mode aaa
+ user privilege level 15
+user-interface vty 1 4
+ authentication-mode aaa
+ user privilege level 15
+ protocol inbound telnet
+#
+wlan ac
+ traffic-profile name default
+ security-profile name default
+ security-profile name default-wds
+  security wpa2 psk pass-phrase %^%#`H'kQ7P,HOe.&u,<<$n22#kMWo,`.:}eS#@4a'vY%^%# aes
+ ssid-profile name default
+ vap-profile name default
+ wds-profile name default
+ regulatory-domain-profile name default
+ air-scan-profile name default
+ rrm-profile name default
+ radio-2g-profile name default
+ radio-5g-profile name default
+ wids-spoof-profile name default
+ wids-profile name default
+ ap-system-profile name default
+ port-link-profile name default
+ wired-port-profile name default
+ ap-group name default
+#
+dot1x-access-profile name dot1x_access_profile
+#
+mac-access-profile name mac_access_profile
+#
+ ntp-service source-interface GigabitEthernet0/0/0
+ ntp-service unicast-server 10.2.1.98
+#
+ops
+#
+autostart
+#
+secelog
+#
+ ms-channel
+
+#
+return
+<PA-TUC-RT01>

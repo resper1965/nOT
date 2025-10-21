@@ -1,0 +1,212 @@
+PA-CAS-RT02#show running-config
+Building configuration...
+
+Current configuration : 5764 bytes
+!
+! Last configuration change at 20:10:14 BR Thu May 29 2025 by tbe
+! NVRAM config last updated at 20:10:16 BR Thu May 29 2025 by tbe
+!
+version 15.0
+service config
+no service pad
+service tcp-keepalives-in
+service tcp-keepalives-out
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log datetime msec localtime show-timezone
+service password-encryption
+!
+hostname PA-CAS-RT02
+!
+boot-start-marker
+boot-end-marker
+!
+logging buffered 524288
+enable secret 5 $1$dxwh$hZfNUzoZcy41iy8GoSd381
+enable password 7 046B39295E0062
+!
+no aaa new-model
+clock timezone BR 0
+!
+no ipv6 cef
+ip source-route
+ip cef
+!
+!
+!
+!
+ip domain name tbe.telecom.local
+ip name-server 10.2.1.80
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CISCO1905BR/K9 sn FSP1739ACZG
+!
+!
+archive
+ log config
+  hidekeys
+ path tftp://192.168.36.55/$h-$t
+ write-memory
+ time-period 421200
+username EBT privilege 10 secret 5 $1$0Gd8$ZGxlt7Cv.gG5SjBftftO40
+username erte secret 5 $1$pL4q$T3heiXLGJ.S2.Ott2eg110
+username tbe privilege 15 password 7 105A0B1C2503100E4F
+!
+!
+!
+!
+!
+!
+interface Loopback200
+ description GERENCIA TBE
+ ip address 10.200.200.35 255.255.255.255
+!
+interface Multilink1
+ description CONEXAO SDH1 ETH3 => SANTA MARIA SHD1 =>  LINK EMBRATEL ROUTEADOR PE MPLS
+ bandwidth 2048
+ ip address 200.208.29.186 255.255.255.252
+ ppp multilink
+ ppp multilink links minimum 1
+ ppp multilink interleave
+ ppp multilink group 1
+!
+interface GigabitEthernet0/0
+ description REDE LAN
+ ip address 192.168.96.254 255.255.255.0
+ duplex auto
+ speed auto
+ vrrp 10 ip 192.168.96.252
+ vrrp 10 priority 105
+!
+interface GigabitEthernet0/1
+ no ip address
+ duplex auto
+ speed auto
+!
+interface Serial0/0/0
+ description CONEXAO SDH1 ETH3 => SANTA MARIA SHD1 =>  LINK EMBRATEL ROUTEADOR PE MPLS
+ bandwidth 2048
+ no ip address
+ encapsulation ppp
+ load-interval 30
+ ppp multilink
+ ppp multilink group 1
+!
+router bgp 65000
+ no synchronization
+ bgp log-neighbor-changes
+ network 200.208.29.184 mask 255.255.255.252
+ redistribute connected
+ neighbor 192.168.96.253 remote-as 65306
+ neighbor 192.168.96.253 description PA-CAS-RT01
+ neighbor 192.168.96.253 next-hop-self
+ neighbor 192.168.96.253 allowas-in
+ neighbor 192.168.96.253 soft-reconfiguration inbound
+ neighbor 200.208.29.185 remote-as 4230
+ neighbor 200.208.29.185 description MPLS EMBRATEL
+ neighbor 200.208.29.185 timers 30 90
+ neighbor 200.208.29.185 allowas-in 6
+ no auto-summary
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+ip route 0.0.0.0 0.0.0.0 200.208.29.185
+!
+!
+!
+snmp-server group ons v3 auth
+snmp-server group ons-snmp-v3 v3 auth
+snmp-server community public RO
+snmp-server community ons_gerencia RO
+snmp-server ifindex persist
+snmp-server enable traps snmp authentication linkdown linkup coldstart warmstart
+snmp-server enable traps vrrp
+snmp-server enable traps ds1
+snmp-server enable traps eigrp
+snmp-server enable traps tty
+snmp-server enable traps ospf state-change
+snmp-server enable traps ospf errors
+snmp-server enable traps ospf retransmit
+snmp-server enable traps ospf lsa
+snmp-server enable traps ospf cisco-specific state-change nssa-trans-change
+snmp-server enable traps ospf cisco-specific state-change shamlink interface-old
+snmp-server enable traps ospf cisco-specific state-change shamlink neighbor
+snmp-server enable traps ospf cisco-specific errors
+snmp-server enable traps ospf cisco-specific retransmit
+snmp-server enable traps ospf cisco-specific lsa
+snmp-server enable traps envmon
+snmp-server enable traps ethernet cfm cc mep-up mep-down cross-connect loop config
+snmp-server enable traps ethernet cfm crosscheck mep-missing mep-unknown service-up
+snmp-server enable traps icsudsu
+snmp-server enable traps isdn call-information
+snmp-server enable traps isdn layer2
+snmp-server enable traps isdn chan-not-avail
+snmp-server enable traps isdn ietf
+snmp-server enable traps ds0-busyout
+snmp-server enable traps ds1-loopback
+snmp-server enable traps bgp
+snmp-server enable traps aaa_server
+snmp-server enable traps atm subif
+snmp-server enable traps cnpd
+snmp-server enable traps config-copy
+snmp-server enable traps config
+snmp-server enable traps entity
+snmp-server enable traps resource-policy
+snmp-server enable traps frame-relay multilink bundle-mismatch
+snmp-server enable traps frame-relay
+snmp-server enable traps frame-relay subif
+snmp-server enable traps hsrp
+snmp-server enable traps ipmulticast
+snmp-server enable traps msdp
+snmp-server enable traps mvpn
+snmp-server enable traps pim neighbor-change rp-mapping-change invalid-pim-message
+snmp-server enable traps pppoe
+snmp-server enable traps cpu threshold
+snmp-server enable traps rsvp
+snmp-server enable traps syslog
+snmp-server enable traps l2tun session
+snmp-server enable traps l2tun pseudowire status
+snmp-server enable traps vtp
+snmp-server host 200.255.156.193 LIDER
+snmp-server host 192.168.36.55 version 2c TBE_SPO
+snmp-server host 172.19.0.24 version 3 auth ons
+snmp-server host 172.26.0.24 version 3 auth ons
+!
+control-plane
+!
+privilege exec level 1 traceroute
+privilege exec level 1 ping
+privilege exec level 1 show
+banner motd ^CC
+################################################################
+# ATENCAO: ACESSO PERMITIDO PARA PESSOAL AUTORIZADO.           #
+#                 DESCONECTE-SE IMEDIATAMENTE                  #
+# ATTENTION: AUTHORIZED PERSONAL ONLY. DISCONNECT IMMEDIATELY. #
+################################################################
+^C
+!
+line con 0
+line aux 0
+line vty 0 4
+ session-timeout 15
+ exec-timeout 15 0
+ login local
+ transport input telnet ssh
+line vty 5 15
+ session-timeout 15
+ exec-timeout 15 0
+ login local
+ transport input telnet ssh
+!
+scheduler allocate 20000 1000
+ntp source Multilink1
+ntp master 15
+ntp server 10.2.1.98 prefer
+ntp peer 10.2.1.98
+end
+
+PA-CAS-RT02#

@@ -1,0 +1,155 @@
+MA-PDU-SW01-CMD#show running-config
+Building configuration...
+
+Current configuration : 3887 bytes
+!
+! NVRAM config last updated at 18:48:21 BR Thu May 29 2025 by tbe
+!
+version 12.2
+no service pad
+service tcp-keepalives-in
+service tcp-keepalives-out
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log datetime msec localtime show-timezone
+service password-encryption
+!
+hostname MA-PDU-SW01-CMD
+!
+boot-start-marker
+boot-end-marker
+!
+logging buffered 524288
+enable secret 5 $1$X/RH$8fxfaAA8pGZ84VVTGOtF81
+!
+username tbe privilege 15 password 7 0310590E261B23490D
+!
+!
+no aaa new-model
+clock timezone BR 0
+system mtu routing 1500
+!
+!
+ip domain-name tbe.telecom.local
+ip name-server 10.2.1.80
+!
+!
+crypto pki trustpoint TP-self-signed-3232661632
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-3232661632
+ revocation-check none
+ rsakeypair TP-self-signed-3232661632
+!
+!
+crypto pki certificate chain TP-self-signed-3232661632
+ certificate self-signed 01
+  3082024E 308201B7 A0030201 02020101 300D0609 2A864886 F70D0101 04050030
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274
+  69666963 6174652D 33323332 36363136 3332301E 170D3933 30333031 30303031
+  30355A17 0D323030 31303130 30303030 305A3031 312F302D 06035504 03132649
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D33 32333236
+  36313633 3230819F 300D0609 2A864886 F70D0101 01050003 818D0030 81890281
+  8100B084 FBA5C959 1981F22B 94141E04 3F174477 415CA271 B3454BA7 B5A2E493
+  7C724F2B 3FFD7E4A 4322D533 5B818046 B3B9D233 9BB05E47 8EB94F42 62912A87
+  25CD222E 22E8D95D 86132C3F 2D5A9FFA 6E13673B C7A72552 D8881F55 89ECC1A8
+  4B8B174D 389E79B8 8569FF29 E6E66152 A0C1F081 5A732DA7 1894DF33 45517A23
+  84150203 010001A3 76307430 0F060355 1D130101 FF040530 030101FF 30210603
+  551D1104 1A301882 16537769 7463685F 5044445F 534C5F43 4F4D414E 444F2E30
+  1F060355 1D230418 30168014 A9E0AD7B DFD9BF65 29BEEBE9 1389A955 BB2D4A28
+  301D0603 551D0E04 160414A9 E0AD7BDF D9BF6529 BEEBE913 89A955BB 2D4A2830
+  0D06092A 864886F7 0D010104 05000381 8100B014 79ECC323 135A6F08 2B15528A
+  D515FD0D 6B204174 7D849659 A0EE0643 466BB30C BAC25BB8 3E402828 AF5660F8
+  80EDDF8D 21D54A53 24EDAFDE 6CC5C7B3 69CD7DC0 442DEEB9 0BD17264 C3F0AD38
+  E1EFA809 9046DF3D 23FA95E2 F4EBD033 850A1BD9 3038717A 886759D5 8C330A85
+  E1CEC762 233778BB D104E9E6 42AF37DF 9FF1
+  quit
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+lldp run
+!
+!
+interface FastEthernet0/1
+!
+interface FastEthernet0/2
+!
+interface FastEthernet0/3
+!
+interface FastEthernet0/4
+!
+interface FastEthernet0/5
+!
+interface FastEthernet0/6
+!
+interface FastEthernet0/7
+!
+interface FastEthernet0/8
+!
+interface FastEthernet0/9
+ description CONEXAO MA-PDU-SAGE1 ETH0
+!
+interface FastEthernet0/10
+ description CONEXAO MA-PDU-SAGE2 ETH0
+!
+interface FastEthernet0/11
+!
+interface FastEthernet0/12
+!
+interface FastEthernet0/13
+!
+interface FastEthernet0/14
+!
+interface FastEthernet0/15
+!
+interface FastEthernet0/16
+!
+interface FastEthernet0/17
+!
+interface FastEthernet0/18
+!
+interface FastEthernet0/19
+!
+interface FastEthernet0/20
+!
+interface FastEthernet0/21
+!
+interface FastEthernet0/22
+!
+interface FastEthernet0/23
+!
+interface FastEthernet0/24
+!
+interface GigabitEthernet0/1
+ description CONEXAO MA-PDU-SW01 G0/1
+!
+interface GigabitEthernet0/2
+!
+interface Vlan1
+ ip address 192.168.95.101 255.255.255.0
+ no ip route-cache
+!
+ip default-gateway 192.168.95.252
+ip http server
+ip http secure-server
+banner motd ^CC
+################################################################
+# ATENCAO: ACESSO PERMITIDO PARA PESSOAL AUTORIZADO.           #
+#                 DESCONECTE-SE IMEDIATAMENTE                  #
+# ATTENTION: AUTHORIZED PERSONAL ONLY. DISCONNECT IMMEDIATELY. #
+################################################################
+^C
+!
+line con 0
+line vty 0 4
+ login local
+ transport input telnet
+line vty 5 15
+ login
+!
+ntp peer 10.2.1.98
+end
+
+MA-PDU-SW01-CMD#

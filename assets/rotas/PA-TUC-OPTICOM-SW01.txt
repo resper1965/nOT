@@ -1,0 +1,158 @@
+PA-TUC-OPTICOM-SW01#show system-time
+
+    Current time source : NTP Server
+    Current system time : FRI MAY 30 19:53:35 2025
+
+
+PA-TUC-OPTICOM-SW01#show
+show
+
+PA-TUC-OPTICOM-SW01#show running-config
+running-config
+
+PA-TUC-OPTICOM-SW01#show running-config
+!OPT-G524C4
+#
+vlan 3033
+#
+#
+#
+#
+hostname "PA-TUC-OPTICOM-SW01"
+location "TUCURUI"
+#
+mac address-table aging-time 300
+#
+logging buffer 6
+no logging file flash
+#
+enable secret 5 $1$J>E>C6J3H4I5L6F/O=A0J9C6B:D;A6H>}},()
+#
+no ip http secure-server
+#
+system-time ntp UTC 10.2.1.98 10.2.1.80 12
+#
+#
+user name admin privilege admin secret 5 $1$B0B2B>B8G9E6J4J6D2H8D9@=D9H/A>L2$'}./
+user name tbe privilege admin secret 5 $1$J>E>C6J3H4I5L6F/O=A0J9C6B:D;A6H>}},()
+#
+#
+#
+#
+#
+#
+#
+ip ssh server
+#
+interface gigabitEthernet 1/0/1
+#
+interface gigabitEthernet 1/0/2
+  switchport mode trunk
+  switchport trunk allowed vlan 3033
+  switchport pvid 3033
+#
+interface gigabitEthernet 1/0/3
+#
+interface gigabitEthernet 1/0/4
+#
+interface gigabitEthernet 1/0/5
+#
+interface gigabitEthernet 1/0/6
+#
+interface gigabitEthernet 1/0/7
+#
+interface gigabitEthernet 1/0/8
+#
+interface gigabitEthernet 1/0/9
+#
+interface gigabitEthernet 1/0/10
+#
+interface gigabitEthernet 1/0/11
+#
+interface gigabitEthernet 1/0/12
+#
+interface gigabitEthernet 1/0/13
+#
+interface gigabitEthernet 1/0/14
+#
+interface gigabitEthernet 1/0/15
+#
+interface gigabitEthernet 1/0/16
+#
+interface gigabitEthernet 1/0/17
+#
+interface gigabitEthernet 1/0/18
+#
+interface gigabitEthernet 1/0/19
+#
+interface gigabitEthernet 1/0/20
+#
+interface gigabitEthernet 1/0/21
+#
+interface gigabitEthernet 1/0/22
+#
+interface gigabitEthernet 1/0/23
+  description "PA-TUC-SW01_FA23"
+#
+interface gigabitEthernet 1/0/24
+  switchport mode trunk
+  switchport trunk allowed vlan 3033
+  switchport pvid 3033
+  description "OPTICOM-SW02_G24"
+#
+interface vlan 1
+ip address 192.168.121.103 255.255.255.0 192.168.121.252
+#
+#
+line vty 0 0
+login local
+#
+line vty 1 1
+login local
+#
+line vty 2 2
+login local
+#
+line vty 3 3
+login local
+#
+line vty 4 4
+login local
+#
+line vty 5 5
+login local
+#
+line vty 6 6
+login local
+#
+line vty 7 7
+login local
+#
+line vty 8 8
+login local
+#
+line vty 9 9
+login local
+#
+line vty 10 10
+login local
+#
+line vty 11 11
+login local
+#
+line vty 12 12
+login local
+#
+line vty 13 13
+login local
+#
+line vty 14 14
+login local
+#
+line vty 15 15
+login local
+#
+end
+
+
+PA-TUC-OPTICOM-SW01#

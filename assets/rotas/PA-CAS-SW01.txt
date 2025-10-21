@@ -1,0 +1,196 @@
+<PA-CAS-SW01>display current-configuration
+!Software Version V200R011C10SPC600
+#
+sysname PA-CAS-SW01
+#
+dns resolve
+dns server 10.2.1.80
+dns domain tbe.telecom.local
+#
+vlan batch 10 20
+#
+authentication-profile name default_authen_profile
+authentication-profile name dot1x_authen_profile
+authentication-profile name mac_authen_profile
+authentication-profile name portal_authen_profile
+authentication-profile name dot1xmac_authen_profile
+authentication-profile name multi_authen_profile
+#
+telnet server enable
+#
+clock timezone BR minus 00:00:00
+#
+radius-server template default
+#
+pki realm default
+ certificate-check none
+#
+free-rule-template name default_free_rule
+#
+portal-access-profile name portal_access_profile
+#
+aaa
+ authentication-scheme default
+ authentication-scheme radius
+  authentication-mode radius
+ authorization-scheme default
+ accounting-scheme default
+ local-aaa-user password policy administrator
+  password history record number 0
+  password expire 0
+ domain default
+  authentication-scheme radius
+  radius-server default
+ domain default_admin
+  authentication-scheme default
+ local-user tbe password irreversible-cipher $1a$Pd!4%.J#{'$b*`;Sxa"o!ZP%I4giaBAa6MK<rv'=+CUIC8Tg8.N$
+ local-user tbe privilege level 15
+ local-user tbe service-type telnet
+ local-user erte password irreversible-cipher $1a$k~ODM#8te#$L9wET5'T~3N79QEMPD.3N*vB*,2-w6=g6YOH[S6G$
+ local-user erte privilege level 15
+ local-user erte service-type telnet
+ local-user admin password irreversible-cipher $1a$gadaYQs7#"$_qL!$v+QFH;%Jm~]uu<;]-Sr0[u\L=x}=VB/+b7Y$
+ local-user admin privilege level 15
+ local-user admin service-type terminal http
+#
+ntp-service server disable
+ntp-service ipv6 server disable
+ntp-service unicast-server 10.2.1.98
+#
+interface Vlanif1
+#
+interface Vlanif10
+ description VLAN GERENCIA
+ ip address 192.168.96.103 255.255.255.0
+#
+interface Vlanif30
+#
+interface MEth0/0/1
+#
+interface GigabitEthernet0/0/1
+ port default vlan 10
+#
+interface GigabitEthernet0/0/2
+ port default vlan 10
+#
+interface GigabitEthernet0/0/3
+ port default vlan 10
+#
+interface GigabitEthernet0/0/4
+ port default vlan 10
+#
+interface GigabitEthernet0/0/5
+ description CONEXAO PA-CAS-RT01 G0/0/1
+ port default vlan 10
+#
+interface GigabitEthernet0/0/6
+ port default vlan 10
+#
+interface GigabitEthernet0/0/7
+ port default vlan 10
+#
+interface GigabitEthernet0/0/8
+ description CONEXAO VOIP F0/0
+ port default vlan 10
+#
+interface GigabitEthernet0/0/9
+ port default vlan 10
+#
+interface GigabitEthernet0/0/10
+ port default vlan 10
+#
+interface GigabitEthernet0/0/11
+ description CONEXAO VOIP F0/0
+ port default vlan 10
+#
+interface GigabitEthernet0/0/12
+ port default vlan 10
+#
+interface GigabitEthernet0/0/13
+ port default vlan 20
+#
+interface GigabitEthernet0/0/14
+ port default vlan 20
+#
+interface GigabitEthernet0/0/15
+ port default vlan 20
+#
+interface GigabitEthernet0/0/16
+ port default vlan 20
+#
+interface GigabitEthernet0/0/17
+ description CONEXAO SHD1 ETH2
+ port default vlan 20
+#
+interface GigabitEthernet0/0/18
+ port default vlan 20
+#
+interface GigabitEthernet0/0/19
+ port default vlan 20
+#
+interface GigabitEthernet0/0/20
+ port default vlan 20
+#
+interface GigabitEthernet0/0/21
+ port default vlan 20
+#
+interface GigabitEthernet0/0/22
+ port default vlan 20
+#
+interface GigabitEthernet0/0/23
+ description CONEXAO CFTV ETH0
+ port default vlan 20
+#
+interface GigabitEthernet0/0/24
+ description CONEXAO PA-CAS-SW02 G0/0/24
+ port link-type trunk
+ port trunk allow-pass vlan 2 to 4094
+#
+interface GigabitEthernet0/0/25
+#
+interface GigabitEthernet0/0/26
+#
+interface GigabitEthernet0/0/27
+#
+interface GigabitEthernet0/0/28
+ port trunk allow-pass only-vlan 1 to 29
+ port description switch
+#
+interface NULL0
+#
+ip route-static 0.0.0.0 0.0.0.0 192.168.96.252
+#
+snmp-agent
+snmp-agent local-engineid 800007DB039C741A881910
+snmp-agent sys-info version v3
+#
+stelnet ipv4 server enable
+stelnet ipv6 server enable
+ssh user tbe
+ssh user tbe authentication-type password
+ssh user tbe service-type stelnet
+#
+header login information "################################################################
+# ATENCAO: ACESSO PERMITIDO PARA PESSOAL AUTORIZADO.           #
+#                 DESCONECTE-SE IMEDIATAMENTE                  #
+# ATTENTION: AUTHORIZED PERSONAL ONLY. DISCONNECT IMMEDIATELY. #
+################################################################
+"
+#
+user-interface maximum-vty 15
+user-interface con 0
+ authentication-mode none
+user-interface vty 0 4
+ authentication-mode aaa
+user-interface vty 5 14
+ authentication-mode aaa
+ protocol inbound telnet
+user-interface vty 16 20
+#
+dot1x-access-profile name dot1x_access_profile
+#
+mac-access-profile name mac_access_profile
+#
+return
+<PA-CAS-SW01>
+<PA-CAS-SW01>

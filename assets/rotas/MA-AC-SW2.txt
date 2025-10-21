@@ -1,0 +1,146 @@
+<MA-AC-SW2>display current-configuration configuration
+#
+sysname MA-AC-SW2
+#
+dns resolve
+dns server 10.2.1.80
+dns domain tbe.telecom.local
+#
+vlan batch 10 2001 to 2002 2004 to 2007
+#
+authentication-profile name default_authen_profile
+ undo authentication ip-address in-accounting-start
+authentication-profile name dot1x_authen_profile
+ undo authentication ip-address in-accounting-start
+authentication-profile name dot1xmac_authen_profile
+ undo authentication ip-address in-accounting-start
+authentication-profile name mac_authen_profile
+ undo authentication ip-address in-accounting-start
+authentication-profile name multi_authen_profile
+ undo authentication ip-address in-accounting-start
+authentication-profile name portal_authen_profile
+ undo authentication ip-address in-accounting-start
+#
+set save-configuration
+#
+telnet server enable
+telnet server-source all-interface
+#
+http server-source all-interface
+#
+clock timezone BR minus 00:00:00
+#
+portal https-redirect tls1.1 enable
+#
+undo pki key enhance enable
+#
+diffserv domain default
+#
+ip vpn-instance vrf1
+ ipv4-family
+  route-distinguisher 1:2
+#
+radius-server template default
+#
+ecc peer-public-key 192.1.20.5 encoding-type der
+ public-key-code begin
+    04003BCC BBF1776D 2090C652 62ECDBB6 4303CD33 A222A289 3FA1B888 5B8D1B4D
+    DB5A1521 FCBEC848 EC961EBA A41E8631 A8FB893C A565F771 9F304C01 714D5448
+    37888D01 103DC9D8 7FE72568 C6E486CB 466146B7 89AD136D 4E38C209 F4E91EC7
+    05E283B5 4AD1B4B6 5403B113 2976DEB3 3F117E23 9D445DDC 2B2DA89C 4F712F50
+    8B1D1236 66
+ public-key-code end
+peer-public-key end
+#
+pki realm default
+ certificate-check none
+#
+free-rule-template name default_free_rule
+#
+portal-access-profile name portal_access_profile
+#
+vlan 2001
+ description P2P SW2_ACD
+vlan 2002
+ description P2P AR
+vlan 2004
+ description P2P Cisco Oi
+vlan 2005
+ description P2P Wirelink Castanhal
+vlan 2006
+ description P2P Wirelink Presidente Dutra
+vlan 2007
+ description P2P Wirelink Ibicoara
+#
+aaa
+ authentication-scheme default
+  authentication-mode local
+ authentication-scheme radius
+  authentication-mode radius
+ authorization-scheme default
+  authorization-mode local
+ accounting-scheme default
+  accounting-mode none
+ local-aaa-user password policy administrator
+  password history record number 0
+  password expire 0
+ domain default
+  authentication-scheme radius
+  accounting-scheme default
+  radius-server default
+ domain default_admin
+  authentication-scheme default
+  accounting-scheme default
+ local-user tbe password irreversible-cipher $1c$B<^]7xw]<M$H,'nR;c4DF"mQ"YxJGAX/Ke.PNHF{$%u/:4kKHA"$
+ local-user tbe privilege level 15
+ local-user tbe service-type telnet terminal ssh http
+ local-user admin password irreversible-cipher $1c$WKGP3uS$a/$Ixn".YUaT9f.y-DpJ,M+RB"4Z<P6gO`ZdICt!l}Y$
+ local-user admin privilege level 15
+ local-user admin service-type terminal ssh http
+ local-user opengsi password irreversible-cipher $1c$M>5LKx90~P$_V'a")w#N~f4h@2z`-6V6JH>304K79mPby%JdcAD$
+ local-user opengsi privilege level 15
+ local-user opengsi service-type telnet terminal ssh http
+#
+ntp-service server disable
+ntp-service ipv6 server disable
+ntp-service unicast-server 10.2.1.98
+#
+undo icmp name timestamp-request receive
+#
+ip route-static 0.0.0.0 0.0.0.0 192.168.90.252
+#
+stelnet ipv4 server enable
+ssh client first-time enable
+ssh client 192.1.20.5 assign ecc-key 192.1.20.5
+ssh server-source all-interface
+ssh server cipher aes256_ctr aes128_ctr
+ssh server hmac sha2_256
+ssh client cipher aes256_ctr aes128_ctr
+ssh client hmac sha2_256
+ssh server dh-exchange min-len 2048
+ssh server publickey ecc dsa rsa
+#
+header login information "################################################################
+# ATENCAO: ACESSO PERMITIDO PARA PESSOAL AUTORIZADO.           #
+#                 DESCONECTE-SE IMEDIATAMENTE                  #
+# ATTENTION: AUTHORIZED PERSONAL ONLY. DISCONNECT IMMEDIATELY. #
+################################################################
+"
+#
+user-interface con 0
+ authentication-mode aaa
+user-interface vty 0 4
+ authentication-mode aaa
+ idle-timeout 30 0
+ protocol inbound all
+user-interface vty 16 20
+ protocol inbound all
+#
+dot1x-access-profile name dot1x_access_profile
+#
+mac-access-profile name mac_access_profile
+#
+ops
+#
+return
+<MA-AC-SW2>

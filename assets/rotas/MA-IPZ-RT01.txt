@@ -1,0 +1,235 @@
+<MA-IPZ-RT01>display current-configuration
+[V300R019C10SPC300]
+#
+ sysname MA-IPZ-RT01
+ header login information "
+################################################################
+# ATENCAO: ACESSO PERMITIDO PARA PESSOAL AUTORIZADO.           #
+#                 DESCONECTE-SE IMEDIATAMENTE                  #
+# ATTENTION: AUTHORIZED PERSONAL ONLY. DISCONNECT IMMEDIATELY. #
+################################################################
+"
+#
+ board add 0/1 2SA
+#
+ drop illegal-mac alarm
+#
+ clock timezone BR minus 00:00:00
+#
+ipv6
+#
+authentication-profile name default_authen_profile
+authentication-profile name dot1x_authen_profile
+authentication-profile name dot1xmac_authen_profile
+authentication-profile name mac_authen_profile
+authentication-profile name multi_authen_profile
+authentication-profile name portal_authen_profile
+#
+ lldp enable
+#
+dns resolve
+dns server 10.2.1.80
+dns domain tbe.telecom.local
+dns server source-ip 192.168.130.252
+#
+dhcp enable
+#
+radius-server template default
+#
+pki realm default
+#
+ssl policy default_policy type server
+ pki-realm default
+ version tls1.2
+ ciphersuite rsa_aes_128_cbc_sha rsa_aes_128_sha256 rsa_aes_256_sha256 ecdhe_rsa_aes128_gcm_sha256 ecdhe_rsa_aes256_gcm_sha384
+#
+ike proposal default
+ encryption-algorithm aes-256 aes-192 aes-128
+ dh group14
+ authentication-algorithm sha2-512 sha2-384 sha2-256
+ authentication-method pre-share
+ integrity-algorithm hmac-sha2-256
+ prf hmac-sha2-256
+#
+free-rule-template name default_free_rule
+#
+portal-access-profile name portal_access_profile
+#
+aaa
+ authentication-scheme default
+  authentication-mode local
+ authentication-scheme radius
+  authentication-mode radius
+ authorization-scheme default
+  authorization-mode local
+ accounting-scheme default
+  accounting-mode none
+ local-aaa-user password policy administrator
+ domain default
+  authentication-scheme default
+  accounting-scheme default
+ domain default_admin
+  authentication-scheme default
+  accounting-scheme default
+ local-user tbe password irreversible-cipher $1a$#d,g"x/{v1$3Ov.2V},h/%XkF7%hoV>=A\bE0_YBN#<k9,gi:F)$
+ local-user tbe privilege level 15
+ local-user tbe service-type telnet terminal ssh
+ local-user admin password irreversible-cipher $1a$l/ee<QKJ`1$aPb2.&;1m0F.R-CHp_};.,#v)1A_gH=rau~tev,#$
+ local-user admin privilege level 15
+ local-user admin service-type terminal http
+ local-user opengsi password irreversible-cipher $1a$$7m81;2Z8($Hx=d:-bDqL*ce-7|}E>=_j1V"PXfDKL$$hH<BMO&$
+ local-user opengsi privilege level 15
+ local-user opengsi service-type telnet terminal ssh
+#
+web
+#
+firewall zone Local
+#
+interface Vlanif1
+ ip address 192.168.1.1 255.255.255.0
+ dhcp select interface
+#
+interface Serial1/0/0
+ link-protocol ppp
+#
+interface Serial1/0/1
+ link-protocol ppp
+#
+interface GigabitEthernet0/0/0
+ undo portswitch
+ description REDE LOCAL
+ ip address 192.168.130.252 255.255.255.0
+ vrrp vrid 10 virtual-ip 192.168.130.253
+ vrrp vrid 10 priority 110
+ vrrp vrid 10 track nqa NQA VRRP
+#
+interface GigabitEthernet0/0/1
+ undo portswitch
+ description description CONEXAO RAISECOM UNI1 => LINK ELETRONORTE
+#
+interface GigabitEthernet0/0/1.130
+ description CONEXAO RAISECOM F0/1 => LINK P2P ELETRONORTE MA-AC-RT01 F0/1/1 ACAILANDIA
+ dot1q termination vid 130
+ ip address 192.168.0.30 255.255.255.252
+#
+interface GigabitEthernet0/0/2
+#
+interface GigabitEthernet0/0/3
+#
+interface GigabitEthernet0/0/4
+#
+interface GigabitEthernet0/0/5
+#
+interface GigabitEthernet0/0/6
+#
+interface GigabitEthernet0/0/7
+#
+interface GigabitEthernet0/0/8
+#
+interface GigabitEthernet0/0/9
+#
+interface GigabitEthernet0/0/10
+#
+interface GigabitEthernet0/0/11
+ description VirtualPort
+ shutdown
+#
+interface XGigabitEthernet0/0/0
+#
+interface NULL0
+#
+interface LoopBack200
+ description GERENCIA TBE
+ ip address 10.200.200.41 255.255.255.255
+#
+bgp 65005
+ router-id 192.168.130.252
+ peer 192.168.0.29 as-number 65000
+ peer 192.168.0.29 description MA-AC-RT01
+ peer 192.168.0.29 connect-interface GigabitEthernet0/0/1.130
+ peer 192.168.130.254 as-number 65005
+ peer 192.168.130.254 description MA-ITZ-RT02
+ peer 192.168.130.254 connect-interface GigabitEthernet0/0/0
+ #
+ ipv4-family unicast
+  undo synchronization
+  network 10.200.200.41 255.255.255.255
+  network 192.168.0.28 255.255.255.252
+  network 192.168.130.0
+  peer 192.168.0.29 enable
+  peer 192.168.0.29 route-policy LOCAL_PREF_MA-AC-RT01_IN import
+  peer 192.168.130.254 enable
+#
+route-policy PREPEND_ELETRONORTE_OUT permit node 40
+ apply as-path 65306 65306 65306 additive
+#
+route-policy LOCAL_PREF_MA-AC-RT01_IN permit node 40
+ apply local-preference 250
+#
+ snmp-agent local-engineid 800007DB03048C16CACD6F
+ snmp-agent trap enable
+#
+ telnet server enable
+#
+ http secure-server ssl-policy default_policy
+ http secure-server enable
+ http server permit interface GigabitEthernet0/0/0
+#
+fib regularly-refresh disable
+#
+nqa test-instance NQA VRRP
+ test-type icmp
+ destination-address ipv4 192.168.0.29
+ source-address ipv4 192.168.0.30
+ send-trap testfailure
+ frequency 30
+ timeout 1
+ probe-count 1
+ start now
+#
+user-interface con 0
+ authentication-mode aaa
+user-interface vty 0
+ authentication-mode aaa
+ user privilege level 15
+ protocol inbound telnet
+user-interface vty 1 4
+ authentication-mode aaa
+#
+wlan ac
+ traffic-profile name default
+ security-profile name default
+ security-profile name default-wds
+  security wpa2 psk pass-phrase %^%#KG*D"e;Fo0cXz3He8=-)xgHtX7EXKK-Px(,B\ji6%^%# aes
+ ssid-profile name default
+ vap-profile name default
+ wds-profile name default
+ regulatory-domain-profile name default
+ air-scan-profile name default
+ rrm-profile name default
+ radio-2g-profile name default
+ radio-5g-profile name default
+ wids-spoof-profile name default
+ wids-profile name default
+ ap-system-profile name default
+ port-link-profile name default
+ wired-port-profile name default
+ ap-group name default
+#
+dot1x-access-profile name dot1x_access_profile
+#
+mac-access-profile name mac_access_profile
+#
+ ntp-service unicast-server 10.2.1.98
+#
+ops
+#
+autostart
+#
+secelog
+#
+ ms-channel
+
+#
+return
+<MA-IPZ-RT01>

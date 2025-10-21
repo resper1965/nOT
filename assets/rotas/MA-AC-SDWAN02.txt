@@ -1,0 +1,818 @@
+<MA-AC-SDWAN02>dis current-configuration
+[V300R021C00SPC200]
+#
+ sysname MA-AC-SDWAN02
+#
+ engine enable
+ engine sac bypass
+#
+update schedule ips-sdb daily 04:26
+update schedule av-sdb daily 04:26
+undo update schedule sa-sdb enable
+update schedule sa-sdb daily 04:26
+update schedule cnc daily 04:26
+ update host source GigabitEthernet0/0/10
+#
+ drop illegal-mac alarm
+#
+ clock timezone default minus 00:00:00
+#
+ undo set workmode hardware hash
+#
+ip route recursive-lookup default-route protocol bgp
+#
+ install module flash:/file-default.app
+ install module flash:/url-default.app
+#
+ ipsec authentication sha2 compatible enable
+#
+authentication-profile name default_authen_profile
+authentication-profile name dot1x_authen_profile
+authentication-profile name dot1xmac_authen_profile
+authentication-profile name mac_authen_profile
+authentication-profile name multi_authen_profile
+authentication-profile name portal_authen_profile
+#
+ lldp enable
+#
+dns resolve
+dns proxy enable
+dns relay enable
+#
+ license active accept agreement
+ license function ac
+ license function sece
+ license function datae
+ license resource av 120
+ license resource urlf 120
+ license resource ips 120
+#
+dhcp enable
+#
+ip vpn-instance MNG_192.168.1.1
+ ipv4-family
+  route-distinguisher 5500:5500
+#
+ip vpn-instance OPENSSHLINKVPORT
+ ipv4-family
+#
+ip vpn-instance TBE
+ ipv4-family
+  route-distinguisher 100.99.0.32:1
+  import route-policy evpn-vpn1-import evpn
+  export route-policy evpn-vpn1-export evpn
+  vpn-target 64600:5 export-extcommunity evpn
+  vpn-target 64600:5 import-extcommunity evpn
+ evpn vn-id 5
+#
+ip vpn-instance underlay_MPLS
+ ipv4-family
+  route-distinguisher 1111:1111
+  vpn-target 11:11 export-extcommunity
+  vpn-target 11:11 import-extcommunity
+#
+radius-server template default
+#
+bfd
+#
+pki realm default
+ certificate-check none
+#
+ssl policy default_policy type server
+ pki-realm default
+ version tls1.2
+ ciphersuite rsa_aes_128_sha256 rsa_aes_256_sha256 ecdhe_rsa_aes128_gcm_sha256 ecdhe_rsa_aes256_gcm_sha384
+#
+ipsec proposal sdwan-proposal
+ esp authentication-algorithm sha2-256
+ esp encryption-algorithm aes-256
+#
+ike proposal default
+ encryption-algorithm aes-256 aes-192 aes-128
+ dh group14
+ authentication-algorithm sha2-512 sha2-384 sha2-256
+ authentication-method pre-share
+ integrity-algorithm hmac-sha2-256
+ prf hmac-sha2-256
+#
+ipsec p2mp-policy sdwan-p2mp-sa
+ proposal sdwan-proposal
+#
+free-rule-template name default_free_rule
+#
+portal-access-profile name portal_access_profile
+#
+aaa
+ authentication-scheme default
+  authentication-mode local
+ authentication-scheme radius
+  authentication-mode radius
+ authorization-scheme default
+  authorization-mode local
+ accounting-scheme default
+  accounting-mode none
+ local-aaa-user password policy administrator
+ domain default
+  authentication-scheme default
+  accounting-scheme default
+  radius-server default
+ domain default_admin
+  authentication-scheme default
+  accounting-scheme default
+ domain domain_accampus
+  authentication-scheme default
+  accounting-scheme default
+  radius-server default
+ local-user tbe password irreversible-cipher $1a$YX=-E2#J'$$}g.=BsU#r5,$K:/K.PdL`O5o'n(fwE>T_4"{Wp,X$
+ local-user tbe privilege level 15
+ local-user tbe service-type terminal ssh http
+ local-user fiberx password irreversible-cipher $1a$*a:"K]4dY*$/On."UwH~Oyx5l9Nj(Z@K(e~((eJ'Aag7W+%SuF5$
+ local-user fiberx privilege level 15
+ local-user fiberx service-type terminal ssh http
+ local-user opengsi password irreversible-cipher $1a$KDXc,sCiwW$FvPo=>`luD_%@:4dE2/5X;s@<0HbJYh&YMU4JvH"$
+ local-user opengsi privilege level 15
+ local-user opengsi service-type telnet ssh http
+ local-user accampus@domain_accampus password irreversible-cipher $1a$pA{fT&w~gF$!e3/Tv,;Z<4X1f:O_<"Wi`5I;nC&Y9[SjEVREE[Y$
+ local-user accampus@domain_accampus privilege level 15
+ local-user accampus@domain_accampus service-type ssh http
+#
+web
+ set fast-configuration state disable
+#
+firewall zone Local
+#
+sa
+#
+nat alg ftp enable
+nat alg rtsp enable
+nat alg sip enable
+nat alg pptp enable
+#
+mi-server
+#
+interface Vlanif1
+ ip binding vpn-instance MNG_192.168.1.1
+ ip address 192.168.1.1 255.255.192.0
+ dhcp select interface
+ dhcp server dns-list 192.168.1.1
+#
+interface GigabitEthernet0/0/0
+#
+interface GigabitEthernet0/0/1
+ undo portswitch
+ description LAN
+ ip binding vpn-instance TBE
+ tcp adjust-mss 1200
+ ip address 192.168.35.254 255.255.255.128
+ ip address 10.10.3.254 255.255.255.0 sub
+ ip address 192.168.1.254 255.255.255.0 sub
+ vrrp vrid 10 virtual-ip 192.168.35.140
+ sa application-statistic enable
+#
+interface GigabitEthernet0/0/2
+ undo portswitch
+ description LAN
+ ip binding vpn-instance TBE
+ tcp adjust-mss 1200
+ ip address 192.168.37.254 255.255.255.0
+ vrrp vrid 15 virtual-ip 192.168.37.252
+ sa application-statistic enable
+#
+interface GigabitEthernet0/0/3
+ undo portswitch
+ description LAN
+ ip binding vpn-instance TBE
+ tcp adjust-mss 1200
+ ip address 192.168.90.254 255.255.255.0
+ vrrp vrid 20 virtual-ip 192.168.90.252
+ sa application-statistic enable
+#
+interface GigabitEthernet0/0/4
+ undo portswitch
+#
+interface GigabitEthernet0/0/4.4000
+ description interlink
+ dot1q termination vid 4000
+ tcp adjust-mss 1200
+ ip address 100.99.0.18 255.255.255.252
+ tcp fpm enable
+ sa application-statistic enable
+#
+interface GigabitEthernet0/0/4.4001
+ description interlink
+ dot1q termination vid 4001
+ ip binding vpn-instance TBE
+ tcp adjust-mss 1200
+ ip address 100.99.0.22 255.255.255.252
+ tcp fpm enable
+ ospf enable 30001 area 0.0.0.0
+ sa application-statistic enable
+#
+interface GigabitEthernet0/0/5
+#
+interface GigabitEthernet0/0/6
+#
+interface GigabitEthernet0/0/7
+ undo portswitch
+ description WAN RT CAS
+ ip binding vpn-instance underlay_MPLS
+ tcp adjust-mss 1200
+ ip address 192.16.8.18 255.255.255.252
+ qos gts cir 100000 cbs 2500000
+#
+interface GigabitEthernet0/0/8
+#
+interface GigabitEthernet0/0/9
+#
+interface GigabitEthernet0/0/10
+ description WAN FW ACD
+ ip binding vpn-instance underlay_MPLS
+ tcp adjust-mss 1200
+ ip address 192.0.9.74 255.255.255.252
+ qos pre-nat
+ qos gts cir 10000 cbs 250000
+#
+interface GigabitEthernet0/0/11
+ description VirtualPort
+ ip binding vpn-instance OPENSSHLINKVPORT
+ ip address 192.168.233.233 255.255.255.252
+ dhcp select interface
+ dhcp server dns-list 192.168.233.233
+#
+interface XGigabitEthernet0/0/0
+#
+interface NULL0
+#
+interface LoopBack100
+ ip address 100.99.0.7 255.255.255.255
+#
+interface LoopBack105
+ description physical port: GigabitEthernet0/0/7
+ ip binding vpn-instance TBE
+ ip address 100.99.0.9 255.255.255.255
+#
+interface LoopBack106
+ description physical port: GigabitEthernet0/0/7
+ ip binding vpn-instance TBE
+ ip address 100.99.0.10 255.255.255.255
+#
+interface LoopBack900
+ ip binding vpn-instance underlay_MPLS
+ ip address 100.98.1.2 255.255.255.255
+#
+interface Tunnel0/0/5
+ description physical port: GigabitEthernet0/0/7
+ ip binding vpn-instance TBE
+ ip address 100.99.0.11 255.255.255.248
+ tunnel-protocol gre
+ source LoopBack105
+ destination vpn-instance TBE 100.99.0.10
+ ip netstream connection statistic inbound
+ ip netstream connection statistic outbound
+ tcp fpm enable
+ qos group 1
+ ospf enable 35005 area 0.0.0.0
+ sa application-statistic enable
+#
+interface Tunnel0/0/6
+ description physical port: GigabitEthernet0/0/7
+ ip binding vpn-instance underlay_MPLS
+ ip address 100.99.0.12 255.255.255.248
+ tunnel-protocol gre
+ source LoopBack106
+ destination vpn-instance TBE 100.99.0.9
+ ospf enable 35006 area 0.0.0.0
+#
+interface Tunnel0/0/600
+ description evpn tunnel
+ tcp adjust-mss 1098
+ vpn-mapping enable
+ ip address 100.99.0.34 255.255.255.255
+ tunnel-protocol svpn
+ ip netstream connection statistic inbound
+ ip netstream connection statistic outbound
+ tcp fpm enable
+ qos pre-classify
+ ipsec p2mp-policy enable
+ statistic enable inbound
+ statistic enable outbound
+ weak-state-control enable
+ sa application-statistic enable
+#
+interface Tunnel0/0/601
+ description evpn tunnel
+ ip binding vpn-instance TBE
+ tcp adjust-mss 1098
+ vpn-mapping enable
+ ip address 100.99.0.34 255.255.255.255
+ tunnel-protocol svpn
+ ip netstream connection statistic inbound
+ ip netstream connection statistic outbound
+ tcp fpm enable
+ qos pre-classify
+ qos group 1
+ ipsec p2mp-policy enable
+ statistic enable inbound
+ statistic enable outbound
+ weak-state-control enable
+ sa application-statistic enable
+#
+cellular profile default
+ modem auto-recovery dial action modem-reboot fail-times 128
+ modem auto-recovery icmp-unreachable action modem-reboot
+ modem auto-recovery services-unavailable action modem-reboot test-times 0 interval 3600
+#
+bgp 64600
+ router-id 100.99.0.7
+ peer 100.99.0.1 as-number 64600
+ peer 100.99.0.3 as-number 64600
+ peer 100.99.0.3 connect-interface LoopBack100
+ peer 100.99.0.4 as-number 64600
+ peer 100.99.0.4 connect-interface LoopBack100
+ peer 100.99.0.32 as-number 64600
+ peer 100.99.0.32 connect-interface LoopBack100
+ peer 100.99.0.35 as-number 64600
+ peer 100.99.0.36 as-number 64600
+ peer 100.99.0.39 as-number 64600
+ peer 100.99.0.40 as-number 64600
+ peer 100.99.0.43 as-number 64600
+ peer 100.99.0.44 as-number 64600
+ group site-0268806ae8c740f6820838ab2bc03f7f internal
+ peer site-0268806ae8c740f6820838ab2bc03f7f connect-interface LoopBack100
+ group site-0a390865ad924487b75376f476dcdeca internal
+ peer site-0a390865ad924487b75376f476dcdeca connect-interface LoopBack100
+ group site-11b6218f40f5497da89e7ca03a6490e2 internal
+ peer site-11b6218f40f5497da89e7ca03a6490e2 connect-interface LoopBack100
+ group site-41316c30ad03413a82b9add0d4a519e6 internal
+ peer site-41316c30ad03413a82b9add0d4a519e6 connect-interface LoopBack100
+ group tenant-d05887aa78424e66a6a9cb96b588c1e4 internal
+ peer tenant-d05887aa78424e66a6a9cb96b588c1e4 connect-interface LoopBack100
+ #
+ ipv4-family unicast
+  undo synchronization
+  peer 100.99.0.1 enable
+  peer 100.99.0.3 enable
+  peer 100.99.0.4 enable
+  peer 100.99.0.32 enable
+  peer 100.99.0.35 enable
+  peer 100.99.0.36 enable
+  peer 100.99.0.39 enable
+  peer 100.99.0.40 enable
+  peer 100.99.0.43 enable
+  peer 100.99.0.44 enable
+  peer site-0268806ae8c740f6820838ab2bc03f7f enable
+  peer site-0a390865ad924487b75376f476dcdeca enable
+  peer site-11b6218f40f5497da89e7ca03a6490e2 enable
+  peer site-41316c30ad03413a82b9add0d4a519e6 enable
+  peer tenant-d05887aa78424e66a6a9cb96b588c1e4 enable
+ #
+ l2vpn-family evpn
+  reflector cluster-id 100.99.0.7
+  reflect change-path-attribute
+  undo policy vpn-target
+  peer 100.99.0.3 enable
+  peer 100.99.0.3 route-policy vrr-to-vrr-deny-self import
+  peer 100.99.0.3 advertise encap-type sd-wan
+  peer 100.99.0.3 reflect-client
+  peer 100.99.0.4 enable
+  peer 100.99.0.4 route-policy vrr-to-vrr-deny-self import
+  peer 100.99.0.4 advertise encap-type sd-wan
+  peer 100.99.0.4 reflect-client
+  peer 100.99.0.32 enable
+  peer 100.99.0.32 route-policy vrr-to-vrr-deny-self import
+  peer 100.99.0.32 advertise encap-type sd-wan
+  peer 100.99.0.32 reflect-client
+  peer site-0268806ae8c740f6820838ab2bc03f7f enable
+  peer site-0268806ae8c740f6820838ab2bc03f7f route-policy evpn-6b6851baf65e405e9c5d9764e041b690-im import
+  peer site-0268806ae8c740f6820838ab2bc03f7f route-policy evpn-f9d961ad6b0e4b478abfe36f5c4df604-ex export
+  peer site-0268806ae8c740f6820838ab2bc03f7f advertise encap-type sd-wan
+  peer site-0268806ae8c740f6820838ab2bc03f7f reflect-client
+  peer 100.99.0.1 enable
+  peer 100.99.0.1 group site-0268806ae8c740f6820838ab2bc03f7f
+  peer site-0a390865ad924487b75376f476dcdeca enable
+  peer site-0a390865ad924487b75376f476dcdeca route-policy evpn-6b6851baf65e405e9c5d9764e041b690-im import
+  peer site-0a390865ad924487b75376f476dcdeca route-policy evpn-f9d961ad6b0e4b478abfe36f5c4df604-ex export
+  peer site-0a390865ad924487b75376f476dcdeca advertise encap-type sd-wan
+  peer site-0a390865ad924487b75376f476dcdeca reflect-client
+  peer 100.99.0.43 enable
+  peer 100.99.0.43 group site-0a390865ad924487b75376f476dcdeca
+  peer 100.99.0.44 enable
+  peer 100.99.0.44 group site-0a390865ad924487b75376f476dcdeca
+  peer site-11b6218f40f5497da89e7ca03a6490e2 enable
+  peer site-11b6218f40f5497da89e7ca03a6490e2 route-policy evpn-6b6851baf65e405e9c5d9764e041b690-im import
+  peer site-11b6218f40f5497da89e7ca03a6490e2 route-policy evpn-f9d961ad6b0e4b478abfe36f5c4df604-ex export
+  peer site-11b6218f40f5497da89e7ca03a6490e2 advertise encap-type sd-wan
+  peer site-11b6218f40f5497da89e7ca03a6490e2 reflect-client
+  peer 100.99.0.39 enable
+  peer 100.99.0.39 group site-11b6218f40f5497da89e7ca03a6490e2
+  peer 100.99.0.40 enable
+  peer 100.99.0.40 group site-11b6218f40f5497da89e7ca03a6490e2
+  peer site-41316c30ad03413a82b9add0d4a519e6 enable
+  peer site-41316c30ad03413a82b9add0d4a519e6 route-policy evpn-6b6851baf65e405e9c5d9764e041b690-im import
+  peer site-41316c30ad03413a82b9add0d4a519e6 route-policy evpn-f9d961ad6b0e4b478abfe36f5c4df604-ex export
+  peer site-41316c30ad03413a82b9add0d4a519e6 advertise encap-type sd-wan
+  peer site-41316c30ad03413a82b9add0d4a519e6 reflect-client
+  peer 100.99.0.35 enable
+  peer 100.99.0.35 group site-41316c30ad03413a82b9add0d4a519e6
+  peer 100.99.0.36 enable
+  peer 100.99.0.36 group site-41316c30ad03413a82b9add0d4a519e6
+ #
+ ipv4-family tunnel-encap-ext
+  reflector cluster-id 100.99.0.7
+  peer 100.99.0.3 enable
+  peer 100.99.0.3 reflect-client
+  peer 100.99.0.3 advertise-community
+  peer 100.99.0.4 enable
+  peer 100.99.0.4 reflect-client
+  peer 100.99.0.4 advertise-community
+  peer 100.99.0.32 enable
+  peer 100.99.0.32 reflect-client
+  peer 100.99.0.32 advertise-community
+  peer tenant-d05887aa78424e66a6a9cb96b588c1e4 enable
+  peer tenant-d05887aa78424e66a6a9cb96b588c1e4 reflect-client
+  peer tenant-d05887aa78424e66a6a9cb96b588c1e4 advertise-community
+  peer 100.99.0.1 enable
+  peer 100.99.0.1 group tenant-d05887aa78424e66a6a9cb96b588c1e4
+  peer 100.99.0.35 enable
+  peer 100.99.0.35 group tenant-d05887aa78424e66a6a9cb96b588c1e4
+  peer 100.99.0.36 enable
+  peer 100.99.0.36 group tenant-d05887aa78424e66a6a9cb96b588c1e4
+  peer 100.99.0.39 enable
+  peer 100.99.0.39 group tenant-d05887aa78424e66a6a9cb96b588c1e4
+  peer 100.99.0.40 enable
+  peer 100.99.0.40 group tenant-d05887aa78424e66a6a9cb96b588c1e4
+  peer 100.99.0.43 enable
+  peer 100.99.0.43 group tenant-d05887aa78424e66a6a9cb96b588c1e4
+  peer 100.99.0.44 enable
+  peer 100.99.0.44 group tenant-d05887aa78424e66a6a9cb96b588c1e4
+ #
+ ipv4-family vpn-instance TBE
+  preference 30 255 170 route-policy bgp-preference-vpn1
+  import-route direct med 0 route-policy bgp-import-direct-vpn1
+  import-route static med 0 route-policy bgp-import-static-vpn1
+  import-route ospf 30001 route-policy bgp-import-interlink-ospf-vpn1
+  import-route ospf 35005 route-policy bgp-import-legacy-ospf-vpn1
+  import-route unr med 0 route-policy bgp-import-static-vpn1
+  advertise l2vpn evpn
+ #
+ ipv4-family vpn-instance underlay_MPLS
+  preference 120 255 255
+  import-route direct med 0
+  import-route static med 0
+  import-route ospf 35006
+  advertise l2vpn evpn
+  peer 192.16.8.17 as-number 65337
+  peer 192.16.8.17 fake-as 65002
+#
+ospf 30001 router-id 127.0.0.9 vpn-instance TBE
+ import-route direct cost 1 type 2 tag 3100 route-policy innerlink-import-direct-30001
+ import-route static cost 1 type 2 tag 3100
+ import-route ospf 35005 cost 70 type 2 tag 3000
+ import-route bgp cost 1 type 2 tag 3100
+ preference ase route-policy innerlink_ospf_preference_30001 150
+ vpn-instance-capability simple
+ area 0.0.0.0
+#
+ospf 35005 router-id 127.0.0.10 vpn-instance TBE
+ import-route direct cost 1 type 2 tag 1 route-policy interworking-import-direct-35005
+ import-route static cost 1 type 2 tag 1
+ import-route ospf 30001 cost 1 type 2 tag 1 route-policy interworking-import-innerlkospf-35005
+ preference ase route-policy interworking-apply-preference-35005 150
+ vpn-instance-capability simple
+ area 0.0.0.0
+#
+ospf 35006 router-id 127.0.0.11 vpn-instance underlay_MPLS
+ import-route direct cost 60 type 2 tag 1
+ import-route static cost 60 type 2 tag 1 route-policy interworking-deny-ac-south-ip-35006
+ import-route bgp permit-ibgp cost 60 type 2 tag 1
+ preference ase route-policy interworking-apply-preference-35006 150
+ area 0.0.0.0
+#
+route-policy interworking-apply-preference-35005 permit node 10
+ apply preference 190
+#
+route-policy innerlink_ospf_preference_30001 permit node 0
+ if-match tag 3000
+ apply preference 190
+#
+route-policy innerlink_ospf_preference_30001 permit node 10
+ if-match tag 3300
+ apply preference 190
+#
+route-policy innerlink_ospf_preference_30001 permit node 20
+ if-match tag 3600
+ apply preference 190
+#
+route-policy innerlink_ospf_preference_30001 permit node 30
+ if-match tag 3900
+ apply preference 190
+#
+route-policy innerlink_ospf_preference_30001 permit node 40
+ if-match tag 3100
+ apply preference 160
+#
+route-policy innerlink_ospf_preference_30001 permit node 50
+ if-match tag 3200
+ apply preference 180
+#
+route-policy innerlink_ospf_preference_30001 permit node 60
+ if-match tag 4100
+ apply preference 210
+#
+route-policy innerlink_ospf_preference_30001 permit node 70
+#
+route-policy bgp-import-legacy-ospf-vpn1 permit node 55
+ apply community 64600:2 additive
+ apply preferred-value 35
+#
+route-policy interworking-apply-preference-35006 permit node 10
+ apply preference 20
+#
+route-policy evpn-vpn1-export deny node 50
+ description evpn deny local legacy route
+ if-match community-filter local-legacy-route-community
+#
+route-policy evpn-vpn1-export permit node 65535
+ description vpn export to evpn
+ apply community 64600:1000 additive
+ apply extcommunity color 6:10 additive
+ apply comm-filter lan-bgp-import-community delete
+#
+route-policy interworking-import-direct-35005 deny node 10
+ if-match ip-prefix interworking-deny-route--35005
+#
+route-policy interworking-import-direct-35005 permit node 20
+#
+route-policy bgp-preference-vpn1 permit node 10
+ description bgp preference default route
+ if-match ip-prefix default-route
+ apply preference 200
+#
+route-policy bgp-preference-vpn1 permit node 20
+ description bgp preference legacy route
+ if-match community-filter central-legacy-route-community
+ apply preference 200
+#
+route-policy bgp-preference-vpn1 permit node 40
+ description bgp preference default
+#
+route-policy innerlink-import-direct-30001 deny node 10
+ description Innerlink ospf import direct deny loopback address
+ if-match ip-prefix bgp-import-direct-deny-loopback-vpn1
+#
+route-policy innerlink-import-direct-30001 permit node 20
+#
+route-policy bgp-import-direct-vpn1 deny node 50
+ description bgp import direct deny interlink address
+ if-match ip-prefix bgp-import-direct-deny-interlink-vpn1
+#
+route-policy bgp-import-direct-vpn1 deny node 55
+ description bgp import direct deny loopback address
+ if-match ip-prefix bgp-import-direct-deny-loopback-vpn1
+#
+route-policy bgp-import-direct-vpn1 permit node 60
+ description bgp import direct
+ apply community 64600:0 additive
+ apply preferred-value 60
+#
+route-policy evpn-vpn1-import deny node 50
+ description vpn import fromt evpn deny self route
+ if-match extcommunity-list color match-self-color-list
+#
+route-policy evpn-vpn1-import permit node 40000
+ description vpn import from evpn centralized deployment
+ if-match community-filter t3-v1-a1-lan-default-spoke
+ if-match extcommunity-filter t3-vpn1
+ apply preferred-value 30
+#
+route-policy evpn-vpn1-import permit node 40001
+ description vpn import from evpn centralized deployment
+ if-match community-filter t3-v1-a1-lan-spoke
+ if-match extcommunity-filter t3-vpn1
+ apply preferred-value 50
+#
+route-policy evpn-vpn1-import permit node 40002
+ description vpn import from evpn centralized deployment
+ if-match community-filter t3-v1-a1-spokes
+ if-match extcommunity-filter t3-vpn1
+ apply preferred-value 30
+#
+route-policy evpn-vpn1-import deny node 65535
+ description vpn import from evpn centralized deployment
+#
+route-policy bgp-import-interlink-ospf-vpn1 permit node 50
+ if-match ip-prefix default-route
+ apply community 64600:2 additive
+ apply preferred-value 35
+#
+route-policy bgp-import-interlink-ospf-vpn1 permit node 55
+ if-match tag 3000
+ apply cost 0
+ apply community 64600:2 additive
+ apply preferred-value 35
+#
+route-policy bgp-import-interlink-ospf-vpn1 permit node 60
+ if-match tag 3100
+ apply cost 0
+ apply community 64600:0 additive
+ apply preferred-value 60
+#
+route-policy bgp-import-interlink-ospf-vpn1 permit node 70
+ if-match tag 3200
+ apply community 64600:2 additive
+ apply preferred-value 35
+#
+route-policy bgp-import-interlink-ospf-vpn1 permit node 80
+ if-match tag 4100
+ apply community 64600:2 additive
+ apply preferred-value 35
+#
+route-policy vrr-to-vrr-deny-self deny node 50
+ description rr to rr deny self import
+ if-match extcommunity-list color match-self-color-list
+#
+route-policy vrr-to-vrr-deny-self permit node 65535
+ description rr to rr permit import
+#
+route-policy bgp-import-static-vpn1 permit node 60
+ description bgp import static
+ if-match ip-prefix default-route
+ apply community 64600:2 additive
+ apply preferred-value 35
+#
+route-policy bgp-import-static-vpn1 permit node 70
+ description bgp import static permit
+ apply community 64600:0 additive
+ apply preferred-value 60
+#
+route-policy interworking-deny-ac-south-ip-35006 deny node 10
+ if-match tag 4400
+#
+route-policy interworking-deny-ac-south-ip-35006 permit node 20
+#
+route-policy interworking-import-innerlkospf-35005 deny node 10
+ if-match tag 3000
+#
+route-policy interworking-import-innerlkospf-35005 deny node 20
+ if-match tag 3200
+#
+route-policy interworking-import-innerlkospf-35005 deny node 30
+ if-match tag 4100
+#
+route-policy interworking-import-innerlkospf-35005 permit node 40
+#
+route-policy evpn-f9d961ad6b0e4b478abfe36f5c4df604-ex permit node 40000
+ description evpn site default export
+ if-match community-filter t3-v1-a1-spokes
+ if-match extcommunity-filter t3-vpn1
+#
+route-policy evpn-f9d961ad6b0e4b478abfe36f5c4df604-ex deny node 65535
+ description evpn site default export
+#
+route-policy evpn-6b6851baf65e405e9c5d9764e041b690-im permit node 40000
+ description evpn site default import
+ if-match extcommunity-filter t3-vpn1
+ apply community 64600:1000 additive
+#
+route-policy evpn-6b6851baf65e405e9c5d9764e041b690-im permit node 65535
+ description default import internal area
+#
+cpu-defend policy car_policy
+ packet-type bgp rate-limit 1024
+ rate-adaption all-exception enable
+ rate-adaption include packet-type bgp
+#
+ cpu-defend-policy car_policy
+#
+undo icmp name timestamp-request receive
+#
+ snmp-agent local-engineid 800007DB031C3D2FB264A2
+ snmp-agent trap enable
+ undo snmp-agent trap enable feature-name bgp trap-name ESTABLISHED
+ undo snmp-agent trap enable feature-name bgp trap-name BACKWARD
+ snmp-agent
+#
+ stelnet server enable
+ ssh server permit interface all
+#
+ http secure-server ssl-policy default_policy
+ http server permit interface GigabitEthernet0/0/0
+#
+ip ip-prefix bgp-import-direct-deny-loopback-vpn1 index 1 permit 100.99.0.8 29 greater-equal 29 less-equal 32
+ip ip-prefix interworking-deny-route--35005 index 1 permit 100.99.0.20 30 greater-equal 30 less-equal 32
+ip ip-prefix interworking-deny-route--35005 index 2 permit 100.99.0.8 29 greater-equal 29 less-equal 32
+ip ip-prefix interworking-deny-route--35005 index 3 permit 100.99.0.34 32 greater-equal 32 less-equal 32
+ip ip-prefix bgp-import-direct-deny-interlink-vpn1 index 1 permit 100.99.0.20 30 greater-equal 30 less-equal 32
+ip ip-prefix default-route index 1 permit 0.0.0.0 0
+ip ip-prefix TNL-RT index 1 permit 0.0.0.0 32
+#
+ip community-filter basic lan-route-community permit 64600:0
+ip community-filter basic lan-bgp-import-community permit 64600:4
+ip community-filter basic central-legacy-route-community permit 64600:3
+ip community-filter basic local-legacy-route-community permit 64600:2
+ip community-filter basic t3-v1-a1-spokes permit 64600:1000
+ip community-filter basic t3-v1-a1-lan-default-spoke permit 64600:1000 64600:5
+ip community-filter basic t3-v1-a1-lan-spoke permit 64600:1000 64600:0
+#
+ip extcommunity-filter basic t3-vpn1 permit rt 64600:5
+#
+ip extcommunity-list color basic match-self-color-list index 1 permit 10
+#
+ip route-static 0.0.0.0 0.0.0.0 Tunnel0/0/600
+ip route-static 100.99.0.1 255.255.255.255 Tunnel0/0/600
+ip route-static 100.99.0.3 255.255.255.255 Tunnel0/0/600
+ip route-static 100.99.0.4 255.255.255.255 Tunnel0/0/600
+ip route-static 100.99.0.32 255.255.255.255 100.99.0.17
+ip route-static 100.99.0.35 255.255.255.255 Tunnel0/0/600
+ip route-static 100.99.0.36 255.255.255.255 Tunnel0/0/600
+ip route-static 100.99.0.39 255.255.255.255 Tunnel0/0/600
+ip route-static 100.99.0.40 255.255.255.255 Tunnel0/0/600
+ip route-static 100.99.0.43 255.255.255.255 Tunnel0/0/600
+ip route-static 100.99.0.44 255.255.255.255 Tunnel0/0/600
+ip route-static vpn-instance underlay_MPLS 10.35.0.0 255.255.255.0 192.0.9.73
+ip route-static vpn-instance underlay_MPLS 10.35.0.12 255.255.255.255 GigabitEthernet0/0/10 192.0.9.73 tag 4400 description agile-controller
+ip route-static vpn-instance OPENSSHLINKVPORT 0.0.0.0 0.0.0.0 vpn-instance underlay_MPLS 192.0.9.73
+#
+fib regularly-refresh disable
+#
+ forward-session-syn enable
+ forward-session-syn local-ip 100.99.0.7 local-data-port 49156
+ forward-session-syn peer-ip 100.99.0.17 peer-data-port 49156
+ forward-session-syn peer-ip 100.99.0.21 peer-data-port 49156 dst-vpn TBE
+#
+stun server enable
+#
+ agile controller host 10.35.0.12 port 10020 vpn-instance underlay_MPLS
+#
+nqa ipfpm dcp
+ dcp id 100.99.0.7
+ color-flag loss-measure tos-bit 5 delay-measure flags-bit0
+#
+nqa ipfpm mcp
+ mcp id 100.99.0.7
+#
+user-interface con 0
+ authentication-mode aaa
+user-interface vty 0
+ authentication-mode aaa
+ user privilege level 15
+ idle-timeout 30 0
+user-interface vty 1 4
+ authentication-mode aaa
+ idle-timeout 30 0
+#
+smart-policy-route
+ redirect enhance enable
+ period 5
+ route flapping suppression 30
+ undo alarm link-report enable
+ undo alarm service-report enable
+ undo alarm sitelink-degrade enable
+ undo alarm sitelink-resume enable
+ service-map default-policy
+#
+wlan ac
+ traffic-profile name default
+ security-profile name default
+ security-profile name default-wds
+  security wpa2 psk pass-phrase %^%#QfF{@P1It,}~UtWwl-AH,=whW/#ebN.G.ASQI,<<%^%# aes
+ ssid-profile name default
+ vap-profile name default
+ wds-profile name default
+ regulatory-domain-profile name default
+ air-scan-profile name default
+ rrm-profile name default
+ radio-2g-profile name default
+ radio-5g-profile name default
+ wids-spoof-profile name default
+ wids-profile name default
+ ap-system-profile name default
+ port-link-profile name default
+ wired-port-profile name default
+ ap-group name default
+#
+dot1x-access-profile name dot1x_access_profile
+#
+mac-access-profile name mac_access_profile
+#
+ ntp-service refclock-master 10
+ ntp-service unicast-server 100.99.0.17
+#
+voice
+ #
+ enterprise default
+ #
+ diagnose
+#
+ops
+#
+autostart
+#
+secelog
+#
+ ms-channel
+
+ channel-ip-port local-interface GigabitEthernet0/0/4.4000 local-ip 100.99.0.18 local-data-port 35101 peer-ip 100.99.0.17 peer-data-port 35101
+#
+return
+<MA-AC-SDWAN02>

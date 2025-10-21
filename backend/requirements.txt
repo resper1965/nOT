@@ -27,6 +27,7 @@ httpx==0.26.0
 # Data Processing
 pandas==2.1.4
 numpy==1.26.3
+networkx==3.5
 
 # JSON Processing
 orjson==3.9.12

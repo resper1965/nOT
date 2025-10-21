@@ -1,0 +1,52 @@
+MA-IPZ-SW02#show running-config
+config-file-header
+MA-IPZ-SW02
+v1.3.0.62 / R750_NIK_1_3_647_260
+CLI v1.0
+set system mode switch
+
+file SSD indicator encrypted
+@
+ssd-control-start
+ssd config
+ssd file passphrase control unrestricted
+no ssd file integrity control
+ssd-control-end cb0a3fdb1f3a1af4e4430033719968c0
+!
+voice vlan oui-table add 0001e3 Siemens_AG_phone________
+voice vlan oui-table add 00036b Cisco_phone_____________
+voice vlan oui-table add 00096e Avaya___________________
+voice vlan oui-table add 000fe2 H3C_Aolynk______________
+voice vlan oui-table add 0060b9 Philips_and_NEC_AG_phone
+voice vlan oui-table add 00d01e Pingtel_phone___________
+voice vlan oui-table add 00e075 Polycom/Veritel_phone___
+voice vlan oui-table add 00e0bb 3Com_phone______________
+hostname MA-IPZ-SW02
+username tbe password encrypted 944ba184eca7ec72dad379dbf4589507d81ea820 privilege 15
+clock source sntp
+sntp unicast client enable
+sntp server 10.2.1.98
+ip domain name tbe.telecom.local
+ip name-server  10.2.1.80
+ip telnet server
+!
+interface vlan 1
+ ip address 192.168.130.101 255.255.255.0
+ no ip address dhcp
+!
+interface fastethernet2
+ description CONEXAO_MA-IPZ-SW02_G0/2
+!
+interface fastethernet19
+ description CONEXAO_MA-IPZ-SAGE1
+!
+exit
+banner login ^C
+################################################################
+# ATENCAO: ACESSO PERMITIDO PARA PESSOAL AUTORIZADO.           #
+#                 DESCONECTE-SE IMEDIATAMENTE                  #
+# ATTENTION: AUTHORIZED PERSONAL ONLY. DISCONNECT IMMEDIATELY. #
+################################################################
+^C
+ip default-gateway 192.168.130.253
+MA-IPZ-SW02#

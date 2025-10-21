@@ -1,0 +1,233 @@
+<MA-PDU-RT02>display current-configuration
+[V300R022C00SPC100]
+#
+ sysname MA-PDU-RT02
+ header login information "
+################################################################
+# ATENCAO: ACESSO PERMITIDO PARA PESSOAL AUTORIZADO.           #
+#                 DESCONECTE-SE IMEDIATAMENTE                  #
+# ATTENTION: AUTHORIZED PERSONAL ONLY. DISCONNECT IMMEDIATELY. #
+################################################################
+"
+#
+ drop illegal-mac alarm
+#
+authentication-profile name default_authen_profile
+authentication-profile name dot1x_authen_profile
+authentication-profile name dot1xmac_authen_profile
+authentication-profile name mac_authen_profile
+authentication-profile name multi_authen_profile
+authentication-profile name portal_authen_profile
+#
+ lldp enable
+#
+dns resolve
+dns server 10.2.1.80
+dns domain tbe.telecom.local
+dns server source-ip 192.168.95.253
+#
+dhcp enable
+#
+radius-server template default
+#
+pki realm default
+ certificate-check none
+#
+ssl policy default_policy type server
+ pki-realm default
+ version tls1.2
+ ciphersuite rsa_aes_128_sha256 rsa_aes_256_sha256 ecdhe_rsa_aes128_gcm_sha256 ecdhe_rsa_aes256_gcm_sha384
+#
+ike proposal default
+ encryption-algorithm aes-256 aes-192 aes-128
+ dh group14
+ authentication-algorithm sha2-512 sha2-384 sha2-256
+ authentication-method pre-share
+ integrity-algorithm hmac-sha2-256
+ prf hmac-sha2-256
+#
+free-rule-template name default_free_rule
+#
+portal-access-profile name portal_access_profile
+#
+aaa
+ authentication-scheme default
+  authentication-mode local
+ authentication-scheme radius
+  authentication-mode radius
+ authorization-scheme default
+  authorization-mode local
+ accounting-scheme default
+  accounting-mode none
+ local-aaa-user password policy administrator
+ domain default
+  authentication-scheme default
+  accounting-scheme default
+  radius-server default
+ domain default_admin
+  authentication-scheme default
+  accounting-scheme default
+ local-user tbe password irreversible-cipher $1a$TbWECEwpaL$dI$FV)<6u).rf!R{nM99n$mnPf~7$S/gNKPWNH*&$
+ local-user tbe privilege level 15
+ local-user tbe service-type telnet terminal ssh
+ local-user admin password irreversible-cipher $1a$StsC-x[Y1W$@nK6Wfck#.l,_Q:o:|0Y11ae<:fqx7A;7;C,:vz1$
+ local-user admin privilege level 15
+ local-user admin service-type terminal http
+ local-user opengsi password irreversible-cipher $1a$"1|:G^C*E*$5\18OX^<0<u8ze$PRU>Q^WZGPJ[V\EevN`L2X1LK$
+ local-user opengsi privilege level 15
+ local-user opengsi service-type telnet terminal ssh
+#
+web
+ set fast-configuration state disable
+#
+firewall zone Local
+#
+mi-server
+#
+interface Vlanif1
+ ip address 192.168.1.1 255.255.255.0
+ dhcp select interface
+#
+interface GigabitEthernet0/0/0
+ undo portswitch
+ description REDE LOCAL
+ ip address 192.168.95.253 255.255.255.0
+ vrrp vrid 10 virtual-ip 192.168.95.252
+ vrrp vrid 10 priority 105
+#
+interface GigabitEthernet0/0/1
+ undo portswitch
+ description CONEXAO RAISECOM UNI2 => LINK  ELETRONORTE
+#
+interface GigabitEthernet0/0/1.95
+ description CONEXAO RAISECOM UNI2 => LINK P2P ELETRONORTE MA-AC-RT01 F0/1/1 ACAILANDIA
+ dot1q termination vid 95
+ ip address 192.168.0.66 255.255.255.252
+#
+interface GigabitEthernet0/0/1.950
+ description CONEXAO RAISECOM UNI2 => LINK P2P ELETRONORTE PA-CAS-RT01 G0/0/9 CASTANHAL
+ dot1q termination vid 950
+ ip address 192.168.0.42 255.255.255.252
+#
+interface GigabitEthernet0/0/2
+#
+interface GigabitEthernet0/0/3
+ undo portswitch
+ description CONEXAO MA-PDU-RT02 G0/0/3 => LINK IBGP
+ ip address 192.0.81.1 255.255.255.252
+#
+interface GigabitEthernet0/0/4
+#
+interface GigabitEthernet0/0/5
+#
+interface GigabitEthernet0/0/6
+#
+interface GigabitEthernet0/0/7
+#
+interface GigabitEthernet0/0/8
+#
+interface GigabitEthernet0/0/9
+#
+interface GigabitEthernet0/0/10
+#
+interface GigabitEthernet0/0/11
+ description VirtualPort
+#
+interface XGigabitEthernet0/0/0
+#
+interface NULL0
+#
+interface LoopBack200
+ description GERENCIA TBE
+ ip address 10.200.200.55 255.255.255.255
+#
+cellular profile default
+ modem auto-recovery dial action modem-reboot fail-times 128
+ modem auto-recovery icmp-unreachable action modem-reboot
+ modem auto-recovery services-unavailable action modem-reboot test-times 0 interval 3600
+#
+bgp 65004
+ peer 192.0.81.2 as-number 65004
+ peer 192.0.81.2 description MA-PDU-RT01
+ peer 192.0.81.2 connect-interface GigabitEthernet0/0/3
+ peer 192.168.0.41 as-number 65306
+ peer 192.168.0.41 description PA-CAS-RT01
+ peer 192.168.0.41 connect-interface GigabitEthernet0/0/1.950
+ peer 192.168.0.65 as-number 65000
+ peer 192.168.0.65 description MA-AC-RT01
+ peer 192.168.0.65 connect-interface GigabitEthernet0/0/1.95
+ #
+ ipv4-family unicast
+  undo synchronization
+  network 10.200.200.55 255.255.255.255
+  network 192.0.81.0 255.255.255.252
+  network 192.168.0.40 255.255.255.252
+  network 192.168.0.64 255.255.255.252
+  network 192.168.95.0
+  peer 192.0.81.2 enable
+  peer 192.168.0.41 enable
+  peer 192.168.0.65 enable
+#
+undo icmp name timestamp-request receive
+#
+ snmp-agent local-engineid 800007DB03CC895E86D350
+ snmp-agent trap enable
+#
+ telnet server enable
+ telnet server permit interface GigabitEthernet0/0/0 GigabitEthernet0/0/1
+#
+ http secure-server ssl-policy default_policy
+ http secure-server enable
+ http server permit interface GigabitEthernet0/0/0
+#
+fib regularly-refresh disable
+#
+user-interface con 0
+ authentication-mode aaa
+user-interface vty 0 4
+ authentication-mode aaa
+ user privilege level 15
+#
+wlan ac
+ traffic-profile name default
+ security-profile name default
+ security-profile name default-wds
+  security wpa2 psk pass-phrase %^%#\zu_F!'$q=38,u.:JY*%vRVMCG3+ML>Da8Gz0f=Z%^%# aes
+ ssid-profile name default
+ vap-profile name default
+ wds-profile name default
+ regulatory-domain-profile name default
+ air-scan-profile name default
+ rrm-profile name default
+ radio-2g-profile name default
+ radio-5g-profile name default
+ wids-spoof-profile name default
+ wids-profile name default
+ ap-system-profile name default
+ port-link-profile name default
+ wired-port-profile name default
+ ap-group name default
+#
+dot1x-access-profile name dot1x_access_profile
+#
+mac-access-profile name mac_access_profile
+#
+ ntp-service unicast-server 10.2.1.98
+#
+voice
+ #
+ enterprise default
+ #
+ diagnose
+#
+ops
+#
+autostart
+#
+secelog
+#
+ ms-channel
+
+#
+return
+<MA-PDU-RT02>

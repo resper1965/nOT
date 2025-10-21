@@ -1,0 +1,213 @@
+PA-CAS-SW03#show running-config
+config-file-header
+PA-CAS-SW03
+v1.3.0.62 / R750_NIK_1_3_647_260
+CLI v1.0
+set system mode switch
+
+file SSD indicator encrypted
+@
+ssd-control-start
+ssd config
+ssd file passphrase control unrestricted
+no ssd file integrity control
+ssd-control-end cb0a3fdb1f3a1af4e4430033719968c0
+!
+vlan database
+vlan 10,20,30,96,100,123,200,300,400,500,600,700,800,950,1030,1210
+vlan 1300
+exit
+voice vlan oui-table add 0001e3 Siemens_AG_phone________
+voice vlan oui-table add 00036b Cisco_phone_____________
+voice vlan oui-table add 00096e Avaya___________________
+voice vlan oui-table add 000fe2 H3C_Aolynk______________
+voice vlan oui-table add 0060b9 Philips_and_NEC_AG_phone
+voice vlan oui-table add 00d01e Pingtel_phone___________
+voice vlan oui-table add 00e075 Polycom/Veritel_phone___
+voice vlan oui-table add 00e0bb 3Com_phone______________
+hostname PA-CAS-SW03
+username tbe password encrypted 944ba184eca7ec72dad379dbf4589507d81ea820 privilege 15
+ip ssh server
+snmp-server server
+snmp-server location "SUBESTAÇÃO CASTANHAL"
+snmp-server contact 0000000
+snmp-server community TBE_SPO@ ro 192.168.36.55 view Default
+snmp-server host 192.168.36.55 traps version 2c TBE_SPO@ udp-port 161
+snmp-server group TBE_SPO@ v2 read Default
+clock timezone BR 0 minutes 0
+clock source sntp
+sntp unicast client enable
+sntp server 10.2.1.98
+ip domain name tbe.telecom.local
+ip name-server  10.2.1.80
+ip telnet server
+!
+interface vlan 96
+ name TRANS_ACAILANDIA
+!
+interface vlan 100
+ name SUPERVISAO
+ ip address 192.168.96.47 255.255.255.0
+ no ip address dhcp
+!
+interface vlan 123
+ name TRANS_TUCURUI_504
+!
+interface vlan 200
+ name SDH1_STM
+!
+interface vlan 300
+ name SDH2_STM
+!
+interface vlan 400
+ name FIREWALL
+!
+interface vlan 500
+ name EMBRATEL_2Mbps
+!
+interface vlan 600
+ name RESERVA
+!
+interface vlan 700
+ name ELETRONORTE
+!
+interface vlan 950
+ name TRANS_PRESI_DUTRA
+!
+interface vlan 1030
+ name TRANS_MARABA
+!
+interface vlan 1210
+ name TRANS_TUCURUI
+!
+interface vlan 1300
+ name TRANS_IMPERATRIZ
+!
+interface fastethernet1
+ switchport mode access
+ switchport access vlan 100
+!
+interface fastethernet2
+ switchport mode access
+ switchport access vlan 100
+!
+interface fastethernet3
+ switchport mode access
+ switchport access vlan 100
+!
+interface fastethernet4
+ switchport mode access
+ switchport access vlan 100
+!
+interface fastethernet5
+ switchport mode access
+ switchport access vlan 200
+!
+interface fastethernet6
+ switchport mode access
+ switchport access vlan 200
+!
+interface fastethernet7
+ switchport mode access
+ switchport access vlan 200
+!
+interface fastethernet8
+ switchport mode access
+ switchport access vlan 200
+!
+interface fastethernet9
+ switchport mode access
+ switchport access vlan 300
+!
+interface fastethernet10
+ switchport mode access
+ switchport access vlan 300
+!
+interface fastethernet11
+ switchport mode access
+ switchport access vlan 300
+!
+interface fastethernet12
+ switchport mode access
+ switchport access vlan 300
+!
+interface fastethernet13
+ switchport mode access
+ switchport access vlan 400
+!
+interface fastethernet14
+ switchport mode access
+ switchport access vlan 400
+!
+interface fastethernet15
+ switchport mode access
+ switchport access vlan 400
+!
+interface fastethernet16
+ switchport mode access
+ switchport access vlan 400
+!
+interface fastethernet17
+ switchport mode access
+ switchport access vlan 500
+!
+interface fastethernet18
+ switchport mode access
+ switchport access vlan 500
+!
+interface fastethernet19
+ switchport mode access
+ switchport access vlan 500
+!
+interface fastethernet20
+ switchport mode access
+ switchport access vlan 500
+!
+interface fastethernet21
+ switchport mode access
+ switchport access vlan 600
+!
+interface fastethernet22
+ description "CONEXAO PA-CAS-RT01 G0/0/9"
+ switchport trunk allowed vlan add 10,20,30,96,100,123,200,300,400
+ switchport trunk allowed vlan add 500,700,800,950,1030,1210,1300
+ switchport trunk native vlan 600
+!
+interface fastethernet23
+ switchport mode access
+ switchport access vlan 700
+!
+interface fastethernet24
+ switchport mode access
+ switchport access vlan 600
+!
+interface gigabitethernet1
+ switchport mode access
+ switchport access vlan 800
+!
+interface gigabitethernet2
+ description "TELEASSISTENCIA SANTA MARIA"
+ switchport mode access
+ switchport access vlan 800
+!
+interface gigabitethernet3
+ description "CONEXAO PA-SR-SW01 G3 SANTA MARIA"
+ switchport trunk allowed vlan add 96,100,123,200,300,400,500,600,800
+ switchport trunk allowed vlan add 950,1030,1210,1300
+ switchport trunk native vlan 700
+!
+interface gigabitethernet4
+ shutdown
+ switchport mode access
+ switchport access vlan 700
+!
+exit
+banner login ^C
+################################################################
+# ATENCAO: ACESSO PERMITIDO PARA PESSOAL AUTORIZADO.           #
+#                 DESCONECTE-SE IMEDIATAMENTE                  #
+# ATTENTION: AUTHORIZED PERSONAL ONLY. DISCONNECT IMMEDIATELY. #
+################################################################
+^C
+ip default-gateway 192.168.96.252
+PA-CAS-SW03#

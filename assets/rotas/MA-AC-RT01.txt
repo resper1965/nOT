@@ -1,0 +1,404 @@
+MA-AC-RT01#show running-config
+Building configuration...
+
+Current configuration : 11601 bytes
+!
+! Last configuration change at 18:59:23 BR Fri May 30 2025 by tbe
+! NVRAM config last updated at 18:59:24 BR Fri May 30 2025 by tbe
+! NVRAM config last updated at 18:59:24 BR Fri May 30 2025 by tbe
+version 15.1
+no service pad
+service tcp-keepalives-in
+service tcp-keepalives-out
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log datetime msec localtime show-timezone
+service password-encryption
+!
+hostname MA-AC-RT01
+!
+boot-start-marker
+boot-end-marker
+!
+!
+logging buffered 524288
+logging monitor informational
+enable secret 5 $1$9uWY$IYi5HtPWlQ7oodphOQXPX1
+!
+no aaa new-model
+clock timezone BR 0 0
+!
+no ipv6 cef
+ip source-route
+ip cef
+!
+!
+!
+!
+!
+ip domain name tbe.telecom.local
+ip name-server 10.2.1.80
+multilink bundle-name authenticated
+!
+password encryption aes
+crypto pki token default removal timeout 0
+!
+!
+license udi pid CISCO1905BR/K9 sn FSP1648AACI
+!
+!
+archive
+ path tftp://192.168.36.55/$h-$t
+ write-memory
+ time-period 421200
+vtp mode transparent
+username erte privilege 15 password 7 03475E19120A
+username cisco password 7 1511021F0725
+username opengsi privilege 15 password 7 1418020E02033922676272
+username tbe privilege 15 password 7 0212065E2B120D240F
+!
+!
+vlan 50,65,70,80
+!
+vlan 95
+ name TRANS_PRESI_DUTRA
+!
+vlan 96
+ name TRANS_CASTANHAL
+!
+vlan 103
+ name TRANS_MARABA
+!
+vlan 121
+ name TRANS_TUCURUI
+!
+vlan 123
+ name TRANS_TUCURUI_SL503
+!
+vlan 130
+ name TRANS_IMPERATRIZ
+!
+vlan 350
+ name NAO_SEI
+!
+vlan 3031
+ name MARABA
+!
+vlan 3032
+ name TRANSITO_NOVA_MUTUM
+!
+vlan 3033
+ name TUCURUI
+!
+ip tftp source-interface GigabitEthernet0/0
+ip ssh version 1
+!
+!
+!
+!
+interface Loopback19
+ description ONS-BSA-GERENCIA
+ ip address 10.19.9.128 255.255.255.255
+!
+interface Loopback200
+ description GERENCIA TBE
+ ip address 10.200.200.5 255.255.255.255
+!
+interface Embedded-Service-Engine0/0
+ no ip address
+ shutdown
+!
+interface GigabitEthernet0/0
+ description CONEXAO P2P PRESIDENTE DUTRA WIRELINK
+ ip address 192.168.147.5 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/1
+ description CONEXAO MT-AC-SDWAN01 G0/3
+ ip address 192.0.5.6 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface Serial0/0/0
+ description CONEXAO LINK OI-MPLS
+ ip address 100.127.77.6 255.255.255.252
+ encapsulation ppp
+ load-interval 30
+!
+interface FastEthernet0/1/0
+ description CONEXAO MA-AC-RT02 G0/2
+ switchport access vlan 50
+ no ip address
+!
+interface FastEthernet0/1/1
+ description CONEXAO RAISECOM UNI1 => LINKS ELETRONORTE
+ switchport access vlan 70
+ switchport trunk native vlan 70
+ switchport mode trunk
+ no ip address
+!
+interface FastEthernet0/1/2
+ description CONEXAO TRUNK SWITCH HUAWEI NORTEWAY => LINKS P2P PA-MBA-RT01 G0/0/2 MARABA, PA-TUC-RT02 G0/0/9 VLAN3033 TUCURUI, MT-NM-RT02 F0/0 NOVA MUTUM
+ switchport mode trunk
+ no ip address
+!
+interface FastEthernet0/1/3
+ description link Vlan NM VLAN 3032
+ switchport mode trunk
+ no ip address
+!
+interface Vlan1
+ no ip address
+!
+interface Vlan50
+ ip address 192.16.8.9 255.255.255.252
+!
+interface Vlan70
+ description CONEXAO RAISECOM ETHX => LINK P2P ELETRONORTE PA-MBA-RT02 G0/0/0 MARABA, PA-CAS-RT01 G0/0/9 CASTANHAL, PA-VDC-SDWAN1 G0/0/0, PA-VDC-SDWAN2 G0/0/0 VILA DO CONDE, MA-IPZ-RT01 G0/0/1 IMPERATRIZ
+ ip address 192.0.89.19 255.255.255.0
+!
+interface Vlan95
+ description CONEXAO RAISICOM UNI1 => LINK P2P ELETRONORTE MA-PDU-RT02 G0/0/1 PRESIDENTE DUTRA
+ ip address 192.168.0.65 255.255.255.252
+!
+interface Vlan96
+ description CONEXAO RAISICOM UNI1 => LINK P2P ELETRONORTE PA-CAS-RT01 G0/0/9 CASTANHAL
+ ip address 192.168.0.21 255.255.255.252
+!
+interface Vlan103
+ description CONEXAO RAISECOM UNI1  => LINK P2P ELETRONORTE RASICOM ETH24 PA-MBA-RT02 G0/0/0 MARABA
+ ip address 192.168.0.25 255.255.255.252
+!
+interface Vlan121
+ description CONEXAO RAISICOM UNI1 => LINK P2P ELETRONORTE PA-TUC-RT01 G0/0/1 TUCURUI
+ ip address 192.168.0.33 255.255.255.252
+!
+interface Vlan123
+ description CONEXAO RAISICOM UNI1 => LINK P2P ELETRONORTE PA-TUC-RT01-SL503 TUCURUI
+ ip address 192.168.0.37 255.255.255.252
+!
+interface Vlan130
+ description CONEXAO RAISICOM UNI1 => LINK P2P ELETRONORTE MA-IPZ-RT01 G0/0/1 IMPERATRIZ
+ ip address 192.168.0.29 255.255.255.252
+!
+interface Vlan3031
+ description CONEXAO SW HUAWEI G0/0/X => LINK P2P NORTEWAY PA-MBA-RT01 G0/0/2 MARABA
+ ip address 192.16.5.9 255.255.255.252
+!
+interface Vlan3032
+ description CONEXAO SW HUAWEI G0/0/X => LINK P2P NORTEWAY MT-NM-RT02 F0/0 NOVA MUTUM
+ ip address 192.168.0.13 255.255.255.252
+!
+interface Vlan3033
+ description CONEXAO SW HUAWEI G0/0/X => LINK P2P NORTEWAY PA-TUC-RT2 TUCURUI
+ ip address 192.210.0.5 255.255.255.252
+!
+router bgp 65000
+ bgp log-neighbor-changes
+ neighbor 100.127.77.5 remote-as 7738
+ neighbor 100.127.77.5 description MPLS-OI
+ neighbor 192.0.5.5 remote-as 65002
+ neighbor 192.0.5.5 description AR6120_ACD
+ neighbor 192.0.5.5 timers 30 90
+ neighbor 192.0.89.13 remote-as 65203
+ neighbor 192.0.89.13 description PA-VDC-SDWAN1
+ neighbor 192.0.89.14 remote-as 65203
+ neighbor 192.0.89.14 description PA-CAS-SDWAN02
+ neighbor 192.16.5.10 remote-as 65309
+ neighbor 192.16.5.10 description PA-MBA-RT01
+ neighbor 192.16.8.10 remote-as 65337
+ neighbor 192.16.8.10 description MA-AC-RT02
+ neighbor 192.16.8.10 timers 30 90
+ neighbor 192.168.0.14 remote-as 65444
+ neighbor 192.168.0.14 description MT-NM-RT02
+ neighbor 192.168.0.22 remote-as 65306
+ neighbor 192.168.0.22 description PA-CAS-RT01
+ neighbor 192.168.0.26 remote-as 65309
+ neighbor 192.168.0.26 description PA-MBA-RT02
+ neighbor 192.168.0.30 remote-as 65005
+ neighbor 192.168.0.30 description MA-IPZ-RT01
+ neighbor 192.168.0.34 remote-as 65202
+ neighbor 192.168.0.34 description PA-TUC-RT01
+ neighbor 192.168.0.38 remote-as 65205
+ neighbor 192.168.0.38 description PA-TUC-RT01-SL503
+ neighbor 192.168.0.66 remote-as 65004
+ neighbor 192.168.0.66 description MA-PDU-RT02
+ neighbor 192.168.147.6 remote-as 65004
+ neighbor 192.168.147.6 description PA-PDU-RT01
+ neighbor 192.168.147.6 timers 30 90
+ neighbor 192.210.0.6 remote-as 65202
+ neighbor 192.210.0.6 description PA-TUC-RT02
+ !
+ address-family ipv4
+  network 10.19.9.128 mask 255.255.255.255
+  network 10.200.200.5 mask 255.255.255.255
+  network 100.125.180.220 mask 255.255.255.255
+  network 192.0.5.4 mask 255.255.255.252
+  network 192.0.89.0
+  network 192.16.5.0 mask 255.255.255.252
+  network 192.16.5.8 mask 255.255.255.252
+  network 192.16.6.8 mask 255.255.255.252
+  network 192.16.8.8 mask 255.255.255.252
+  network 192.19.3.0 mask 255.255.255.252
+  network 192.168.0.12 mask 255.255.255.252
+  network 192.168.0.20 mask 255.255.255.252
+  network 192.168.0.28 mask 255.255.255.252
+  network 192.168.0.32 mask 255.255.255.252
+  network 192.168.0.36 mask 255.255.255.252
+  network 192.168.0.64 mask 255.255.255.252
+  network 192.168.147.4 mask 255.255.255.252
+  network 192.210.0.4 mask 255.255.255.252
+  network 192.211.0.4 mask 255.255.255.252
+  neighbor 100.127.77.5 activate
+  neighbor 100.127.77.5 allowas-in
+  neighbor 100.127.77.5 soft-reconfiguration inbound
+  neighbor 192.0.5.5 activate
+  neighbor 192.0.5.5 allowas-in
+  neighbor 192.0.89.13 activate
+  neighbor 192.0.89.13 allowas-in
+  neighbor 192.0.89.14 activate
+  neighbor 192.0.89.14 allowas-in
+  neighbor 192.16.5.10 activate
+  neighbor 192.16.5.10 route-map LOCAL_PREF_MARABA_CONNECT in
+  neighbor 192.16.8.10 activate
+  neighbor 192.16.8.10 next-hop-self
+  neighbor 192.16.8.10 allowas-in
+  neighbor 192.16.8.10 soft-reconfiguration inbound
+  neighbor 192.168.0.14 activate
+  neighbor 192.168.0.14 next-hop-self
+  neighbor 192.168.0.14 allowas-in
+  neighbor 192.168.0.14 soft-reconfiguration inbound
+  neighbor 192.168.0.22 activate
+  neighbor 192.168.0.22 next-hop-self
+  neighbor 192.168.0.22 allowas-in
+  neighbor 192.168.0.22 soft-reconfiguration inbound
+  neighbor 192.168.0.26 activate
+  neighbor 192.168.0.26 next-hop-self
+  neighbor 192.168.0.26 allowas-in
+  neighbor 192.168.0.26 soft-reconfiguration inbound
+  neighbor 192.168.0.30 activate
+  neighbor 192.168.0.30 next-hop-self
+  neighbor 192.168.0.30 allowas-in
+  neighbor 192.168.0.30 soft-reconfiguration inbound
+  neighbor 192.168.0.34 activate
+  neighbor 192.168.0.34 next-hop-self
+  neighbor 192.168.0.34 allowas-in
+  neighbor 192.168.0.34 soft-reconfiguration inbound
+  neighbor 192.168.0.38 activate
+  neighbor 192.168.0.38 next-hop-self
+  neighbor 192.168.0.38 allowas-in
+  neighbor 192.168.0.38 soft-reconfiguration inbound
+  neighbor 192.168.0.66 activate
+  neighbor 192.168.0.66 next-hop-self
+  neighbor 192.168.0.66 allowas-in
+  neighbor 192.168.0.66 soft-reconfiguration inbound
+  neighbor 192.168.147.6 activate
+  neighbor 192.168.147.6 next-hop-self
+  neighbor 192.168.147.6 allowas-in
+  neighbor 192.168.147.6 soft-reconfiguration inbound
+  neighbor 192.168.147.6 route-map LOCAL_PREF_PDU_CONNECT in
+  neighbor 192.210.0.6 activate
+  neighbor 192.210.0.6 next-hop-self
+  neighbor 192.210.0.6 allowas-in
+  neighbor 192.210.0.6 soft-reconfiguration inbound
+  neighbor 192.210.0.6 route-map LOCAL_PREF_TUCURUI_121_CONNECT in
+ exit-address-family
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+ip dns server
+!
+!
+ip prefix-list MARABA seq 5 permit 192.168.103.0/24
+ip prefix-list MARABA seq 10 permit 10.200.200.33/32
+ip prefix-list MARABA seq 15 permit 10.200.200.32/32
+!
+ip prefix-list PDU seq 5 permit 192.168.95.0/24
+ip prefix-list PDU seq 10 permit 10.200.200.61/32
+ip prefix-list PDU seq 15 permit 10.200.200.52/32
+!
+ip prefix-list TUCURUI_121 seq 5 permit 192.168.121.0/24
+ip prefix-list TUCURUI_121 seq 10 permit 10.200.200.40/32
+ip prefix-list TUCURUI_121 seq 15 permit 10.200.200.39/32
+kron occurrence backup_aca_2 at 23:00 7 recurring
+ policy-list backup_aca_2
+!
+kron policy-list backup_aca_2
+ cli show start | redirect
+ cli show start | redirect tftp://192.168.90.39/backup
+!
+logging server-arp
+logging 192.168.36.55
+!
+no cdp log mismatch duplex
+route-map LOCAL_PREF_PDU_CONNECT permit 10
+ match ip address prefix-list PDU
+ set local-preference 200
+!
+route-map LOCAL_PREF_PDU_CONNECT permit 40
+!
+route-map LOCAL_PREF_MARABA_CONNECT permit 10
+ match ip address prefix-list MARABA
+ set local-preference 200
+!
+route-map LOCAL_PREF_MARABA_CONNECT permit 40
+!
+route-map LOCAL_PREF_TUCURUI_121_CONNECT permit 10
+ match ip address prefix-list TUCURUI_121
+ set local-preference 200
+!
+route-map LOCAL_PREF_TUCURUI_121_CONNECT permit 40
+!
+!
+snmp-server group ons-snmp-v3 v3 auth
+snmp-server community ons_gerencia RO
+snmp-server community TBE_SPO RO
+snmp-server community TBE_SPO@ RO
+snmp-server enable traps bgp
+snmp-server enable traps syslog
+snmp-server host 192.168.36.55 version 2c TBE_SPO
+snmp-server host 192.168.36.55 version 2c TBE_SPO@
+snmp-server host 172.19.0.24 version 3 auth ons
+snmp-server host 172.26.0.24 version 3 auth ons
+snmp-server host 172.19.0.24 version 2c ons_gerencia
+!
+control-plane
+!
+!
+banner motd ^CC
+################################################################
+# ATENCAO: ACESSO PERMITIDO PARA PESSOAL AUTORIZADO.           #
+#                 DESCONECTE-SE IMEDIATAMENTE                  #
+# ATTENTION: AUTHORIZED PERSONAL ONLY. DISCONNECT IMMEDIATELY. #
+################################################################
+^C
+!
+line con 0
+line aux 0
+line 2
+ no activation-character
+ no exec
+ transport preferred none
+ transport input all
+ transport output pad telnet rlogin lapb-ta mop udptn v120 ssh
+ stopbits 1
+line vty 0 4
+ session-timeout 15
+ exec-timeout 15 0
+ login local
+ transport input telnet ssh
+line vty 5 15
+ session-timeout 15
+ exec-timeout 15 0
+ login local
+ transport input telnet ssh
+!
+exception data-corruption buffer truncate
+scheduler allocate 20000 1000
+ntp peer 10.2.1.98
+end
+
+MA-AC-RT01#

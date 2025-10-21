@@ -1,0 +1,176 @@
+MA-IPZ-SW3# show running-config
+SYSTEM CONFIG FILE ::= BEGIN
+! System Description: intelbras SG 2404 MR L2+ Switch
+! System Version: v27070
+! System Name: MA-IPZ-SW3
+! System Up Time: 478 days, 18 hours, 18 mins, 25 secs
+!
+!
+cpu-protect cpu bandwidth 500
+cpu-protect sub-interface manage pps 500
+cpu-protect sub-interface route pps 200
+cpu-protect sub-interface protocol pps 500
+web-login-time 1800
+web-language en
+web http port 80
+!
+!
+system name "MA-IPZ-SW3"
+ip dns 10.2.1.80
+no ipv6 autoconfig
+ipv6 default-gateway fe80::1
+clock source ntp
+ntp server 10.2.1.98 port 123
+username "admin" privilege user secret encrypted MjEyMzJmMjk3YTU3YTVhNzQzODk0YTBlNGE4MDFmYzM=
+username "tbe" password "tbe@tbe#"
+enable secret "NzU5ZGViYzZkYjQyYzNkNGYxZjNlZGU4ZWUwM2Y3NTc="
+vlan 2
+ description "INTERNET"
+management-vlan disable
+voice-vlan oui-table 00:E0:BB:00:00:00 mask FF:FF:FF:00:00:00 "3COM"
+voice-vlan oui-table 00:03:6B:00:00:00 mask FF:FF:FF:00:00:00 "Cisco"
+voice-vlan oui-table 00:E0:75:00:00:00 mask FF:FF:FF:00:00:00 "Veritel"
+voice-vlan oui-table 00:D0:1E:00:00:00 mask FF:FF:FF:00:00:00 "Pingtel"
+voice-vlan oui-table 00:01:E3:00:00:00 mask FF:FF:FF:00:00:00 "Siemens"
+voice-vlan oui-table 00:60:B9:00:00:00 mask FF:FF:FF:00:00:00 "NEC/Philips"
+voice-vlan oui-table 00:0F:E2:00:00:00 mask FF:FF:FF:00:00:00 "Huawei-3COM"
+voice-vlan oui-table 00:09:6E:00:00:00 mask FF:FF:FF:00:00:00 "Avaya"
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip igmp snooping vlan 1 fast-leave enable
+no ipv6 mld snooping vlan 1 fast-leave enable
+!
+snmp community "private"  rw
+snmp community "public"  ro
+!
+!
+!
+!
+!
+ip telnet
+ip ssh
+ip ssh v1
+ip ssh v2
+ip http
+ip https
+!
+!
+dhcp-snooping vlan 1-4094
+arp-inspection vlan 1-4094
+!
+!
+!
+!
+interface gi0/1
+ switch mode access
+ description "CONEXAO MA-IPZ-SW3"
+!
+interface gi0/2
+ switch mode access
+!
+interface gi0/3
+ switch mode access
+!
+interface gi0/4
+ switch mode access
+!
+interface gi0/5
+ switch mode access
+!
+interface gi0/6
+ switch mode access
+!
+interface gi0/7
+ switch mode access
+!
+interface gi0/8
+ switch mode access
+!
+interface gi0/9
+ switch mode access
+!
+interface gi0/10
+ switch mode access
+ description "MA-IPZ-SAGE2_ETH0"
+!
+interface gi0/11
+ switch mode access
+!
+interface gi0/12
+ switch mode access
+!
+interface gi0/13
+ switch mode access
+!
+interface gi0/14
+ switch mode access
+!
+interface gi0/15
+ switch mode access
+!
+interface gi0/16
+ switch mode access
+!
+interface gi0/17
+ switch mode access
+ switch access vlan 2
+!
+interface gi0/18
+ switch mode access
+ switch access vlan 2
+!
+interface gi0/19
+ switch mode access
+ switch access vlan 2
+!
+interface gi0/20
+ switch mode access
+ switch access vlan 2
+!
+interface gi0/21
+ switch mode access
+ switch access vlan 2
+!
+interface gi0/22
+ switch mode access
+ switch access vlan 2
+!
+interface gi0/23
+ switch mode access
+ switch access vlan 2
+!
+interface gi0/24
+ switch mode access
+ switch access vlan 2
+!
+interface gi0/25
+ switch mode access
+ switch access vlan 2
+!
+interface gi0/26
+ switch mode access
+!
+interface gi0/27
+ switch mode access
+!
+interface gi0/28
+ switch mode access
+!
+!
+!
+!
+interface vlan 1
+ ip address 192.168.130.102 mask 255.255.255.0
+ip default-gateway 192.168.130.253
+route-entry add ip 0.0.0.0 netmask 0.0.0.0 gw 192.168.130.253
+
+MA-IPZ-SW3#

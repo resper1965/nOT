@@ -67,3 +67,22 @@ export async function getAneelRequirements() {
   return res.json();
 }
 
+// Routing API functions
+export async function getRoutingAnalysis() {
+  const res = await fetch(`${API_BASE_URL}/api/routing/analysis-summary`, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Failed to fetch routing analysis');
+  return res.json();
+}
+
+export async function getRoutingVulnerabilities() {
+  const res = await fetch(`${API_BASE_URL}/api/routing/vulnerabilities`, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Failed to fetch routing vulnerabilities');
+  return res.json();
+}
+
+export async function getRoutingGraph() {
+  const res = await fetch(`${API_BASE_URL}/api/routing/routing-graph`, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Failed to fetch routing graph');
+  return res.json();
+}
+

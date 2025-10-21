@@ -1,0 +1,181 @@
+MA-AC-RT02#wr
+Building configuration...
+[OK]
+MA-AC-RT02#sho
+MA-AC-RT02#show ru
+MA-AC-RT02#show run
+Building configuration...
+
+Current configuration : 4177 bytes
+!
+! Last configuration change at 19:11:20 BR Fri May 30 2025 by tbe
+! NVRAM config last updated at 19:11:26 BR Fri May 30 2025 by tbe
+!
+version 15.0
+no service pad
+service tcp-keepalives-in
+service tcp-keepalives-out
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log datetime msec localtime show-timezone
+service password-encryption
+!
+hostname MA-AC-RT02
+!
+boot-start-marker
+boot-end-marker
+!
+logging buffered 524288
+enable secret 5 $1$pCpI$t/./wSSo8qrg6rvrw.2KE.
+!
+no aaa new-model
+clock timezone BR 0
+!
+no ipv6 cef
+ip source-route
+ip cef
+!
+!
+!
+!
+ip domain name tbe.telecom.local
+ip name-server 10.2.1.80
+multilink bundle-name authenticated
+!
+!
+!
+!
+license udi pid CISCO2911BR/K9 sn TSP2027AADP
+license boot module c2900 technology-package datak9
+!
+!
+username opengsi privilege 15 password 7 011C1601550C150662060F
+username tbe privilege 15 password 7 0310590E261B23490D
+username erte privilege 15 password 7 090F4B1B0D00
+!
+redundancy
+!
+!
+!
+!
+!
+!
+interface Loopback26
+ description CONEXAO ONS-BSA-GERENCIA
+ ip address 10.26.9.129 255.255.255.255
+!
+interface Loopback200
+ description GERENCIA TBE
+ ip address 10.200.200.6 255.255.255.255
+!
+interface GigabitEthernet0/0
+ description CONEXAO MT-AC-SDWAN02 G0/7
+ ip address 192.16.8.17 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/1
+ description CONEXAO MA-AC-SW3 Fa1 => LINK P2P WIRELINK PA-CAS-RT01 G0/0/7 CASTANHAL
+ ip address 192.168.147.2 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/2
+ description CONEXAO MA-AC-RT01 F0/1/0
+ ip address 192.16.8.10 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface Serial0/1/0
+ no ip address
+ shutdown
+ no fair-queue
+ clock rate 2000000
+!
+interface Serial0/2/0
+ no ip address
+ shutdown
+ clock rate 2000000
+!
+!
+router bgp 65337
+ no synchronization
+ bgp log-neighbor-changes
+ network 10.26.9.129 mask 255.255.255.255
+ network 10.200.200.6 mask 255.255.255.255
+ network 192.16.8.8 mask 255.255.255.252
+ network 192.16.8.16 mask 255.255.255.252
+ network 192.168.37.0
+ network 192.168.70.0 mask 255.255.255.252
+ network 192.168.147.0 mask 255.255.255.252
+ neighbor 192.16.8.9 remote-as 65000
+ neighbor 192.16.8.9 description MA-AC-RT01
+ neighbor 192.16.8.9 timers 30 90
+ neighbor 192.16.8.9 next-hop-self
+ neighbor 192.16.8.9 allowas-in
+ neighbor 192.16.8.9 soft-reconfiguration inbound
+ neighbor 192.16.8.18 remote-as 65002
+ neighbor 192.16.8.18 description MA-AC-SDWAN02
+ neighbor 192.16.8.18 next-hop-self
+ neighbor 192.16.8.18 allowas-in
+ neighbor 192.16.8.18 soft-reconfiguration inbound
+ neighbor 192.168.147.1 remote-as 65306
+ neighbor 192.168.147.1 description PA-CAS-RT01
+ neighbor 192.168.147.1 next-hop-self
+ neighbor 192.168.147.1 allowas-in
+ neighbor 192.168.147.1 soft-reconfiguration inbound
+ no auto-summary
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+!
+!
+!
+snmp-server community TBE_SPO@ RO
+snmp-server enable traps ospf state-change
+snmp-server enable traps ospf errors
+snmp-server enable traps ospf retransmit
+snmp-server enable traps ospf lsa
+snmp-server enable traps ospf cisco-specific state-change nssa-trans-change
+snmp-server enable traps ospf cisco-specific state-change shamlink interface-old
+snmp-server enable traps ospf cisco-specific state-change shamlink neighbor
+snmp-server enable traps ospf cisco-specific errors
+snmp-server enable traps ospf cisco-specific retransmit
+snmp-server enable traps ospf cisco-specific lsa
+snmp-server enable traps bgp
+snmp-server host 192.168.36.55 TBE_SPO@
+!
+control-plane
+!
+banner motd ^CC
+################################################################
+# ATENCAO: ACESSO PERMITIDO PARA PESSOAL AUTORIZADO.           #
+#                 DESCONECTE-SE IMEDIATAMENTE                  #
+# ATTENTION: AUTHORIZED PERSONAL ONLY. DISCONNECT IMMEDIATELY. #
+################################################################
+^C
+!
+line con 0
+line aux 0
+line vty 0 4
+ session-timeout 15
+ exec-timeout 15 0
+ login local
+ transport input telnet ssh
+line vty 5 15
+ session-timeout 15
+ exec-timeout 15 0
+ login local
+ transport input telnet ssh
+!
+scheduler allocate 20000 1000
+ntp peer 10.2.1.98
+ntp server 10.2.1.98
+end
+
+MA-AC-RT02#

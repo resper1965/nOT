@@ -1,0 +1,208 @@
+<PA-MBA-SW04>screen-length 0 temporary
+Info: The configuration takes effect on the current user terminal interface only.
+<PA-MBA-SW04>dis
+<PA-MBA-SW04>display cu
+<PA-MBA-SW04>display current-configuration
+!Software Version V200R011C10SPC600
+#
+sysname PA-MBA-SW04
+#
+dns resolve
+dns server 10.2.1.80
+dns domain tbe.telecom.local
+#
+vlan batch 10 20 30
+#
+authentication-profile name default_authen_profile
+authentication-profile name dot1x_authen_profile
+authentication-profile name mac_authen_profile
+authentication-profile name portal_authen_profile
+authentication-profile name dot1xmac_authen_profile
+authentication-profile name multi_authen_profile
+#
+telnet server enable
+#
+clock timezone BR minus 00:00:00
+#
+radius-server template default
+#
+pki realm default
+ certificate-check none
+#
+free-rule-template name default_free_rule
+#
+portal-access-profile name portal_access_profile
+#
+aaa
+ authentication-scheme default
+ authentication-scheme radius
+  authentication-mode radius
+ authorization-scheme default
+ accounting-scheme default
+ local-aaa-user password policy administrator
+  password history record number 0
+  password expire 0
+ domain default
+  authentication-scheme radius
+  radius-server default
+ domain default_admin
+  authentication-scheme default
+ local-user tbe password irreversible-cipher $1a$u{g(,"!)s.$v@)D"+yp60SX5kT_>`5DuA\k.I]gIGaShz$$C;(!$
+ local-user tbe privilege level 15
+ local-user tbe service-type telnet terminal ssh
+ local-user admin password irreversible-cipher $1a$}-nA$7w0m4$=H8K1}s$5(3A@EYi(Od-~C54;coQ^6ByX\K:O<fG$
+ local-user admin privilege level 15
+ local-user admin service-type terminal http
+ local-user opengsi password irreversible-cipher $1a$k$q<F1zV*F$d0.IFUp9*$EW[K5~5Gv<Mp4^JSa7}T0a);>/l@vQ$
+ local-user opengsi privilege level 15
+ local-user opengsi service-type telnet terminal ssh
+#
+ntp-service server disable
+ntp-service ipv6 server disable
+ntp-service unicast-server 10.2.1.98
+#
+interface Vlanif1
+ ip address 192.168.0.4 255.255.255.0
+#
+interface Vlanif10
+ ip address 192.168.103.24 255.255.255.0
+#
+interface GigabitEthernet0/0/1
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/2
+ description CONEXAO VOIP ETHX
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/3
+ description CONEXAO PA-MBA-SAGE2 F0/0
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/4
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/5
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/6
+ description CONEXAO MICRO SCADA1 F0/0
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/7
+ description CONEXAO MICRO SCADA2 F0/0
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/8
+ description CONEXAO SERVER ENG F0/0
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/9
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/10
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/11
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/12
+ port link-type access
+ port default vlan 10
+#
+interface GigabitEthernet0/0/13
+ port link-type access
+ port default vlan 30
+#
+interface GigabitEthernet0/0/14
+ description CONEXAO HUB ETHX
+ port link-type access
+ port default vlan 30
+#
+interface GigabitEthernet0/0/15
+ port link-type access
+ port default vlan 20
+#
+interface GigabitEthernet0/0/16
+ port link-type access
+ port default vlan 20
+#
+interface GigabitEthernet0/0/17
+ port link-type access
+ port default vlan 20
+#
+interface GigabitEthernet0/0/18
+ port link-type access
+ port default vlan 20
+#
+interface GigabitEthernet0/0/19
+ port link-type access
+ port default vlan 20
+#
+interface GigabitEthernet0/0/20
+ port link-type access
+ port default vlan 20
+#
+interface GigabitEthernet0/0/21
+ port link-type access
+ port default vlan 20
+#
+interface GigabitEthernet0/0/22
+ port link-type access
+ port default vlan 20
+#
+interface GigabitEthernet0/0/23
+ description CONEXAO MIKROTIK G0/0/8
+ port link-type access
+ port default vlan 20
+#
+interface GigabitEthernet0/0/24
+ port link-type access
+ port default vlan 20
+#
+interface GigabitEthernet0/0/25
+ description CONEXAO PA-MBA-SW02 G0/0/25
+ port link-type trunk
+ port trunk allow-pass vlan 2 to 4094
+#
+interface GigabitEthernet0/0/26
+#
+interface GigabitEthernet0/0/27
+#
+interface GigabitEthernet0/0/28
+#
+interface NULL0
+#
+ip route-static 0.0.0.0 0.0.0.0 192.168.103.252
+#
+header login information "################################################################
+# ATENCAO: ACESSO PERMITIDO PARA PESSOAL AUTORIZADO.           #
+#                 DESCONECTE-SE IMEDIATAMENTE                  #
+# ATTENTION: AUTHORIZED PERSONAL ONLY. DISCONNECT IMMEDIATELY. #
+################################################################
+"
+#
+user-interface maximum-vty 15
+user-interface con 0
+ authentication-mode aaa
+user-interface vty 0 14
+ authentication-mode aaa
+ protocol inbound telnet
+user-interface vty 16 20
+#
+dot1x-access-profile name dot1x_access_profile
+#
+mac-access-profile name mac_access_profile
+#
+return
+<PA-MBA-SW04>

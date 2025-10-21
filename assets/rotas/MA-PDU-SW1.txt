@@ -1,0 +1,134 @@
+MA-PDU-SW1#show running-config
+Building configuration...
+
+Current configuration : 3063 bytes
+!
+version 12.2
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname MA-PDU-SW1
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 $1$XM3S$Zi/AR63xdQzvHOoER/.2r/
+!
+username tbe privilege 15 password 0 tbe@tbe#
+!
+!
+no aaa new-model
+system mtu routing 1500
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-77292160
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-77292160
+ revocation-check none
+ rsakeypair TP-self-signed-77292160
+!
+!
+crypto pki certificate chain TP-self-signed-77292160
+ certificate self-signed 01
+  3082023B 308201A4 A0030201 02020101 300D0609 2A864886 F70D0101 04050030
+  2F312D30 2B060355 04031324 494F532D 53656C66 2D536967 6E65642D 43657274
+  69666963 6174652D 37373239 32313630 301E170D 39333033 30313030 30313038
+  5A170D32 30303130 31303030 3030305A 302F312D 302B0603 55040313 24494F53
+  2D53656C 662D5369 676E6564 2D436572 74696669 63617465 2D373732 39323136
+  3030819F 300D0609 2A864886 F70D0101 01050003 818D0030 81890281 8100C06E
+  D9019C2A 1CC1011E 3DF5B2E5 B0CF3BC7 0439142D 3D7FD06F 656D0980 BB1AA40E
+  ECB027ED A05AA403 F57A3294 E9AAC9E6 5C40B80D A5135C64 32B47818 D0E92181
+  BA533486 729D2A80 DBB5CB1E FCD86B84 F7E249A5 93F426A0 55E49F3E E213948D
+  09950D95 A4E8F5D8 732C2E2F D510A696 DBC9D4AE FE7D68E6 26415B5C 5A5B0203
+  010001A3 67306530 0F060355 1D130101 FF040530 030101FF 30120603 551D1104
+  0B300982 0753575F 5044442E 301F0603 551D2304 18301680 14E28128 DDAE027E
+  CC520972 3F8DAA59 F32013BC 5D301D06 03551D0E 04160414 E28128DD AE027ECC
+  5209723F 8DAA59F3 2013BC5D 300D0609 2A864886 F70D0101 04050003 81810095
+  A972827F 2E16C182 0868F226 7C3D6BAC 541A828E D053372B C38131AB 57738ECD
+  365B858B 9FBC8C9B C2C4CBC0 75163316 5CC7F815 8FB75381 0727D192 4D097BA4
+  A238F023 F4BB6708 10B803FA 764962F9 5162C919 69B90965 CACF1B33 31AE3578
+  C313587A 0E37649C B1C38656 C584B763 624B6836 ED19209E 403CA0FC 710AA0
+  quit
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+!
+interface FastEthernet0/1
+!
+interface FastEthernet0/2
+!
+interface FastEthernet0/3
+!
+interface FastEthernet0/4
+!
+interface FastEthernet0/5
+!
+interface FastEthernet0/6
+!
+interface FastEthernet0/7
+!
+interface FastEthernet0/8
+!
+interface FastEthernet0/9
+!
+interface FastEthernet0/10
+!
+interface FastEthernet0/11
+!
+interface FastEthernet0/12
+!
+interface FastEthernet0/13
+!
+interface FastEthernet0/14
+!
+interface FastEthernet0/15
+!
+interface FastEthernet0/16
+!
+interface FastEthernet0/17
+!
+interface FastEthernet0/18
+!
+interface FastEthernet0/19
+!
+interface FastEthernet0/20
+!
+interface FastEthernet0/21
+!
+interface FastEthernet0/22
+!
+interface FastEthernet0/23
+!
+interface FastEthernet0/24
+!
+interface GigabitEthernet0/1
+!
+interface GigabitEthernet0/2
+!
+interface Vlan1
+ ip address 192.168.95.50 255.255.255.0
+ no ip route-cache
+!
+ip default-gateway 192.168.95.252
+ip http server
+ip http secure-server
+!
+line con 0
+line vty 0 4
+ login local
+ transport input telnet
+line vty 5 15
+ login
+!
+end
+
+MA-PDU-SW1#

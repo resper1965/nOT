@@ -1,0 +1,182 @@
+<PA-CAS-SW02>display current-configuration
+!Software Version V200R011C10SPC600
+#
+sysname PA-CAS-SW02
+#
+dns resolve
+dns server 10.2.1.80
+#
+vlan batch 10 20
+#
+authentication-profile name default_authen_profile
+authentication-profile name dot1x_authen_profile
+authentication-profile name mac_authen_profile
+authentication-profile name portal_authen_profile
+authentication-profile name dot1xmac_authen_profile
+authentication-profile name multi_authen_profile
+#
+telnet server enable
+#
+clock timezone BR minus 00:00:00
+#
+radius-server template default
+#
+pki realm default
+ certificate-check none
+#
+free-rule-template name default_free_rule
+#
+portal-access-profile name portal_access_profile
+#
+aaa
+ authentication-scheme default
+ authentication-scheme radius
+  authentication-mode radius
+ authorization-scheme default
+ accounting-scheme default
+ local-aaa-user password policy administrator
+  password history record number 0
+  password expire 0
+ domain default
+  authentication-scheme radius
+  radius-server default
+ domain default_admin
+  authentication-scheme default
+ local-user tbe password irreversible-cipher $1a$/c;Y"fL:xQ$,vE4T{KRWA.#mrYyFftVa|h\Wy#)&9W*YGSOG=P;$
+ local-user tbe privilege level 15
+ local-user tbe service-type telnet terminal
+ local-user erte password irreversible-cipher $1a$96:X/}aY3G$.R6@@P!i:F5n(SX{LAJI[*nW1BI`m(,q1!<Ag.vG$
+ local-user erte privilege level 15
+ local-user erte service-type telnet
+ local-user admin password irreversible-cipher $1a$MS>0#x'Dy%$x+y79UTYA5l)Z$/$JWwYav>q(8]e9Qt-wN=ep>p6$
+ local-user admin privilege level 15
+ local-user admin service-type terminal http
+ local-user opengsi password irreversible-cipher $1a$U2xS5INPu,$v]Le#).*wMj};V:)U{9$8~^x/Hh+\Gw5WBFVD(>%$
+ local-user opengsi privilege level 15
+ local-user opengsi service-type telnet
+#
+ntp-service ipv6 server disable
+ntp-service unicast-server 10.2.1.98
+#
+interface Vlanif1
+#
+interface Vlanif10
+ description VLAN GERENCIA
+ ip address 192.168.96.104 255.255.255.0
+#
+interface MEth0/0/1
+#
+interface GigabitEthernet0/0/1
+ port default vlan 10
+#
+interface GigabitEthernet0/0/2
+ port default vlan 10
+#
+interface GigabitEthernet0/0/3
+ port default vlan 10
+#
+interface GigabitEthernet0/0/4
+ port default vlan 10
+#
+interface GigabitEthernet0/0/5
+ description CONEXAO PA-CAS-RT02 G0/0
+ port default vlan 10
+#
+interface GigabitEthernet0/0/6
+ description CONEXAO SDH1 ETH4
+ port default vlan 10
+#
+interface GigabitEthernet0/0/7
+ port default vlan 10
+#
+interface GigabitEthernet0/0/8
+ shutdown
+ port default vlan 10
+#
+interface GigabitEthernet0/0/9
+ port default vlan 10
+#
+interface GigabitEthernet0/0/10
+ port default vlan 10
+#
+interface GigabitEthernet0/0/11
+ description CONEXAO VOIP F0/0
+ port default vlan 10
+#
+interface GigabitEthernet0/0/12
+ port default vlan 10
+#
+interface GigabitEthernet0/0/13
+ description CONEXAO FIREWALL G0/0/0
+ port default vlan 10
+#
+interface GigabitEthernet0/0/14
+ port default vlan 10
+#
+interface GigabitEthernet0/0/15
+ port default vlan 10
+#
+interface GigabitEthernet0/0/16
+ port default vlan 10
+#
+interface GigabitEthernet0/0/17
+ description CONEXAO SDH1 ETH3
+ port default vlan 10
+#
+interface GigabitEthernet0/0/18
+ port default vlan 10
+#
+interface GigabitEthernet0/0/19
+ port default vlan 10
+#
+interface GigabitEthernet0/0/20
+ description CONEXAO SDH1 ETH4
+ port default vlan 10
+#
+interface GigabitEthernet0/0/21
+ port default vlan 10
+#
+interface GigabitEthernet0/0/22
+ port default vlan 10
+#
+interface GigabitEthernet0/0/23
+ port default vlan 10
+#
+interface GigabitEthernet0/0/24
+ description CONEXAO PA-CAS-SW01 G0/0/24
+ port link-type trunk
+ port trunk allow-pass vlan 2 to 4094
+#
+interface GigabitEthernet0/0/25
+#
+interface GigabitEthernet0/0/26
+#
+interface GigabitEthernet0/0/27
+#
+interface GigabitEthernet0/0/28
+#
+interface NULL0
+#
+ip route-static 0.0.0.0 0.0.0.0 192.168.96.252
+#
+header login information "################################################################
+# ATENCAO: ACESSO PERMITIDO PARA PESSOAL AUTORIZADO.           #
+#                 DESCONECTE-SE IMEDIATAMENTE                  #
+# ATTENTION: AUTHORIZED PERSONAL ONLY. DISCONNECT IMMEDIATELY. #
+################################################################
+"
+#
+user-interface maximum-vty 15
+user-interface con 0
+ authentication-mode aaa
+user-interface vty 0 14
+ authentication-mode aaa
+ protocol inbound telnet
+user-interface vty 16 20
+#
+dot1x-access-profile name dot1x_access_profile
+#
+mac-access-profile name mac_access_profile
+#
+return
+<PA-CAS-SW02>

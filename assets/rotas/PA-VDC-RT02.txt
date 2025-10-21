@@ -1,0 +1,130 @@
+PA-VDC-RT02#show running-config
+Building configuration...
+
+Current configuration : 2779 bytes
+!
+! Last configuration change at 17:52:19 BR Tue Jun 10 2025 by tbe
+! NVRAM config last updated at 17:55:47 BR Tue Jun 10 2025 by tbe
+!
+version 12.4
+no service pad
+service tcp-keepalives-in
+service tcp-keepalives-out
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log datetime msec localtime show-timezone
+service password-encryption
+!
+hostname PA-VDC-RT02
+!
+boot-start-marker
+boot-end-marker
+!
+logging buffered 524288
+enable secret 5 $1$KACo$lZtauOTz4qhNPkYyQMV3S0
+!
+no aaa new-model
+clock timezone BR 0
+ip cef
+!
+!
+!
+!
+ip domain name tbe.telecom.local
+ip name-server 10.2.1.80
+multilink bundle-name authenticated
+!
+!
+username tbe privilege 15 password 7 105A0B1C2503100E4F
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+!
+interface Loopback200
+ description GERENCIA TBE
+ ip address 10.200.200.54 255.255.255.255
+!
+interface FastEthernet0/0
+ description CONEXAO RAISECOM G1/2 => LINK P2P ELETRONORTE
+ no ip address
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/0.1020
+ description CONEXAO RAISECOM G1/2 => LINK P2P ELETRONORTE PA-CAS-RT01
+ encapsulation dot1Q 1020
+ ip address 192.168.0.74 255.255.255.252
+!
+interface FastEthernet0/1
+ ip address 192.168.170.254 255.255.255.0 secondary
+ ip address 192.168.102.254 255.255.255.0
+ duplex auto
+ speed auto
+ standby 10 ip 192.168.102.252
+ standby 10 priority 105
+ standby 10 preempt
+ standby 11 ip 192.168.170.252
+ standby 11 priority 105
+ standby 11 preempt
+!
+interface Serial0/0/0
+ no ip address
+ shutdown
+ clock rate 2000000
+!
+interface Serial0/0/1
+ no ip address
+ shutdown
+ clock rate 2000000
+!
+router bgp 65073
+ no synchronization
+ bgp log-neighbor-changes
+ network 10.200.200.54 mask 255.255.255.255
+ network 192.168.0.72 mask 255.255.255.252
+ network 192.168.102.0
+ network 192.168.170.0
+ neighbor 192.168.0.73 remote-as 65306
+ neighbor 192.168.0.73 description PA-CAS-RT01
+ neighbor 192.168.0.73 next-hop-self
+ neighbor 192.168.0.73 allowas-in
+ neighbor 192.168.0.73 soft-reconfiguration inbound
+ neighbor 192.168.102.253 remote-as 65073
+ neighbor 192.168.102.253 next-hop-self
+ neighbor 192.168.102.253 allowas-in
+ neighbor 192.168.102.253 soft-reconfiguration inbound
+ no auto-summary
+!
+ip forward-protocol nd
+ip route 0.0.0.0 0.0.0.0 192.168.102.252
+!
+!
+no ip http server
+!
+!
+!
+control-plane
+!
+banner motd ^CC
+################################################################
+# ATENCAO: ACESSO PERMITIDO PARA PESSOAL AUTORIZADO.           #
+#                 DESCONECTE-SE IMEDIATAMENTE                  #
+# ATTENTION: AUTHORIZED PERSONAL ONLY. DISCONNECT IMMEDIATELY. #
+################################################################
+^C
+!
+line con 0
+line aux 0
+line vty 0 4
+ login local
+ transport input all
+!
+scheduler allocate 20000 1000
+ntp clock-period 17179861
+ntp peer 10.2.1.98
+end
+
+PA-VDC-RT02#

@@ -1,0 +1,358 @@
+<PA-CAS-RT01>display current-configuration
+[V300R019C10SPC300]
+#
+ sysname PA-CAS-RT01
+ header login information "
+################################################################
+# ATENCAO: ACESSO PERMITIDO PARA PESSOAL AUTORIZADO.           #
+#                 DESCONECTE-SE IMEDIATAMENTE                  #
+# ATTENTION: AUTHORIZED PERSONAL ONLY. DISCONNECT IMMEDIATELY. #
+################################################################
+"
+#
+ board add 0/1 2SA
+ board add 0/2 2SA
+#
+ drop illegal-mac alarm
+#
+ clock timezone BR minus 00:00:00
+#
+router id 192.0.9.29
+#
+authentication-profile name default_authen_profile
+authentication-profile name dot1x_authen_profile
+authentication-profile name dot1xmac_authen_profile
+authentication-profile name mac_authen_profile
+authentication-profile name multi_authen_profile
+authentication-profile name portal_authen_profile
+#
+ lldp enable
+#
+dns resolve
+dns server 10.2.1.80
+dns domain tbe.telecom.local
+#
+dhcp enable
+#
+ ecc peer-public-key 192.168.96.254 encoding-type der
+  public-key-code begin
+    0424EE4D 8FAEF4DB FB5AD235 30F16ED9 C7A74BC3 DF12A81E DAD4F260 248A3AFA
+    7A477E01 9E079F0D 6A21E803 A9F3EFE4 4CE4003A D47847EF 3CFA5DB7 64B2C4F2
+    29
+  public-key-code end
+ peer-public-key end
+#
+ ecc peer-public-key 192.0.9.30 encoding-type der
+  public-key-code begin
+    0424EE4D 8FAEF4DB FB5AD235 30F16ED9 C7A74BC3 DF12A81E DAD4F260 248A3AFA
+    7A477E01 9E079F0D 6A21E803 A9F3EFE4 4CE4003A D47847EF 3CFA5DB7 64B2C4F2
+    29
+  public-key-code end
+ peer-public-key end
+#
+radius-server template default
+#
+pki realm default
+#
+ssl policy default_policy type server
+ pki-realm default
+ version tls1.2
+ ciphersuite rsa_aes_128_cbc_sha rsa_aes_128_sha256 rsa_aes_256_sha256 ecdhe_rsa_aes128_gcm_sha256 ecdhe_rsa_aes256_gcm_sha384
+#
+acl number 2001
+ rule 5 permit source 192.168.36.0 0.0.0.255
+ rule 6 permit source 192.168.148.0 0.0.0.3
+#
+ike proposal default
+ encryption-algorithm aes-256 aes-192 aes-128
+ dh group14
+ authentication-algorithm sha2-512 sha2-384 sha2-256
+ authentication-method pre-share
+ integrity-algorithm hmac-sha2-256
+ prf hmac-sha2-256
+#
+free-rule-template name default_free_rule
+#
+portal-access-profile name portal_access_profile
+#
+aaa
+ authentication-scheme default
+  authentication-mode local
+ authentication-scheme radius
+  authentication-mode radius
+ authorization-scheme default
+  authorization-mode local
+ accounting-scheme default
+  accounting-mode none
+ domain default
+  authentication-scheme default
+  accounting-scheme default
+ domain default_admin
+  authentication-scheme default
+  accounting-scheme default
+ local-user tbe password irreversible-cipher $1a$$l~}Q+@{v=$a8Eb"I:biWk0y`<tD"C9uVO/+R)2$Eo6~{@Z4$F0$
+ local-user tbe privilege level 15
+ local-user tbe service-type telnet terminal ssh http
+ local-user admin password irreversible-cipher $1a$-bWt)*+~(B$1c%XY/b:S2gq,K@q>_>I5mELRq9CyS-"B|RV$p=J$
+ local-user admin privilege level 15
+ local-user admin service-type terminal http
+#
+web
+ set fast-configuration state disable
+#
+firewall zone Local
+#
+interface Vlanif1
+ ip address 192.168.1.1 255.255.255.0
+ dhcp select interface
+#
+interface GigabitEthernet0/0/0
+ port link-type access
+#
+interface GigabitEthernet0/0/1
+ undo portswitch
+ description CONEXAO PA-CAS-SW01 G0/0/5  REDE LAN
+ ip address 192.168.96.253 255.255.255.0
+ vrrp vrid 10 virtual-ip 192.168.96.252
+ vrrp vrid 10 priority 110
+ vrrp vrid 10 track nqa aa VRRP
+#
+interface GigabitEthernet0/0/2
+ undo portswitch
+ description VAGO REDE IP SEM ARP
+ shutdown
+#
+interface GigabitEthernet0/0/3
+ undo portswitch
+#
+interface GigabitEthernet0/0/4
+ undo portswitch
+#
+interface GigabitEthernet0/0/5
+ undo portswitch
+#
+interface GigabitEthernet0/0/6
+ undo portswitch
+#
+interface GigabitEthernet0/0/7
+ undo portswitch
+ description CONEXAO SW HUAWEI XG5/0/6 => LINKS INFOBARRA/WIRELINK
+#
+interface GigabitEthernet0/0/7.560
+ description CONEXAO SW HUAWEI XG5/0/6 => LINK P2P WIRELINK SP-OLI-RT01 G0/2 VLAN560 SAO PAULO
+ dot1q termination vid 560
+ ip address 192.168.148.1 255.255.255.252
+#
+interface GigabitEthernet0/0/7.564
+ description CONEXAO SW HUAWEI XG5/0/6 => LINK P2P WIRELINK REC-ONS-RT01-SAR G0/0 ONS RECIFE
+ dot1q termination vid 564
+ ip address 192.0.2.69 255.255.255.252
+#
+interface GigabitEthernet0/0/7.600
+ description CONEXAO SW HUAWEI XG5/0/6 => LINK P2P INFOBARRA/WIRELINK MA-AC-RT02 G0/1 ACAILANDIA
+ dot1q termination vid 600
+ ip address 192.168.147.1 255.255.255.252
+#
+interface GigabitEthernet0/0/8
+ undo portswitch
+ ip address 192.0.9.41 255.255.255.252
+#
+interface GigabitEthernet0/0/9
+ description CONEXAO PA-CAS-SW03 FA21 RAISECOM SANTA MARIA UNI 1 => LINK ELETRONORTE
+#
+interface GigabitEthernet0/0/9.96
+ description CONEXAO PA-CAS-SW03 FA21 RAISECOM SANTA MARIA UNI 1 => LINK P2P ELETRONORTE MA-AC-RT01 F0/1/1 ACAILANDIA
+ dot1q termination vid 96
+ ip address 192.168.0.22 255.255.255.252
+#
+interface GigabitEthernet0/0/9.123
+ description CONEXAO PA-CAS-SW03 FA21 RAISECOM SANTA MARIA UNI 1 => LINK P2P ELETRONORTE PA-TUC-RT02-SL503-504 G0/1 TUCURUI SL503-504
+ dot1q termination vid 123
+ ip address 192.168.0.61 255.255.255.252
+#
+interface GigabitEthernet0/0/9.950
+ description CONEXAO PA-CAS-SW03 FA21 RAISECOM SANTA MARIA UNI 1 => LINK P2P ELETRONORTE MA-PDU-RT02 G0/0/1 PRESIDENTE DUTRA
+ dot1q termination vid 950
+ ip address 192.168.0.41 255.255.255.252
+#
+interface GigabitEthernet0/0/9.1030
+ description CONEXAO PA-CAS-SW03 FA21 RAISECOM SANTA MARIA UNI 1 => LINK P2P ELETRONORT PA-MBA-RT02 G0/0/0 MARABA
+ dot1q termination vid 1030
+ ip address 192.168.0.49 255.255.255.252
+#
+interface GigabitEthernet0/0/9.1210
+ description CONEXAO PA-CAS-SW03 FA21 RAISECOM SANTA MARIA UNI 1 => LINK P2P ELETRONORTE PA-TUC-RT01 G0/0/1 TUCURUI
+ dot1q termination vid 1210
+ ip address 192.168.0.57 255.255.255.252
+#
+interface GigabitEthernet0/0/9.1300
+ description CONEXAO RAISECOM G0/2 => LINK P2P ELETRONORTE MA-IPZ-RT02 G0/0/1 IMPERATRIZ
+ dot1q termination vid 1300
+ ip address 192.168.0.45 255.255.255.252
+#
+interface GigabitEthernet0/0/10
+#
+interface GigabitEthernet0/0/11
+ description VirtualPort
+#
+interface XGigabitEthernet0/0/0
+#
+interface NULL0
+#
+interface LoopBack200
+ description GERENCIA TBE
+ ip address 10.200.200.34 255.255.255.255
+#
+bgp 65306
+ router-id 192.168.96.253
+ peer 192.0.2.70 as-number 65119
+ peer 192.0.2.70 description REC-ONS-RT01-SAR
+ peer 192.0.2.70 connect-interface GigabitEthernet0/0/7.564
+ peer 192.168.0.21 as-number 65000
+ peer 192.168.0.21 description MA-AC-RT01
+ peer 192.168.0.21 connect-interface GigabitEthernet0/0/9.96
+ peer 192.168.0.42 as-number 65004
+ peer 192.168.0.42 description MA-PDU-RT02
+ peer 192.168.0.42 connect-interface GigabitEthernet0/0/9.950
+ peer 192.168.0.46 as-number 65005
+ peer 192.168.0.46 description MA-IPZ-RT02
+ peer 192.168.0.46 connect-interface GigabitEthernet0/0/9.1300
+ peer 192.168.0.50 as-number 65309
+ peer 192.168.0.50 description PA-MBA-RT02
+ peer 192.168.0.50 connect-interface GigabitEthernet0/0/9.1030
+ peer 192.168.0.58 as-number 65202
+ peer 192.168.0.58 description PA-TUC-RT01
+ peer 192.168.0.58 connect-interface GigabitEthernet0/0/9.1210
+ peer 192.168.0.62 as-number 65205
+ peer 192.168.0.62 description PA-TUC-RT02-SL503-504
+ peer 192.168.0.62 connect-interface GigabitEthernet0/0/9.123
+ peer 192.168.96.254 as-number 65000
+ peer 192.168.96.254 description PA-CAS-RT02
+ peer 192.168.96.254 connect-interface GigabitEthernet0/0/1
+ peer 192.168.147.2 as-number 65337
+ peer 192.168.147.2 description MA-AC-RT02
+ peer 192.168.147.2 connect-interface GigabitEthernet0/0/7.600
+ peer 192.168.148.2 as-number 65000
+ peer 192.168.148.2 description SP-OLI-RT01
+ peer 192.168.148.2 connect-interface GigabitEthernet0/0/7.560
+ #
+ ipv4-family unicast
+  undo synchronization
+  network 10.10.1.0 255.255.255.0
+  network 10.200.200.34 255.255.255.255
+  network 192.0.2.68 255.255.255.252
+  network 192.0.9.28 255.255.255.252
+  network 192.16.8.40 255.255.255.252
+  network 192.168.0.20 255.255.255.252
+  network 192.168.0.40 255.255.255.252
+  network 192.168.0.44 255.255.255.252
+  network 192.168.0.48 255.255.255.252
+  network 192.168.0.56 255.255.255.252
+  network 192.168.0.60 255.255.255.252
+  network 192.168.96.0
+  network 192.168.147.0 255.255.255.252
+  network 192.168.148.0 255.255.255.252
+  peer 192.0.2.70 enable
+  peer 192.168.0.21 enable
+  peer 192.168.0.42 enable
+  peer 192.168.0.46 enable
+  peer 192.168.0.50 enable
+  peer 192.168.0.58 enable
+  peer 192.168.0.62 enable
+  peer 192.168.96.254 enable
+  peer 192.168.147.2 enable
+  peer 192.168.147.2 route-policy LOCAL_PREF_WIRELINK_IN import
+  peer 192.168.148.2 enable
+#
+route-policy PREPEND_ELETRONORTE_OUT permit node 40
+ apply as-path 65306 65306 65306 additive
+#
+route-policy LOCAL_PREF_WIRELINK_IN permit node 40
+ apply local-preference 250
+#
+ info-center timestamp log format-date
+#
+ snmp-agent local-engineid 800007DB0452545F30325F4341535F574952454C494E4B
+ snmp-agent community write %^%#<x;c<iaBCXh*2u1+K4l"bFZYDrjuN4CSEME('N,VA&\D4'4m@YJWkq;.tA%O]wk.X;5pF0<97'1[~ho0%^%#
+ snmp-agent community read %^%#;81AZFn@0A9w[d/[bVD3&#_J!0X<a9m]k`RTe5AOz=i}A:FqyTPmV6G=%yxGdrRm$+*H5GWiEWAe8cx*%^%#
+ snmp-agent sys-info version v2c v3
+ snmp-agent target-host trap-hostname TBE_SPO@ address 192.168.36.55 udp-port 161 trap-paramsname TBE_SPO@
+ snmp-agent target-host trap-paramsname root@tbesec v2c securityname %^%#Gd$Z%"TmPC3Y!j~D9QI)VFdK"z3v2FI>%kFt,)gA%^%#
+ snmp-agent mib-view 1 include iso
+ snmp-agent trap enable
+ snmp-agent trap enable syslog
+ snmp-agent trap queue-size 200
+ snmp-agent trap life 60
+ snmp-agent permit interface GigabitEthernet0/0/7
+ snmp-agent server-source -a 192.168.148.1
+ snmp-agent
+#
+ ssh client 192.168.96.254 assign ecc-key 192.168.96.254
+ ssh client 192.0.9.30 assign ecc-key 192.0.9.30
+ ssh client first-time enable
+ telnet server enable
+#
+ http secure-server ssl-policy default_policy
+ http secure-server enable
+ http server permit interface GigabitEthernet0/0/0
+#
+ip route-static 0.0.0.0 0.0.0.0 192.0.9.1
+#
+fib regularly-refresh disable
+#
+nqa test-instance aa VRRP
+ test-type icmp
+ destination-address ipv4 192.168.148.2
+ source-address ipv4 192.168.148.1
+ send-trap testfailure
+ frequency 30
+ timeout 1
+ probe-count 1
+ start now
+#
+user-interface con 0
+ authentication-mode aaa
+user-interface vty 0
+ authentication-mode aaa
+ user privilege level 15
+user-interface vty 1 4
+#
+policy-based-route PREPEND_ELETRONORTE permit node  40
+#
+wlan ac
+ traffic-profile name default
+ security-profile name default
+ security-profile name default-wds
+  security wpa2 psk pass-phrase %^%##3YS(<rg*GlcX).5UF#OS`ss29k{;0^DWb'i-a+0%^%# aes
+ ssid-profile name default
+ vap-profile name default
+ wds-profile name default
+ regulatory-domain-profile name default
+ air-scan-profile name default
+ rrm-profile name default
+ radio-2g-profile name default
+ radio-5g-profile name default
+ wids-spoof-profile name default
+ wids-profile name default
+ ap-system-profile name default
+ port-link-profile name default
+ wired-port-profile name default
+ ap-group name default
+#
+dot1x-access-profile name dot1x_access_profile
+#
+mac-access-profile name mac_access_profile
+#
+ ntp-service unicast-server 10.2.1.98
+#
+ops
+#
+autostart
+#
+secelog
+#
+ ms-channel
+
+#
+return
+<PA-CAS-RT01>

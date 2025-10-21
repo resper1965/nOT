@@ -1,0 +1,718 @@
+<PA-CAS-SDWAN02>dis current-configuration
+[V300R022C00SPC100]
+#
+ sysname PA-CAS-SDWAN02
+ set password min-length 6
+#
+ board add 0/2 2SA
+#
+ engine enable
+ engine sac bypass
+#
+update schedule ips-sdb daily 23:11
+update schedule av-sdb daily 23:11
+undo update schedule sa-sdb enable
+update schedule sa-sdb daily 23:11
+update schedule cnc daily 23:11
+#
+ drop illegal-mac alarm
+#
+ clock timezone default minus 00:00:00
+#
+ undo set workmode hardware hash
+#
+ip route recursive-lookup default-route protocol bgp
+#
+ install module flash:/file-default.app
+ install module flash:/url-default.app
+#
+ ipsec authentication sha2 compatible enable
+#
+authentication-profile name default_authen_profile
+authentication-profile name dot1x_authen_profile
+authentication-profile name dot1xmac_authen_profile
+authentication-profile name mac_authen_profile
+authentication-profile name multi_authen_profile
+authentication-profile name portal_authen_profile
+#
+ lldp enable
+#
+dns resolve
+dns proxy enable
+#
+ license active accept agreement
+ license function ac
+ license function sece
+ license function datae
+ license resource av 120
+ license resource urlf 120
+ license resource ips 120
+#
+dhcp enable
+#
+ip vpn-instance MNG_192.168.1.1
+ ipv4-family
+#
+ip vpn-instance underlay_castanhal
+ ipv4-family
+  route-distinguisher 1020:1020
+  vpn-target 1.20:20 export-extcommunity
+  vpn-target 1.20:20 import-extcommunity
+#
+ip vpn-instance underlay_eletronorte
+ ipv4-family
+  route-distinguisher 2222:2222
+  vpn-target 22:22 export-extcommunity
+  vpn-target 22:22 import-extcommunity
+#
+ip vpn-instance underlay_internet
+ ipv4-family
+  route-distinguisher 1111:1111
+  vpn-target 11:11 export-extcommunity
+  vpn-target 11:11 import-extcommunity
+#
+ip vpn-instance vpn1
+ ipv4-family
+  route-distinguisher 100.64.0.72:1
+  import route-policy evpn-vpn1-import evpn
+  export route-policy evpn-vpn1-export evpn
+  vpn-target 65073:117 export-extcommunity evpn
+  vpn-target 65073:117 import-extcommunity evpn
+ evpn vn-id 117
+#
+radius-server template default
+ radius-server shared-key cipher %^%#zMrQ07BEr'WCp@9LxsBH/MqtO1_i5Swp<$'ZmZ8,%^%#
+#
+bfd
+#
+pki realm default
+ certificate-check none
+#
+ssl policy default_policy type server
+ pki-realm default
+ version tls1.2
+ ciphersuite rsa_aes_128_cbc_sha rsa_aes_128_sha256 rsa_aes_256_sha256 ecdhe_rsa_aes128_gcm_sha256 ecdhe_rsa_aes256_gcm_sha384
+#
+acl number 2999
+ rule 0 permit source 192.168.36.55 0
+ rule 1 deny
+#
+ipsec proposal sdwan-proposal
+ esp authentication-algorithm sha2-256
+ esp encryption-algorithm aes-256
+#
+ike proposal default
+ encryption-algorithm aes-256 aes-192 aes-128
+ dh group14
+ authentication-algorithm sha2-512 sha2-384 sha2-256
+ authentication-method pre-share
+ integrity-algorithm hmac-sha2-256
+ prf hmac-sha2-256
+#
+ipsec p2mp-policy sdwan-p2mp-sa
+ proposal sdwan-proposal
+#
+free-rule-template name default_free_rule
+#
+portal-access-profile name portal_access_profile
+#
+aaa
+ authentication-scheme default
+  authentication-mode local
+ authentication-scheme radius
+  authentication-mode radius
+ authorization-scheme default
+  authorization-mode local
+ accounting-scheme default
+  accounting-mode none
+ local-aaa-user password policy administrator
+ domain default
+  authentication-scheme default
+  accounting-scheme default
+  radius-server default
+ domain default_admin
+  authentication-scheme default
+  accounting-scheme default
+ domain domain_accampus
+  authentication-scheme default
+  accounting-scheme default
+  radius-server default
+ undo local-user password change-offline enable
+ local-user tbe password irreversible-cipher $1a$C>R\9;zDIY$CcW9~aL_`KByFSTy]9GW>MCE8#Nb`,u/7|8PpuQG$
+ local-user tbe privilege level 15
+ local-user tbe service-type telnet terminal ssh
+ local-user admin password irreversible-cipher $1a$l/ee<QKJ`1$aPb2.&;1m0F.R-CHp_};.,#v)1A_gH=rau~tev,#$
+ local-user admin privilege level 15
+ local-user admin service-type terminal http
+ local-user fiberx password irreversible-cipher $1a$.#`h7e<[KC$g"03#Jc4yP(_Jh$',ZV.gHl@97]vHQsP1{#L^vHN$
+ local-user fiberx privilege level 15
+ local-user fiberx service-type terminal ssh http
+ local-user opengsi password irreversible-cipher $1a$w=>/@m9j\-$=KM<"b-Yh)+K1:%lhE9@{BL|YYi}H"/R'+/)^GCQ$
+ local-user opengsi privilege level 15
+ local-user opengsi service-type telnet terminal ssh
+ local-user accampus@domain_accampus password irreversible-cipher $1a$u^tv.EhKw.$k%q_+]a}L/G&>tMouiOM1Z8EH^m^c<__&N$L=vy3$
+ local-user accampus@domain_accampus privilege level 15
+ local-user accampus@domain_accampus service-type ssh http
+#
+web
+#
+firewall zone Local
+#
+sa
+#
+nat alg ftp enable
+nat alg rtsp enable
+nat alg sip enable
+nat alg pptp enable
+#
+mi-server
+ server ip-address 119.8.82.53 port 27371 relate-ac-link-vpn
+ collect-item syslog gtl enable
+ collect-item syslog ifnet enable
+ collect-item syslog entitytrap enable
+ collect-item syslog errdown enable
+ collect-item syslog forward enable
+ collect-item syslog conn enable
+ collect-item syslog ms-channel enable
+ collect-item syslog ospf enable
+ collect-item syslog rm enable
+ collect-item syslog bgp enable
+#
+interface Vlanif1
+ ip binding vpn-instance MNG_192.168.1.1
+ ip address 192.168.1.1 255.255.255.0
+ dhcp select interface
+ dhcp server dns-list 192.168.1.1
+#
+interface Serial2/0/0
+ link-protocol ppp
+ set flow-stat interval 10
+ ip binding vpn-instance underlay_castanhal
+ ip address 192.168.20.5 255.255.255.252
+ qos gts cir 2000 cbs 50000
+#
+interface Serial2/0/1
+ link-protocol ppp
+#
+interface GigabitEthernet0/0/0
+ undo portswitch
+ description Eletronorte
+ set flow-stat interval 10
+ ip binding vpn-instance underlay_eletronorte
+ tcp adjust-mss 1200
+ ip address 192.0.89.14 255.255.255.0
+ qos gts cir 10000 cbs 250000
+#
+interface GigabitEthernet0/0/1
+ undo portswitch
+ ip binding vpn-instance vpn1
+ tcp adjust-mss 1200
+ ip address 192.168.102.254 255.255.255.0
+ ip address 192.168.170.254 255.255.255.0 sub
+ vrrp vrid 10 virtual-ip 192.168.102.252
+ vrrp vrid 20 virtual-ip 192.168.170.252
+ sa application-statistic enable
+#
+interface GigabitEthernet0/0/2
+#
+interface GigabitEthernet0/0/3
+ undo portswitch
+ description Internet
+ set flow-stat interval 10
+ ip binding vpn-instance underlay_internet
+ tcp adjust-mss 1200
+ qos gts cir 100000 cbs 2500000
+ stun client enable
+ ip address dhcp-alloc
+#
+interface GigabitEthernet0/0/4
+#
+interface GigabitEthernet0/0/5
+#
+interface GigabitEthernet0/0/6
+ undo portswitch
+#
+interface GigabitEthernet0/0/6.10
+ description interlink
+ dot1q termination vid 10
+ tcp adjust-mss 1200
+ ip address 100.64.0.14 255.255.255.252
+ sa application-statistic enable
+#
+interface GigabitEthernet0/0/6.11
+ description interlink
+ dot1q termination vid 11
+ ip binding vpn-instance vpn1
+ tcp adjust-mss 1200
+ ip address 100.64.0.18 255.255.255.252
+ ospf enable 30001 area 0.0.0.0
+ sa application-statistic enable
+#
+interface GigabitEthernet0/0/7
+#
+interface GigabitEthernet0/0/8
+#
+interface GigabitEthernet0/0/9
+#
+interface GigabitEthernet0/0/10
+#
+interface GigabitEthernet0/0/11
+ description VirtualPort
+#
+interface XGigabitEthernet0/0/0
+#
+interface NULL0
+#
+interface LoopBack100
+ ip address 100.64.0.72 255.255.255.255
+#
+interface LoopBack103
+ description physical port: GigabitEthernet0/0/0
+ ip binding vpn-instance vpn1
+ ip address 100.64.0.33 255.255.255.255
+#
+interface LoopBack104
+ description physical port: GigabitEthernet0/0/0
+ ip binding vpn-instance vpn1
+ ip address 100.64.0.34 255.255.255.255
+#
+interface Tunnel0/0/3
+ description physical port: GigabitEthernet0/0/0
+ ip binding vpn-instance vpn1
+ ip address 100.64.0.35 255.255.255.248
+ tunnel-protocol gre
+ source LoopBack103
+ destination vpn-instance vpn1 100.64.0.34
+ qos group 1
+ ospf enable 35003 area 0.0.0.0
+ sa application-statistic enable
+#
+interface Tunnel0/0/4
+ description physical port: GigabitEthernet0/0/0
+ ip binding vpn-instance underlay_eletronorte
+ ip address 100.64.0.36 255.255.255.248
+ tunnel-protocol gre
+ source LoopBack104
+ destination vpn-instance vpn1 100.64.0.33
+ ospf enable 35004 area 0.0.0.0
+#
+interface Tunnel0/0/600
+ description evpn tunnel
+ tcp adjust-mss 1098
+ vpn-mapping enable
+ ip address 100.64.0.73 255.255.255.255
+ tunnel-protocol svpn
+ qos pre-classify
+ ipsec p2mp-policy enable
+ weak-state-control enable
+ sa application-statistic enable
+#
+interface Tunnel0/0/601
+ description evpn tunnel
+ ip binding vpn-instance vpn1
+ tcp adjust-mss 1098
+ vpn-mapping enable
+ ip address 100.64.0.73 255.255.255.255
+ tunnel-protocol svpn
+ qos pre-classify
+ qos group 1
+ ipsec p2mp-policy enable
+ weak-state-control enable
+ sa application-statistic enable
+#
+cellular profile default
+ modem auto-recovery dial action modem-reboot fail-times 128
+ modem auto-recovery icmp-unreachable action modem-reboot
+ modem auto-recovery services-unavailable action modem-reboot test-times 0 interval 3600
+#
+bgp 65073
+ router-id 100.64.0.72
+ peer 100.64.0.4 as-number 65073
+ peer 100.64.0.4 connect-interface LoopBack100
+ peer 100.64.0.5 as-number 65073
+ peer 100.64.0.5 connect-interface LoopBack100
+ peer 100.64.0.7 as-number 65073
+ peer 100.64.0.7 connect-interface LoopBack100
+ peer 100.64.0.8 as-number 65073
+ peer 100.64.0.8 connect-interface LoopBack100
+ #
+ ipv4-family unicast
+  undo synchronization
+  peer 100.64.0.4 enable
+  peer 100.64.0.5 enable
+  peer 100.64.0.7 enable
+  peer 100.64.0.8 enable
+ #
+ l2vpn-family evpn
+  policy vpn-target
+  peer 100.64.0.4 enable
+  peer 100.64.0.4 advertise encap-type sd-wan
+  peer 100.64.0.5 enable
+  peer 100.64.0.5 advertise encap-type sd-wan
+  peer 100.64.0.7 enable
+  peer 100.64.0.7 advertise encap-type sd-wan
+  peer 100.64.0.8 enable
+  peer 100.64.0.8 advertise encap-type sd-wan
+ #
+ ipv4-family tunnel-encap-ext
+  peer 100.64.0.4 enable
+  peer 100.64.0.4 advertise-community
+  peer 100.64.0.5 enable
+  peer 100.64.0.5 advertise-community
+  peer 100.64.0.7 enable
+  peer 100.64.0.7 advertise-community
+  peer 100.64.0.8 enable
+  peer 100.64.0.8 advertise-community
+ #
+ ipv4-family vpn-instance underlay_castanhal
+  preference 120 255 255
+  advertise l2vpn evpn
+  peer 192.168.20.6 as-number 65003
+  peer 192.168.20.6 fake-as 65203
+ #
+ ipv4-family vpn-instance underlay_eletronorte
+  preference 120 255 255
+  import-route ospf 35004
+  advertise l2vpn evpn
+  peer 192.0.89.19 as-number 65000
+  peer 192.0.89.19 fake-as 65203
+ #
+ ipv4-family vpn-instance vpn1
+  preference 30 255 170 route-policy bgp-preference-vpn1
+  import-route direct med 0 route-policy bgp-import-direct-vpn1
+  import-route static med 0 route-policy bgp-import-static-vpn1
+  import-route ospf 30001 route-policy bgp-import-interlink-ospf-vpn1
+  import-route ospf 35003 route-policy bgp-import-legacy-ospf-vpn1
+  import-route unr med 0 route-policy bgp-import-static-vpn1
+  advertise l2vpn evpn
+#
+ospf 30001 router-id 127.0.0.46 vpn-instance vpn1
+ import-route direct cost 1 type 2 tag 3100 route-policy innerlink-import-direct-30001
+ import-route static cost 1 type 2 tag 3100
+ import-route ospf 35003 cost 40 type 2 tag 3000
+ import-route bgp permit-ibgp cost 1 type 2 tag 1 route-policy innerlink_ospf_import_bgp_30001
+ preference ase route-policy innerlink_ospf_preference_30001 150
+ vpn-instance-capability simple
+ area 0.0.0.0
+#
+ospf 35003 router-id 127.0.0.50 vpn-instance vpn1
+ import-route direct cost 1 type 2 tag 1 route-policy interworking-import-direct-35003
+ import-route static cost 1 type 2 tag 1
+ import-route ospf 30001 cost 1 type 2 tag 1 route-policy interworking-import-innerlkospf-35003
+ preference ase route-policy interworking-apply-preference-35003 150
+ vpn-instance-capability simple
+ area 0.0.0.0
+#
+ospf 35004 router-id 127.0.0.51 vpn-instance underlay_eletronorte
+ import-route direct cost 30 type 2 tag 1
+ import-route static cost 30 type 2 tag 1 route-policy interworking-deny-ac-south-ip-35004
+ import-route bgp permit-ibgp cost 30 type 2 tag 1
+ preference ase route-policy interworking-apply-preference-35004 150
+ area 0.0.0.0
+#
+route-policy innerlink_ospf_preference_30001 permit node 0
+ if-match tag 3000
+ apply preference 190
+#
+route-policy innerlink_ospf_preference_30001 permit node 10
+ if-match tag 3300
+ apply preference 190
+#
+route-policy innerlink_ospf_preference_30001 permit node 20
+ if-match tag 3600
+ apply preference 190
+#
+route-policy innerlink_ospf_preference_30001 permit node 30
+ if-match tag 3900
+ apply preference 190
+#
+route-policy innerlink_ospf_preference_30001 permit node 40
+ if-match tag 3100
+ apply preference 160
+#
+route-policy innerlink_ospf_preference_30001 permit node 50
+ if-match tag 3200
+ apply preference 180
+#
+route-policy innerlink_ospf_preference_30001 permit node 60
+ if-match tag 4100
+ apply preference 210
+#
+route-policy innerlink_ospf_preference_30001 permit node 70
+#
+route-policy bgp-import-legacy-ospf-vpn1 permit node 55
+ apply community 4294967294 additive
+ apply preferred-value 35
+#
+route-policy interworking-deny-ac-south-ip-35004 deny node 10
+ if-match tag 4400
+#
+route-policy interworking-deny-ac-south-ip-35004 permit node 20
+#
+route-policy evpn-vpn1-export deny node 50
+ description evpn deny local legacy route
+ if-match community-filter local-legacy-route-community
+#
+route-policy evpn-vpn1-export permit node 65535
+ description vpn export to evpn route
+ apply extcommunity color 6:5649 additive
+ apply comm-filter lan-bgp-import-community delete
+#
+route-policy bgp-preference-vpn1 permit node 10
+ description bgp preference default route
+ if-match ip-prefix default-route
+ apply preference 200
+#
+route-policy bgp-preference-vpn1 permit node 20
+ description bgp preference legacy route
+ if-match community-filter central-legacy-route-community
+ apply preference 200
+#
+route-policy bgp-preference-vpn1 permit node 40
+ description bgp preference default
+#
+route-policy interworking-apply-preference-35003 permit node 10
+ apply preference 190
+#
+route-policy interworking-apply-preference-35004 permit node 10
+ apply preference 20
+#
+route-policy interworking-import-direct-35003 deny node 10
+ if-match ip-prefix interworking-deny-route--35003
+#
+route-policy interworking-import-direct-35003 permit node 20
+#
+route-policy innerlink-import-direct-30001 deny node 10
+ description Innerlink ospf import direct deny loopback address
+ if-match ip-prefix bgp-import-direct-deny-loopback-vpn1
+#
+route-policy innerlink-import-direct-30001 permit node 20
+#
+route-policy innerlink_ospf_import_bgp_30001 permit node 10
+ if-match extcommunity-list color match-self-color-list
+ apply tag 3100
+#
+route-policy innerlink_ospf_import_bgp_30001 permit node 15
+ if-match community-filter lan-bgp-import-community
+ apply tag 3100
+#
+route-policy innerlink_ospf_import_bgp_30001 permit node 20
+ if-match community-filter lan-route-community
+ apply tag 3200
+#
+route-policy innerlink_ospf_import_bgp_30001 permit node 30
+ apply tag 4100
+#
+route-policy evpn-vpn1-import deny node 50
+ description vpn import fromt evpn deny self route
+ if-match extcommunity-list color match-self-color-list
+#
+route-policy evpn-vpn1-import permit node 60
+ description vpn import fromt evpn other site lan route
+ if-match community-filter lan-route-community
+ apply preferred-value 50
+#
+route-policy evpn-vpn1-import permit node 65
+ description vpn import fromt evpn other site legacy route
+ apply preferred-value 30
+#
+route-policy evpn-vpn1-import deny node 65535
+ description vpn import fromt evpn deny
+#
+route-policy bgp-import-direct-vpn1 deny node 50
+ description bgp import direct deny interlink address
+ if-match ip-prefix bgp-import-direct-deny-interlink-vpn1
+#
+route-policy bgp-import-direct-vpn1 deny node 55
+ description bgp import direct deny loopback address
+ if-match ip-prefix bgp-import-direct-deny-loopback-vpn1
+#
+route-policy bgp-import-direct-vpn1 permit node 60
+ description bgp import direct
+ apply community 4294967293 additive
+ apply preferred-value 60
+#
+route-policy bgp-import-interlink-ospf-vpn1 permit node 50
+ if-match ip-prefix default-route
+ apply community 4294967294 additive
+ apply preferred-value 35
+#
+route-policy bgp-import-interlink-ospf-vpn1 permit node 55
+ if-match tag 3000
+ apply cost 0
+ apply community 4294967294 additive
+ apply preferred-value 35
+#
+route-policy bgp-import-interlink-ospf-vpn1 permit node 60
+ if-match tag 3100
+ apply cost 0
+ apply community 4294967293 additive
+ apply preferred-value 60
+#
+route-policy bgp-import-interlink-ospf-vpn1 permit node 70
+ if-match tag 3200
+ apply community 4294967294 additive
+ apply preferred-value 35
+#
+route-policy bgp-import-interlink-ospf-vpn1 permit node 80
+ if-match tag 4100
+ apply community 4294967294 additive
+ apply preferred-value 35
+#
+route-policy bgp-import-static-vpn1 permit node 60
+ description bgp import static
+ if-match ip-prefix default-route
+ apply community 4294967294 additive
+ apply preferred-value 35
+#
+route-policy bgp-import-static-vpn1 permit node 70
+ description bgp import static permit
+ apply community 4294967293 additive
+ apply preferred-value 60
+#
+route-policy interworking-import-innerlkospf-35003 deny node 10
+ if-match tag 3000
+#
+route-policy interworking-import-innerlkospf-35003 deny node 20
+ if-match tag 3200
+#
+route-policy interworking-import-innerlkospf-35003 deny node 30
+ if-match tag 4100
+#
+route-policy interworking-import-innerlkospf-35003 permit node 40
+#
+ snmp-agent local-engineid 800007DB03D44649C5C788
+ snmp-agent community read %^%#;hSkLEq*%;dBP-9S9IpRX|CF%8N~wW;M,#Uo}W!GuIWM/PcS}.yHv1'Gd`BJ!!)I2XU|!>D_eJ"y'(`+%^%# acl 2999
+ snmp-agent sys-info version v2c
+ snmp-agent trap enable
+ snmp-agent permit interface all
+ snmp-agent
+#
+ stelnet server enable
+ ssh server permit interface all
+#
+ http secure-server ssl-policy default_policy
+ http secure-server enable
+ http server permit interface GigabitEthernet0/0/0
+#
+ip ip-prefix interworking-deny-route--35003 index 1 permit 100.64.0.16 30 greater-equal 30 less-equal 32
+ip ip-prefix interworking-deny-route--35003 index 2 permit 100.64.0.32 29 greater-equal 29 less-equal 32
+ip ip-prefix interworking-deny-route--35003 index 3 permit 100.64.0.73 32 greater-equal 32 less-equal 32
+ip ip-prefix bgp-import-direct-deny-interlink-vpn1 index 1 permit 100.64.0.16 30 greater-equal 30 less-equal 32
+ip ip-prefix default-route index 1 permit 0.0.0.0 0
+ip ip-prefix bgp-import-direct-deny-loopback-vpn1 index 1 permit 100.64.0.32 29 greater-equal 29 less-equal 32
+#
+ip community-filter basic lan-route-community permit 4294967293
+ip community-filter basic central-legacy-route-community permit 4294967289
+ip community-filter basic lan-bgp-import-community permit 4294967288
+ip community-filter basic local-legacy-route-community permit 4294967294
+#
+ip extcommunity-list color basic match-self-color-list index 1 permit 5649
+#
+ip route-static 0.0.0.0 0.0.0.0 Tunnel0/0/600
+ip route-static 100.64.0.4 255.255.255.255 Tunnel0/0/600
+ip route-static 100.64.0.5 255.255.255.255 Tunnel0/0/600
+ip route-static 100.64.0.7 255.255.255.255 Tunnel0/0/600
+ip route-static 100.64.0.8 255.255.255.255 Tunnel0/0/600
+ip route-static 100.64.0.63 255.255.255.255 100.64.0.13
+ip route-static vpn-instance MNG_192.168.1.1 0.0.0.0 0.0.0.0 GigabitEthernet0/0/3 dhcp
+ip route-static vpn-instance underlay_internet 119.8.83.185 255.255.255.255 GigabitEthernet0/0/3 dhcp tag 4400 description agile-controller
+ip route-static vpn-instance underlay_internet 119.8.85.77 255.255.255.255 GigabitEthernet0/0/3 dhcp tag 4400
+ip route-static vpn-instance underlay_eletronorte 119.8.83.185 255.255.255.255 GigabitEthernet0/0/0 192.0.89.19 tag 4400 description agile-controller
+ip route-static vpn-instance underlay_eletronorte 119.8.85.77 255.255.255.255 192.0.89.19 tag 4400
+#
+fib regularly-refresh disable
+#
+ forward-session-syn enable
+ forward-session-syn local-ip 100.64.0.72 local-data-port 49156
+ forward-session-syn peer-ip 100.64.0.13 peer-data-port 49156
+ forward-session-syn peer-ip 100.64.0.17 peer-data-port 49156 dst-vpn vpn1
+#
+ agile controller host 119.8.83.185 port 10020 vpn-instance underlay_internet
+ agile controller host 119.8.83.185 port 10020 vpn-instance underlay_eletronorte
+#
+nqa ipfpm dcp
+ dcp id 100.64.0.72
+ color-flag loss-measure tos-bit 5 delay-measure flags-bit0
+#
+nqa ipfpm mcp
+ mcp id 100.64.0.72
+#
+user-interface con 0
+ authentication-mode aaa
+user-interface vty 0
+ authentication-mode aaa
+ user privilege level 15
+user-interface vty 1 4
+ authentication-mode aaa
+#
+smart-policy-route
+ redirect enhance enable
+ period 5
+ route flapping suppression 30
+ undo alarm link-report enable
+ undo alarm service-report enable
+ undo alarm sitelink-degrade enable
+ undo alarm sitelink-resume enable
+ service-map default-policy
+#
+wlan ac
+ traffic-profile name default
+ security-profile name default
+ security-profile name default-wds
+  security wpa2 psk pass-phrase %^%#D38F:}">h.<xA2#W\=*3bIWP=B&5_2UguL3v}JNF%^%# aes
+ ssid-profile name default
+ vap-profile name default
+ wds-profile name default
+ regulatory-domain-profile name default
+ air-scan-profile name default
+ rrm-profile name default
+ radio-2g-profile name default
+ radio-5g-profile name default
+ wids-spoof-profile name default
+ wids-profile name default
+ ap-system-profile name default
+ port-link-profile name default
+ wired-port-profile name default
+ ap-group name default
+#
+dot1x-access-profile name dot1x_access_profile
+#
+mac-access-profile name mac_access_profile
+#
+ ntp-service unicast-server 192.0.5.5 vpn-instance underlay_eletronorte
+ ntp-service unicast-server 192.0.5.5 vpn-instance underlay_castanhal
+ ntp-service unicast-server 192.0.9.10 vpn-instance underlay_internet
+ ntp-service unicast-server 192.0.9.74 vpn-instance underlay_internet
+ ntp-service unicast-server 192.8.0.69 vpn-instance underlay_castanhal
+ ntp-service unicast-server 192.8.0.69 vpn-instance underlay_eletronorte
+ ntp-service unicast-server 192.0.9.225 vpn-instance underlay_internet
+ ntp-service unicast-server 200.216.213.126 vpn-instance underlay_internet
+ ntp-service unicast-server 100.64.0.13
+ ntp-service unicast-server 192.168.147.2 vpn-instance underlay_castanhal
+ ntp-service unicast-server 192.168.147.2 vpn-instance underlay_eletronorte
+ ntp-service unicast-server 192.168.147.5 vpn-instance underlay_castanhal
+ ntp-service unicast-server 192.168.147.5 vpn-instance underlay_eletronorte
+ ntp-service unicast-server 192.16.8.18 vpn-instance underlay_eletronorte
+ ntp-service unicast-server 192.16.8.18 vpn-instance underlay_castanhal
+ ntp-service unicast-server 192.0.9.150 vpn-instance underlay_eletronorte
+ ntp-service unicast-server 192.0.9.150 vpn-instance underlay_castanhal
+#
+voice
+ #
+ enterprise default
+ #
+ diagnose
+#
+ops
+#
+autostart
+#
+secelog
+#
+ ms-channel
+
+ channel-ip-port local-interface GigabitEthernet0/0/6.10 local-ip 100.64.0.14 local-data-port 35101 peer-ip 100.64.0.13 peer-data-port 35101
+#
+return
+<PA-CAS-SDWAN02>
