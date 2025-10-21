@@ -1,19 +1,13 @@
 'use client';
 
-import React from 'react';
-
-interface ThemeProviderProps {
-  children: React.ReactNode;
-  attribute?: string;
-  defaultTheme?: string;
-  enableSystem?: boolean;
-  disableTransitionOnChange?: boolean;
-}
+import {
+  ThemeProvider as NextThemesProvider,
+  type ThemeProviderProps
+} from 'next-themes';
 
 export default function ThemeProvider({
   children,
   ...props
 }: ThemeProviderProps) {
-  // Simple wrapper - theme is always dark
-  return <>{children}</>;
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
 }

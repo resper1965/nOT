@@ -5,6 +5,7 @@ import { Breadcrumbs } from '../breadcrumbs';
 import { UserButton } from '@clerk/nextjs';
 import { Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '../ThemeToggle/theme-toggle';
 
 export default function Header() {
   return (
@@ -21,6 +22,9 @@ export default function Header() {
           <div className='w-2 h-2 rounded-full bg-green-500'></div>
           <span className="text-xs">Operacional</span>
         </div>
+        
+        {/* Theme Toggle */}
+        <ThemeToggle />
         
         {/* Notifications */}
         <Button variant="ghost" size="icon" className="relative h-9 w-9">

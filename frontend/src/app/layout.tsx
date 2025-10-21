@@ -5,6 +5,7 @@ import ThemeProvider from '@/components/layout/ThemeToggle/theme-provider';
 import { cn } from '@/lib/utils';
 import type { Metadata, Viewport } from 'next';
 import { cookies } from 'next/headers';
+import NextTopLoader from 'nextjs-toploader';
 import {
   ClerkProvider,
   SignInButton,
@@ -41,7 +42,7 @@ export default async function RootLayout({
 
   return (
     <ClerkProvider>
-      <html lang='pt-BR' className="dark" suppressHydrationWarning>
+      <html lang='pt-BR' suppressHydrationWarning>
         <head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -49,15 +50,16 @@ export default async function RootLayout({
         </head>
         <body
           className={cn(
-            'dark bg-background overflow-hidden overscroll-none font-sans antialiased',
+            'bg-background overflow-hidden overscroll-none font-sans antialiased',
             activeThemeValue ? `theme-${activeThemeValue}` : '',
             isScaled ? 'theme-scaled' : '',
             fontVariables
           )}
         >
+          <NextTopLoader color='#00ade8' showSpinner={false} />
           <ThemeProvider
             attribute='class'
-            defaultTheme='system'
+            defaultTheme='dark'
             enableSystem
             disableTransitionOnChange
           >
