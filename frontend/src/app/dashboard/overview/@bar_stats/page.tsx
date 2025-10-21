@@ -41,9 +41,9 @@ export default async function NetworkDistribution() {
     <Card>
       <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
-          <CardTitle>Distribuição de Assets TBE</CardTitle>
+          <CardTitle>Distribuição de Assets</CardTitle>
           <CardDescription>
-            {total.toLocaleString('pt-BR')} ativos reais importados • Escala proporcional
+            {total.toLocaleString('pt-BR')} ativos importados • Escala proporcional
           </CardDescription>
         </div>
       </CardHeader>
@@ -76,7 +76,7 @@ export default async function NetworkDistribution() {
           })}
         </div>
         <div className="mt-6 text-center text-xs text-brand-cyan font-medium">
-          ✓ Dados reais da rede TBE - {deviceTypes.length} tipos • Escala proporcional
+          ✓ Dados reais da rede - {deviceTypes.length} tipos • Escala proporcional
         </div>
       </CardContent>
     </Card>
