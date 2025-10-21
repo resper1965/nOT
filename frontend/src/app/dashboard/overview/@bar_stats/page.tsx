@@ -24,6 +24,7 @@ export default async function NetworkDistribution() {
   })) || [];
 
   const total = stats.total_assets || 0;
+  const maxCount = Math.max(...deviceTypes.map(d => d.count), 1);
 
   return (
     <Card>
@@ -31,7 +32,7 @@ export default async function NetworkDistribution() {
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
           <CardTitle>Distribuição de Assets TBE</CardTitle>
           <CardDescription>
-            {total.toLocaleString('pt-BR')} ativos da rede esperados
+            {total.toLocaleString('pt-BR')} ativos reais importados
           </CardDescription>
         </div>
       </CardHeader>
@@ -39,10 +40,10 @@ export default async function NetworkDistribution() {
         <div className="flex aspect-auto h-[280px] w-full items-end justify-around gap-2 pt-8">
           {deviceTypes.map((device) => (
             <div key={device.name} className="flex flex-col items-center gap-2 flex-1">
-              <div className="text-xs text-muted-foreground">{device.count}</div>
+              <div className="text-xs font-semibold text-foreground">{device.count.toLocaleString('pt-BR')}</div>
               <div 
                 className={`w-full ${device.color} rounded-t transition-all hover:opacity-80`}
-                style={{ height: `${(device.count / 249) * 100}%` }}
+                style={{ height: `${(device.count / maxCount) * 100}%` }}
               ></div>
               <div className="text-xs text-muted-foreground rotate-45 origin-top-left whitespace-nowrap">
                 {device.name}
@@ -50,8 +51,8 @@ export default async function NetworkDistribution() {
             </div>
           ))}
         </div>
-        <div className="mt-6 text-center text-xs text-muted-foreground">
-          Aguardando importação de dados para análise em tempo real
+        <div className="mt-6 text-center text-xs text-brand-cyan font-medium">
+          ✓ Dados reais da rede TBE - {deviceTypes.length} tipos de dispositivos
         </div>
       </CardContent>
     </Card>

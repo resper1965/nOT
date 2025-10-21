@@ -1,11 +1,17 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { getAssetsStats, getNetworkTopology } from '@/lib/api';
 
 export default async function NetworkSegmentation() {
+  const stats = await getAssetsStats().catch(() => ({ total_vlans: 0, by_type: [] }));
+  const topology = await getNetworkTopology().catch(() => ({ devices: {}, subnets: 0, connections: 0 }));
+  
+  const firewallCount = stats.by_type?.find((t: any) => t.type === 'Firewall')?.count || 0;
+  
   const segmentData = [
-    { label: 'Subnets mapeados', current: 0, target: 109 },
-    { label: 'VLANs classificadas', current: 0, target: 59 },
-    { label: 'Conexões analisadas', current: 0, target: 1345 },
-    { label: 'Firewalls implementados', current: 9, target: 15 },
+    { label: 'Subnets mapeados', current: topology.subnets || 0, target: 109 },
+    { label: 'VLANs classificadas', current: 0, target: stats.total_vlans || 59 },
+    { label: 'Conexões analisadas', current: 0, target: topology.connections || 1345 },
+    { label: 'Firewalls implementados', current: firewallCount, target: 15 },
   ];
 
   return (

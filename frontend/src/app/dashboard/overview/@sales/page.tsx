@@ -1,13 +1,21 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle } from 'lucide-react';
+import { getAssetsStats, getNetworkTopology } from '@/lib/api';
 
 export default async function CriticalGaps() {
+  const stats = await getAssetsStats().catch(() => ({ total_vlans: 0, by_type: [] }));
+  const topology = await getNetworkTopology().catch(() => ({ devices: {}, subnets: 0, connections: 0 }));
+  
+  const firewallCount = stats.by_type?.find((t: any) => t.type === 'Firewall')?.count || 0;
+  const subnetsTarget = topology.subnets || 109;
+  const connectionsTarget = topology.connections || 1345;
+  
   const gaps = [
     { id: 'GAP-SEG-001', description: 'Modelo Purdue não implementado', cvss: 9.1, status: 'critical' },
-    { id: 'GAP-SEG-002', description: '109 Subnets não mapeados', cvss: 8.5, status: 'high' },
-    { id: 'GAP-SEG-003', description: '59 VLANs não classificadas', cvss: 7.8, status: 'high' },
-    { id: 'GAP-SEG-004', description: '1.345 Conexões não analisadas', cvss: 8.2, status: 'high' },
-    { id: 'GAP-SEG-005', description: 'Firewalls insuficientes (9 vs 15+)', cvss: 9.0, status: 'critical' },
+    { id: 'GAP-SEG-002', description: `${subnetsTarget} Subnets não classificados`, cvss: 8.5, status: 'high' },
+    { id: 'GAP-SEG-003', description: `${stats.total_vlans || 59} VLANs não classificadas`, cvss: 7.8, status: 'high' },
+    { id: 'GAP-SEG-004', description: `${connectionsTarget.toLocaleString('pt-BR')} Conexões não analisadas`, cvss: 8.2, status: 'high' },
+    { id: 'GAP-SEG-005', description: `Firewalls insuficientes (${firewallCount} vs 15+)`, cvss: 9.0, status: 'critical' },
   ];
 
   return (
