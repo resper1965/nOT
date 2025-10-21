@@ -77,6 +77,8 @@ services:
       DATABASE_URL: postgresql://ness_admin:ness_secure_pass_2025@postgres:5432/ness_ot_grc
       NEXT_PUBLIC_API_URL: http://localhost:8000
       NODE_ENV: development
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_ZXhwZXJ0LXJhdHRsZXItNi5jbGVyay5hY2NvdW50cy5kZXYk
+      CLERK_SECRET_KEY: sk_test_dFg10rDlZ6okBRCFD15wCbWfftslMBg2MCv61shkg7
     ports:
       - "3002:3000"
     volumes:
