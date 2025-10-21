@@ -5,7 +5,7 @@ import { Breadcrumbs } from '../breadcrumbs';
 import { UserButton } from '@clerk/nextjs';
 import { Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '../ThemeToggle/theme-toggle';
+import { ThemeToggle } from '@/components/layout/ThemeToggle/theme-toggle';
 
 export default function Header() {
   return (
