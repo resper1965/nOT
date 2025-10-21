@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
 import * as React from 'react';
 
 // Dados do sistema ness. OT GRC
@@ -111,6 +112,7 @@ const navItems = [
 
 export default function AppSidebar() {
   const pathname = usePathname();
+  const { user } = useUser();
 
   return (
     <Sidebar collapsible='icon'>
@@ -211,23 +213,41 @@ export default function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* Footer com cliente */}
+      {/* Footer com info do usuário e cliente */}
       <SidebarFooter>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size='lg' asChild>
-              <div className='flex items-center gap-3 cursor-default'>
-                <div className='flex aspect-square size-8 items-center justify-center rounded-lg bg-purple-500/10 border border-purple-500/20'>
-                  <Building2 className='size-4 text-purple-500' />
+          {/* User Info */}
+          {user && (
+            <SidebarMenuItem className="border-t pt-3">
+              <div className="flex items-center gap-3 px-2 py-2">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#00ade8]/10 border border-[#00ade8]/20 text-sm font-semibold text-[#00ade8]">
+                  {user.firstName?.[0]?.toUpperCase() || user.emailAddresses[0]?.emailAddress[0]?.toUpperCase() || 'U'}
                 </div>
-                <div className='grid flex-1 text-left text-sm leading-tight'>
-                  <span className='truncate font-semibold'>Cliente TBE</span>
-                  <span className='truncate text-xs text-gray-400'>
-                    Setor Elétrico
-                  </span>
+                <div className="flex-1 overflow-hidden">
+                  <div className="text-sm font-medium truncate">
+                    {user.firstName || 'Usuário'}
+                  </div>
+                  <div className="text-xs text-muted-foreground truncate">
+                    {user.emailAddresses[0]?.emailAddress}
+                  </div>
                 </div>
               </div>
-            </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
+          
+          {/* Client Info */}
+          <SidebarMenuItem className="border-t pt-2">
+            <div className='flex items-center gap-3 px-2 py-2'>
+              <div className='flex aspect-square size-8 items-center justify-center rounded-lg bg-purple-500/10 border border-purple-500/20'>
+                <Building2 className='size-4 text-purple-500' />
+              </div>
+              <div className='grid flex-1 text-left text-sm leading-tight'>
+                <span className='truncate font-semibold text-xs'>Cliente TBE</span>
+                <span className='truncate text-[10px] text-muted-foreground'>
+                  Setor Elétrico
+                </span>
+              </div>
+            </div>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
@@ -235,4 +255,3 @@ export default function AppSidebar() {
     </Sidebar>
   );
 }
-
