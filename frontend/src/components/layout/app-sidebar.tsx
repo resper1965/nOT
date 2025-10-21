@@ -29,7 +29,8 @@ import {
   Database,
   Settings,
   ChevronRight,
-  Building2
+  Building2,
+  Settings2
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -107,6 +108,14 @@ const navItems = [
     title: 'Configurações',
     url: '/dashboard/settings',
     icon: Settings,
+  },
+  {
+    title: 'Administração',
+    url: '#',
+    icon: Settings2,
+    items: [
+      { title: 'pgAdmin (Banco de Dados)', url: '/admin/pgadmin' },
+    ]
   },
 ];
 
