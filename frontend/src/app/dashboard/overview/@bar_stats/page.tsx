@@ -15,8 +15,10 @@ export default async function NetworkDistribution() {
     'Network Device': 'bg-gray-500',
     'Ethernet': 'bg-yellow-500',
     'Hub': 'bg-pink-500',
+    'Modem': 'bg-teal-500',
   };
   
+  // Filtra e mapeia dados
   const deviceTypes = stats.by_type?.slice(0, 10).map((item: any) => ({
     name: item.type,
     count: item.count,
@@ -24,6 +26,16 @@ export default async function NetworkDistribution() {
   })) || [];
 
   const total = stats.total_assets || 0;
+  
+  // Usa escala logarítmica para melhor visualização
+  // (Network Device tem 13k, outros têm centenas)
+  const getLogHeight = (count: number, maxCount: number) => {
+    if (count === 0) return 0;
+    const logCount = Math.log10(count + 1);
+    const logMax = Math.log10(maxCount + 1);
+    return (logCount / logMax) * 100;
+  };
+  
   const maxCount = Math.max(...deviceTypes.map(d => d.count), 1);
 
   return (
@@ -32,27 +44,40 @@ export default async function NetworkDistribution() {
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
           <CardTitle>Distribuição de Assets TBE</CardTitle>
           <CardDescription>
-            {total.toLocaleString('pt-BR')} ativos reais importados
+            {total.toLocaleString('pt-BR')} ativos reais importados • Escala logarítmica
           </CardDescription>
         </div>
       </CardHeader>
       <CardContent className="px-2 sm:p-6">
-        <div className="flex aspect-auto h-[280px] w-full items-end justify-around gap-2 pt-8">
-          {deviceTypes.map((device) => (
-            <div key={device.name} className="flex flex-col items-center gap-2 flex-1">
-              <div className="text-xs font-semibold text-foreground">{device.count.toLocaleString('pt-BR')}</div>
-              <div 
-                className={`w-full ${device.color} rounded-t transition-all hover:opacity-80`}
-                style={{ height: `${(device.count / maxCount) * 100}%` }}
-              ></div>
-              <div className="text-xs text-muted-foreground rotate-45 origin-top-left whitespace-nowrap">
-                {device.name}
+        <div className="flex aspect-auto h-[280px] w-full items-end justify-around gap-1 pt-8">
+          {deviceTypes.map((device) => {
+            const height = getLogHeight(device.count, maxCount);
+            const percentage = ((device.count / total) * 100).toFixed(1);
+            
+            return (
+              <div key={device.name} className="flex flex-col items-center gap-2 flex-1 min-w-0">
+                <div className="text-xs font-bold text-foreground text-center">
+                  {device.count.toLocaleString('pt-BR')}
+                </div>
+                <div className="text-[10px] text-muted-foreground text-center">
+                  {percentage}%
+                </div>
+                <div 
+                  className={`w-full ${device.color} rounded-t transition-all hover:opacity-80 hover:scale-105`}
+                  style={{ 
+                    height: `${Math.max(height, 5)}%`,
+                    minHeight: '20px'
+                  }}
+                ></div>
+                <div className="text-[10px] text-muted-foreground text-center leading-tight">
+                  {device.name.replace('Network ', 'Net.')}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         <div className="mt-6 text-center text-xs text-brand-cyan font-medium">
-          ✓ Dados reais da rede TBE - {deviceTypes.length} tipos de dispositivos
+          ✓ Dados reais da rede TBE - {deviceTypes.length} tipos • Escala log₁₀
         </div>
       </CardContent>
     </Card>
