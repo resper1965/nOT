@@ -14,8 +14,8 @@ from psycopg2.extras import execute_batch
 
 # Configuração do banco
 DB_CONFIG = {
-    'host': 'localhost',
-    'port': 5434,
+    'host': 'postgres',  # Nome do serviço no Docker
+    'port': 5432,        # Porta interna do container
     'database': 'ness_ot_grc',
     'user': 'ness_admin',
     'password': 'ness_secure_pass_2025'
@@ -101,20 +101,36 @@ def create_network_zones_table(conn):
     """Cria tabela para armazenar zonas de rede (se não existir)"""
     cursor = conn.cursor()
     
+    # Cria tabela se não existir
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS topology.network_zones (
             id SERIAL PRIMARY KEY,
             zone_name VARCHAR(255) NOT NULL UNIQUE,
-            purdue_level VARCHAR(100),
             description TEXT,
             criticality VARCHAR(20) CHECK (criticality IN ('critical', 'high', 'medium', 'low')),
             security_level INTEGER,
-            allowed_protocols TEXT[],
             firewall_required BOOLEAN DEFAULT true,
             monitoring_level VARCHAR(50),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
+    """)
+    
+    # Adiciona colunas se não existirem
+    cursor.execute("""
+        DO $$ 
+        BEGIN
+            BEGIN
+                ALTER TABLE topology.network_zones ADD COLUMN purdue_level VARCHAR(100);
+            EXCEPTION
+                WHEN duplicate_column THEN NULL;
+            END;
+            BEGIN
+                ALTER TABLE topology.network_zones ADD COLUMN allowed_protocols TEXT[];
+            EXCEPTION
+                WHEN duplicate_column THEN NULL;
+            END;
+        END $$;
     """)
     
     cursor.execute("""
@@ -181,11 +197,6 @@ def classify_vlans(conn, zone_ids):
                     security_level = %s,
                     criticality = %s,
                     description = COALESCE(description, %s),
-                    name = CASE 
-                        WHEN name = 'VLAN ' || vlan_id::text 
-                        THEN %s || ' - VLAN ' || vlan_id::text
-                        ELSE name
-                    END,
                     updated_at = CURRENT_TIMESTAMP
                 WHERE vlan_id = %s
             """, (
@@ -194,7 +205,6 @@ def classify_vlans(conn, zone_ids):
                 zone_data['security_level'],
                 zone_data['criticality'],
                 zone_data['description'],
-                zone_name.split(' - ')[-1] if ' - ' in zone_name else zone_name,
                 vlan_id
             ))
             

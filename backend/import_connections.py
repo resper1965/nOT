@@ -18,14 +18,14 @@ from datetime import datetime
 
 # Configuração do banco
 DB_CONFIG = {
-    'host': 'localhost',
-    'port': 5434,
+    'host': 'postgres',  # Nome do serviço no Docker
+    'port': 5432,        # Porta interna do container
     'database': 'ness_ot_grc',
     'user': 'ness_admin',
     'password': 'ness_secure_pass_2025'
 }
 
-CSV_FILE = '/home/resper/TBE-OT/assets/conexoes_origem_destino.csv'
+CSV_FILE = '/app/assets/conexoes_origem_destino.csv'
 
 def connect_db():
     """Conecta ao banco de dados"""

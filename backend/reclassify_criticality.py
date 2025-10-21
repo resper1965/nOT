@@ -15,8 +15,8 @@ import psycopg2
 
 # Configuração do banco
 DB_CONFIG = {
-    'host': 'localhost',
-    'port': 5434,
+    'host': 'postgres',  # Nome do serviço no Docker
+    'port': 5432,        # Porta interna do container
     'database': 'ness_ot_grc',
     'user': 'ness_admin',
     'password': 'ness_secure_pass_2025'
