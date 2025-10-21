@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: ness-ot-grc-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ness_ot_grc
+      POSTGRES_USER: ness_admin
+      POSTGRES_PASSWORD: ness_secure_pass_2025
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    networks:
+      - ness-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ness_admin -d ness_ot_grc"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # pgAdmin - Database Management UI
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: ness-ot-grc-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@ness.local
+      PGADMIN_DEFAULT_PASSWORD: ness_admin_2025
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - ness-network
+    depends_on:
+      - postgres
+
+  # Backend API (Python FastAPI)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ness-ot-grc-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://ness_admin:ness_secure_pass_2025@postgres:5432/ness_ot_grc
+      PYTHONUNBUFFERED: 1
+      API_PORT: 8000
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./backend:/app
+      - ./assets:/app/assets
+      - ./docs:/app/docs
+    networks:
+      - ness-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Frontend (Next.js)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: ness-ot-grc-frontend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://ness_admin:ness_secure_pass_2025@postgres:5432/ness_ot_grc
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      NODE_ENV: development
+    ports:
+      - "3002:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - ness-network
+    depends_on:
+      - backend
+    command: npm run dev
+
+  # Redis (para cache e sessions)
+  redis:
+    image: redis:7-alpine
+    container_name: ness-ot-grc-redis
+    restart: unless-stopped
+    ports:
+      - "6381:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ness-network
+    command: redis-server --appendonly yes
+
+volumes:
+  postgres_data:
+    name: ness_ot_grc_postgres_data
+  pgadmin_data:
+    name: ness_ot_grc_pgadmin_data
+  redis_data:
+    name: ness_ot_grc_redis_data
+
+networks:
+  ness-network:
+    name: ness_ot_grc_network
+    driver: bridge

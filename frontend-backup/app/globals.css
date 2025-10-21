@@ -1,0 +1,145 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-montserrat: 'Montserrat', sans-serif;
+    --font-jetbrains-mono: 'JetBrains Mono', monospace;
+    
+    /* ness. design system - dark-first */
+    --background: 222 15% 5%;        /* #0B0C0E */
+    --foreground: 223 33% 95%;       /* #EEF1F6 */
+    
+    --card: 222 13% 8%;              /* #111317 */
+    --card-foreground: 223 33% 95%;
+    
+    --popover: 222 15% 10%;          /* #151820 */
+    --popover-foreground: 223 33% 95%;
+    
+    --primary: 195 100% 46%;         /* #00ADE8 - ness. cyan */
+    --primary-foreground: 222 15% 5%;
+    
+    --secondary: 222 13% 15%;        /* #1B2030 */
+    --secondary-foreground: 223 33% 95%;
+    
+    --muted: 222 13% 15%;
+    --muted-foreground: 223 15% 65%;
+    
+    --accent: 195 100% 46%;          /* ness. cyan */
+    --accent-foreground: 222 15% 5%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 223 33% 95%;
+    
+    --border: 222 13% 15%;
+    --input: 222 13% 15%;
+    --ring: 195 100% 46%;
+    
+    --radius: 0.5rem;
+    
+    --chart-1: 195 100% 46%;  /* ness. cyan */
+    --chart-2: 142 76% 36%;
+    --chart-3: 262 83% 58%;
+    --chart-4: 47 96% 53%;
+    --chart-5: 12 76% 61%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-medium tracking-tight;
+  }
+  
+  /* ness. scrollbar styling */
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-900;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-700 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-600;
+  }
+}
+
+@layer components {
+  /* ness. wordmark component */
+  .ness-wordmark {
+    @apply font-medium;
+  }
+  
+  .ness-wordmark-dot {
+    @apply text-brand-cyan;
+  }
+  
+  /* Elevated surfaces */
+  .surface-1 {
+    @apply bg-gray-900;
+  }
+  
+  .surface-2 {
+    @apply bg-gray-850;
+  }
+  
+  .surface-3 {
+    @apply bg-gray-800;
+  }
+  
+  /* ness. transitions */
+  .transition-ness {
+    @apply transition-all duration-ness-normal ease-ness;
+  }
+  
+  .transition-ness-fast {
+    @apply transition-all duration-ness-fast ease-ness;
+  }
+  
+  .transition-ness-slow {
+    @apply transition-all duration-ness-slow ease-ness;
+  }
+  
+  /* Focus states - WCAG AA compliant */
+  .focus-ness {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+  
+  /* Icon styling - monocolor, stroke 1.5 */
+  .icon-ness {
+    @apply stroke-[1.5] text-current;
+  }
+}
+
+@layer utilities {
+  /* Text utilities */
+  .text-gradient-ness {
+    @apply bg-gradient-to-r from-brand-cyan to-brand-cyan-light bg-clip-text text-transparent;
+  }
+  
+  /* Glow effect */
+  .glow-ness {
+    box-shadow: 0 0 20px rgba(0, 173, 232, 0.3);
+  }
+  
+  /* Card hover effect */
+  .card-hover-ness {
+    @apply transition-ness hover:bg-gray-850 hover:border-gray-700;
+  }
+}

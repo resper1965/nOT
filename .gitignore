@@ -1,0 +1,100 @@
+# ness. OT GRC - .gitignore
+
+# Assets (dados sensíveis da rede)
+assets/*.json
+assets/*.csv
+assets/*.xlsx
+assets/*.xls
+assets/*.zip
+assets/*.xml
+assets/network-data/
+assets/configs/
+assets/scans/
+assets/existing-docs/
+
+# Manter apenas o README
+!assets/README.md
+
+# Environment variables
+.env.local
+.env.*.local
+.env.production
+.env.development
+backend/.env
+frontend/.env.local
+
+# Dependencies
+node_modules/
+frontend/node_modules/
+backend/__pycache__/
+backend/*.pyc
+backend/.pytest_cache/
+backend/venv/
+backend/.venv/
+
+# Build outputs
+frontend/.next/
+frontend/out/
+frontend/build/
+backend/dist/
+backend/build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+backend/logs/
+frontend/logs/
+
+# Docker volumes (mantém apenas no docker)
+postgres_data/
+pgadmin_data/
+redis_data/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Documentos preenchidos (após aprovação, backup separado)
+docs/policies/*-v*.md
+docs/procedures/*-v*.md
+docs/incidents/*-2025-*.md
+docs/incidents/*-2026-*.md
+
+# Keep templates
+!docs/**/*-TEMPLATE.md
+
+# Database backups locais
+*.sql.bak
+backup*.sql
+
+# Certificates and keys
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Compliance documents com dados sensíveis
+docs/evidence/EVID-001-inventario-ativos-*.md
+docs/evidence/EVID-002-varredura-*.md
+docs/evidence/EVID-003-logs-*.md
+
+# Incidentes reais (manter fora do git)
+docs/incidents/INC-001-incident-*.md
+docs/incidents/INC-002-notificacao-*.md
+
+# Manter estrutura de pastas vazias
+!**/.gitkeep

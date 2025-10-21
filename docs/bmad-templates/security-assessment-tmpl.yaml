@@ -1,0 +1,239 @@
+template:
+  id: security-assessment
+  name: Security Assessment Report Template
+  version: 1.0
+  description: Comprehensive security assessment report for network infrastructure
+  
+sections:
+  - id: exec_summary
+    title: Executive Summary
+    required: true
+    prompts:
+      - What is the overall security posture?
+      - What are the top 3-5 critical findings?
+      - What is the recommended remediation timeline?
+      - What is the estimated risk level?
+    content_guidance: |
+      Provide a high-level overview suitable for executive audience:
+      - Overall risk level (Critical/High/Medium/Low)
+      - Number of findings by severity
+      - Top security priorities
+      - Business impact summary
+      - High-level remediation roadmap
+
+  - id: assessment_scope
+    title: Assessment Scope and Methodology
+    required: true
+    prompts:
+      - What was assessed?
+      - What assessment methods were used?
+      - What was the assessment timeline?
+      - What were the limitations?
+    content_guidance: |
+      Document:
+      - Network segments assessed
+      - Asset types in scope
+      - Assessment activities performed
+      - Tools and techniques used
+      - Date range of assessment
+      - Exclusions and limitations
+
+  - id: network_overview
+    title: Network Infrastructure Overview
+    required: true
+    prompts:
+      - What is the network architecture?
+      - What are the security zones?
+      - What are the critical assets?
+    content_guidance: |
+      Provide overview of:
+      - Network topology and segmentation
+      - Trust zones and boundaries
+      - Critical systems and assets
+      - Internet-facing systems
+      - Security devices (firewalls, IDS/IPS)
+
+  - id: findings_critical
+    title: Critical Security Findings
+    required: true
+    repeating: per_finding
+    prompts:
+      - What critical vulnerabilities were identified?
+      - What is the exploit scenario?
+      - What is the business impact?
+    content_guidance: |
+      For each critical finding:
+      - Finding ID and title
+      - CVSS score and severity justification
+      - Detailed description
+      - Affected systems
+      - Exploit scenario and likelihood
+      - Business impact
+      - Technical details
+      - Recommended remediation
+      - Priority and timeline
+
+  - id: findings_high
+    title: High-Risk Security Findings
+    required: true
+    repeating: per_finding
+    content_guidance: |
+      Same structure as critical findings
+
+  - id: findings_medium
+    title: Medium-Risk Security Findings
+    required: false
+    repeating: per_finding
+    content_guidance: |
+      Summarized format acceptable
+
+  - id: threat_landscape
+    title: Threat Landscape Analysis
+    required: true
+    prompts:
+      - What threat actors are relevant?
+      - What are the likely attack scenarios?
+      - What is the attack surface?
+    content_guidance: |
+      Analyze:
+      - Relevant threat actors (ransomware, APT, insider, etc.)
+      - Attack vectors and surface
+      - Likely attack scenarios
+      - Threat intelligence insights
+      - Industry-specific threats
+
+  - id: data_protection
+    title: Data Protection Assessment
+    required: true
+    prompts:
+      - Where is sensitive data stored?
+      - How is data protected?
+      - What are the data leakage risks?
+    content_guidance: |
+      Document:
+      - Sensitive data inventory
+      - Data classification
+      - Encryption status
+      - Data leakage risks
+      - DLP controls assessment
+      - Backup security
+
+  - id: access_control
+    title: Access Control and Identity Management
+    required: true
+    prompts:
+      - How are users authenticated?
+      - How is access authorized?
+      - Are privileged accounts managed properly?
+    content_guidance: |
+      Evaluate:
+      - Authentication mechanisms
+      - Authorization models
+      - Privileged access management
+      - Account lifecycle management
+      - Password policies
+      - MFA implementation
+
+  - id: compliance_status
+    title: Regulatory Compliance Status
+    required: if_applicable
+    prompts:
+      - What frameworks apply?
+      - What is the compliance status?
+      - What are the compliance gaps?
+    content_guidance: |
+      Assess compliance with:
+      - LGPD
+      - IEC 62443
+      - NIST CSF
+      - ISO 27001
+      - CIS Controls
+      Document compliance percentage and gaps
+
+  - id: risk_matrix
+    title: Risk Prioritization Matrix
+    required: true
+    content_guidance: |
+      Provide risk matrix showing:
+      - Risk scores (Likelihood x Impact)
+      - Risk heat map
+      - Prioritized remediation order
+      - Quick wins vs. long-term projects
+
+  - id: remediation_plan
+    title: Remediation Roadmap
+    required: true
+    prompts:
+      - What are the remediation priorities?
+      - What is the implementation timeline?
+      - What resources are required?
+    content_guidance: |
+      Provide actionable roadmap:
+      - Phase 1: Critical (0-30 days)
+      - Phase 2: High (30-90 days)
+      - Phase 3: Medium (90-180 days)
+      - Phase 4: Low (180+ days)
+      For each phase:
+        - Specific remediation actions
+        - Effort estimates
+        - Resource requirements
+        - Success criteria
+
+  - id: metrics_kpis
+    title: Security Metrics and KPIs
+    required: true
+    content_guidance: |
+      Define metrics for tracking:
+      - Vulnerability remediation rate
+      - Mean time to remediate
+      - Security posture score
+      - Compliance percentage
+      - Incident count
+      - Patching cadence
+
+  - id: recommendations
+    title: Strategic Recommendations
+    required: true
+    prompts:
+      - What strategic security improvements are recommended?
+      - What security program enhancements are needed?
+    content_guidance: |
+      Provide recommendations for:
+      - Security program improvements
+      - Technology investments
+      - Process enhancements
+      - Training and awareness
+      - Continuous monitoring
+      - Governance and oversight
+
+  - id: appendices
+    title: Appendices
+    required: false
+    content_guidance: |
+      Include supporting materials:
+      - Detailed vulnerability listings
+      - Scan results
+      - Configuration samples
+      - Tool outputs
+      - Reference materials
+
+output_format:
+  document_type: markdown
+  include_toc: true
+  include_executive_summary: true
+  include_glossary: true
+  
+audience:
+  primary:
+    - CISO / Security Leadership
+    - IT Leadership
+    - Executive Management
+  secondary:
+    - IT Security Team
+    - Network Team
+    - Compliance Team
+
+metadata:
+  classification: Confidential
+  distribution: Limited
+  retention: 3 years

@@ -1,0 +1,227 @@
+template:
+  id: threat-model
+  name: Threat Model Template
+  version: 1.0
+  description: Threat modeling documentation for security analysis
+  framework: STRIDE / MITRE ATT&CK
+  
+sections:
+  - id: system_overview
+    title: System Overview
+    required: true
+    content_guidance: |
+      - System description and purpose
+      - Architecture overview
+      - Trust boundaries
+      - Data flows
+      - External dependencies
+
+  - id: assets_crown_jewels
+    title: Assets and Crown Jewels
+    required: true
+    content_guidance: |
+      Identify and classify:
+      - Critical business assets
+      - Sensitive data
+      - Critical infrastructure
+      - Key systems and services
+      - Asset valuation
+
+  - id: threat_actors
+    title: Threat Actor Profiles
+    required: true
+    repeating: per_actor
+    fields:
+      - actor_name: Name/type of threat actor
+      - motivation: What they want
+      - capability: Technical sophistication
+      - resources: Available resources
+      - typical_targets: What they target
+      - attack_methods: How they operate
+    actors_to_consider:
+      - Ransomware groups
+      - Nation-state APT
+      - Cybercriminals
+      - Hacktivists
+      - Malicious insiders
+      - Negligent insiders
+      - Supply chain attackers
+      - Competitors
+
+  - id: attack_surface
+    title: Attack Surface Analysis
+    required: true
+    content_guidance: |
+      Map all entry points:
+      - External-facing systems
+      - Remote access points
+      - Third-party connections
+      - Wireless networks
+      - Physical access points
+      - Social engineering vectors
+
+  - id: stride_analysis
+    title: STRIDE Threat Analysis
+    required: true
+    threat_categories:
+      spoofing:
+        description: Impersonating users or systems
+        examples:
+          - Credential theft
+          - Session hijacking
+          - Man-in-the-middle attacks
+      tampering:
+        description: Modifying data or code
+        examples:
+          - Data manipulation
+          - Configuration changes
+          - Code injection
+      repudiation:
+        description: Denying actions
+        examples:
+          - Insufficient logging
+          - Log tampering
+          - Non-repudiation failures
+      information_disclosure:
+        description: Exposing confidential information
+        examples:
+          - Data breaches
+          - Credential exposure
+          - Information leakage
+      denial_of_service:
+        description: Disrupting availability
+        examples:
+          - DDoS attacks
+          - Resource exhaustion
+          - Ransomware
+      elevation_of_privilege:
+        description: Gaining unauthorized access
+        examples:
+          - Privilege escalation
+          - Credential compromise
+          - Lateral movement
+
+  - id: mitre_attack_mapping
+    title: MITRE ATT&CK Mapping
+    required: true
+    content_guidance: |
+      Map likely attack techniques:
+      
+      **Initial Access**:
+      - Phishing
+      - Exploit public-facing application
+      - Valid accounts
+      
+      **Execution**:
+      - PowerShell
+      - Command and scripting
+      
+      **Persistence**:
+      - Account manipulation
+      - Scheduled tasks
+      
+      **Privilege Escalation**:
+      - Exploitation for privilege escalation
+      - Valid accounts
+      
+      **Defense Evasion**:
+      - Obfuscated files or information
+      - Indicator removal
+      
+      **Credential Access**:
+      - Credential dumping
+      - Brute force
+      
+      **Discovery**:
+      - Network service scanning
+      - System information discovery
+      
+      **Lateral Movement**:
+      - Remote services
+      - Pass the hash
+      
+      **Collection**:
+      - Data from local system
+      - Data from network shares
+      
+      **Exfiltration**:
+      - Exfiltration over C2
+      - Exfiltration to cloud storage
+      
+      **Impact**:
+      - Data encrypted for impact
+      - Service stop
+
+  - id: threat_scenarios
+    title: Detailed Threat Scenarios
+    required: true
+    repeating: per_scenario
+    fields:
+      - scenario_id: Unique identifier
+      - threat_name: Descriptive name
+      - threat_actor: Who would do this
+      - attack_path: Step-by-step attack sequence
+      - preconditions: What enables this attack
+      - impact: Consequences if successful
+      - likelihood: Probability (High/Medium/Low)
+      - risk_score: Impact x Likelihood
+      - existing_controls: Current mitigations
+      - residual_risk: Risk after existing controls
+      - recommended_controls: Additional mitigations
+
+  - id: data_flow_threats
+    title: Data Flow Diagram Threats
+    required: true
+    content_guidance: |
+      For each data flow crossing trust boundary:
+      - Source and destination
+      - Data classification
+      - Protection mechanisms
+      - Threats to confidentiality
+      - Threats to integrity
+      - Threats to availability
+
+  - id: risk_rating
+    title: Threat Risk Rating
+    required: true
+    content_guidance: |
+      Risk matrix showing:
+      | Threat | Likelihood | Impact | Risk | Priority |
+      |--------|-----------|---------|------|----------|
+      
+      Risk calculation: Risk = Likelihood x Impact
+      - Critical: 16-25
+      - High: 11-15
+      - Medium: 6-10
+      - Low: 1-5
+
+  - id: security_controls
+    title: Security Control Recommendations
+    required: true
+    content_guidance: |
+      For each threat, recommend controls:
+      - Preventive controls
+      - Detective controls
+      - Corrective controls
+      - Deterrent controls
+      
+      Organized by:
+      - Technical controls
+      - Administrative controls
+      - Physical controls
+
+  - id: monitoring_detection
+    title: Threat Detection and Monitoring
+    required: true
+    content_guidance: |
+      For each threat, define:
+      - Detection mechanisms
+      - Monitoring requirements
+      - Alert thresholds
+      - Response procedures
+      - Forensic artifacts
+
+output_format:
+  document_type: markdown
+  include_diagrams: true
+  include_risk_matrix: true
