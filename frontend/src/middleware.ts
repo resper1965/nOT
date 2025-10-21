@@ -1,8 +1,9 @@
 // ness. OT GRC - Clerk Authentication Middleware
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-// Define rotas públicas (apenas sign-in e sign-up)
+// Define rotas públicas (landing page + autenticação)
 const isPublicRoute = createRouteMatcher([
+  '/',
   '/sign-in(.*)',
   '/sign-up(.*)',
 ]);
