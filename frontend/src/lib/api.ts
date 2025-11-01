@@ -1,9 +1,18 @@
 // API client for ness. OT GRC backend
+// Supports both Supabase and FastAPI backend
 
-// Use different URL for server-side vs client-side
-const getApiUrl = () => {
-  // Server-side (dentro do Docker)
+// Get API URL from environment variables
+const getApiUrl = (): string => {
+  // Use environment variable if available
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  
+  if (apiUrl) {
+    return apiUrl;
+  }
+  
+  // Fallback: Use different URL for server-side vs client-side (Docker/local)
   if (typeof window === 'undefined') {
+    // Server-side (dentro do Docker)
     return 'http://backend:8000';
   }
   // Client-side (browser)
