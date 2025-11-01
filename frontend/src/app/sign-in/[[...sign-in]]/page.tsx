@@ -26,13 +26,35 @@ export default function SignInPage() {
       });
 
       if (signInError) {
-        setError(signInError.message);
+        // Melhorar mensagens de erro específicas
+        let errorMessage = signInError.message;
+        
+        if (signInError.message.includes('Email not confirmed')) {
+          errorMessage = 'Email não confirmado. Verifique sua caixa de entrada para confirmar seu email.';
+        } else if (signInError.message.includes('Invalid login credentials')) {
+          errorMessage = 'Email ou senha incorretos. Verifique suas credenciais.';
+        } else if (signInError.message.includes('User not found')) {
+          errorMessage = 'Usuário não encontrado. Verifique se o email está correto.';
+        }
+        
+        setError(errorMessage);
         return;
       }
 
-      if (data.user) {
-        router.push('/dashboard');
-        router.refresh();
+      if (data.user && data.session) {
+        // Sessão criada com sucesso
+        // Aguardar um pouco para garantir que cookies sejam salvos
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        // Forçar reload completo da página para garantir que middleware veja a sessão
+        // Usar window.location.href em vez de router.push para garantir que cookies sejam lidos
+        window.location.href = '/dashboard';
+      } else if (data.user && !data.session) {
+        // Usuário existe mas sessão não foi criada (pode precisar confirmar email)
+        setError('Por favor, confirme seu email antes de fazer login. Verifique sua caixa de entrada.');
+      } else {
+        // Caso inesperado
+        setError('Erro ao criar sessão. Tente novamente.');
       }
     } catch (err: any) {
       setError(err.message || 'Erro ao fazer login');
