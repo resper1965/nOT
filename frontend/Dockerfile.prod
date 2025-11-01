@@ -9,8 +9,8 @@ WORKDIR /app
 RUN npm install -g pnpm@10.18.3
 
 # Install dependencies
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+COPY package.json ./
+RUN pnpm install
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -21,7 +21,13 @@ COPY . .
 # Install pnpm
 RUN npm install -g pnpm@10.18.3
 
-# Disable telemetry
+# Build arguments for environment variables
+ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+ARG NEXT_PUBLIC_API_URL
+
+# Set environment variables for build
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Build

@@ -70,26 +70,23 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.prod
+      args:
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_ZXhwZXJ0LXJhdHRsZXItNi5jbGVyay5hY2NvdW50cy5kZXYk
+        NEXT_PUBLIC_API_URL: http://localhost:8001
     container_name: ness-ot-grc-frontend
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql://ness_admin:ness_secure_pass_2025@postgres:5432/ness_ot_grc
-      NEXT_PUBLIC_API_URL: http://localhost:8000
-      NODE_ENV: development
-      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_ZXhwZXJ0LXJhdHRsZXItNi5jbGVyay5hY2NvdW50cy5kZXYk
+      NODE_ENV: production
       CLERK_SECRET_KEY: sk_test_dFg10rDlZ6okBRCFD15wCbWfftslMBg2MCv61shkg7
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_ZXhwZXJ0LXJhdHRsZXItNi5jbGVyay5hY2NvdW50cy5kZXYk
+      NEXT_PUBLIC_API_URL: http://localhost:8001
     ports:
       - "3002:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
     networks:
       - ness-network
     depends_on:
       - backend
-    command: npm run dev
 
   # Redis (para cache e sessions)
   redis:

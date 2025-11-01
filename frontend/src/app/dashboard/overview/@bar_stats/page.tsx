@@ -28,7 +28,7 @@ export default async function NetworkDistribution() {
   const total = stats.total_assets || 0;
   
   // Usa escala logarítmica para melhor visualização de dados com grande variação
-  const maxCount = Math.max(...deviceTypes.map(d => d.count), 1);
+  const maxCount = Math.max(...deviceTypes.map((d: any) => d.count), 1);
   
   const getLogarithmicHeight = (count: number, maxCount: number) => {
     if (count === 0) return 0;
@@ -36,8 +36,8 @@ export default async function NetworkDistribution() {
     // Isso comprime valores grandes e expande valores pequenos
     const logValue = Math.log10(count + 1);
     const logMax = Math.log10(maxCount + 1);
-    const normalized = (logValue / logMax) * 92; // 92% do espaço
-    return Math.max(normalized, 8); // Mínimo 8% para visibilidade
+    const normalized = (logValue / logMax) * 88; // 88% do espaço
+    return Math.max(normalized, 12); // Mínimo 12% para visibilidade
   };
 
   return (
@@ -46,13 +46,13 @@ export default async function NetworkDistribution() {
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
           <CardTitle>Distribuição de Assets</CardTitle>
           <CardDescription>
-            {total.toLocaleString('pt-BR')} ativos importados • Escala proporcional
+            {total.toLocaleString('pt-BR')} ativos importados • Escala logarítmica
           </CardDescription>
         </div>
       </CardHeader>
       <CardContent className="px-2 sm:p-6">
         <div className="flex aspect-auto h-[280px] w-full items-end justify-around gap-1 pt-8">
-          {deviceTypes.map((device) => {
+          {deviceTypes.map((device: any) => {
             const height = getLogarithmicHeight(device.count, maxCount);
             const percentage = ((device.count / total) * 100).toFixed(1);
             

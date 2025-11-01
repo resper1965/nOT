@@ -6,14 +6,7 @@ import { cn } from '@/lib/utils';
 import type { Metadata, Viewport } from 'next';
 import { cookies } from 'next/headers';
 import NextTopLoader from 'nextjs-toploader';
-import {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton
-} from '@clerk/nextjs';
+import { ClerkProvider } from '@clerk/nextjs';
 import './globals.css';
 import './theme.css';
 
@@ -50,7 +43,7 @@ export default async function RootLayout({
         </head>
         <body
           className={cn(
-            'bg-background overflow-hidden overscroll-none font-sans antialiased',
+            'bg-background font-sans antialiased',
             activeThemeValue ? `theme-${activeThemeValue}` : '',
             isScaled ? 'theme-scaled' : '',
             fontVariables

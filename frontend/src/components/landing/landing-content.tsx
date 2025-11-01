@@ -1,6 +1,5 @@
 'use client';
 
-import { SignInButton, SignUpButton } from '@clerk/nextjs';
 import { Shield, Network, FileText, TrendingUp, CheckCircle, Lock } from 'lucide-react';
 import Link from 'next/link';
 

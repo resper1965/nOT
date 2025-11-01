@@ -170,7 +170,7 @@ export default function AppSidebar() {
                         tooltip={item.title}
                         isActive={pathname === item.url}
                       >
-                        {item.icon && <Icon className='size-4' />}
+                        {item.icon && <item.icon className='size-4' />}
                         <span>{item.title}</span>
                         {item.badge && (
                           <span className={`ml-auto text-xs ${item.badgeColor}`}>

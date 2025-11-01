@@ -1,8 +1,10 @@
 import type { NextConfig } from 'next';
-// import { withSentryConfig } from '@sentry/nextjs'; // Disabled for performance
 
-// ness. OT GRC - Optimized configuration
+// ness. OT GRC - Production configuration
 const nextConfig: NextConfig = {
+  // Output standalone for Docker production
+  output: 'standalone',
+  
   images: {
     remotePatterns: [
       {
@@ -18,6 +20,7 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
   },
+  
 };
 
 export default nextConfig;
