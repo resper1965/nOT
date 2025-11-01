@@ -75,7 +75,22 @@ export async function getServerUser() {
   const supabase = await getServerSupabaseClient();
   const {
     data: { user },
+    error: authError,
   } = await supabase.auth.getUser();
+  
+  // Debug: Log para entender o que está acontecendo
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔍 [getServerUser DEBUG]', {
+      hasUser: !!user,
+      userId: user?.id,
+      userEmail: user?.email,
+      authError: authError ? {
+        message: authError.message,
+        status: authError.status,
+      } : null,
+    });
+  }
+  
   return user;
 }
 

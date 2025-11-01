@@ -19,10 +19,28 @@ export default function SignInPage() {
     setLoading(true);
     setError(null);
 
+    // Debug: Início do login
+    console.log('🔍 [DEBUG] Iniciando login...', { email });
+
     try {
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
+      });
+
+      // Debug: Resultado do signInWithPassword
+      console.log('🔍 [DEBUG] Resultado signInWithPassword:', {
+        hasUser: !!data?.user,
+        hasSession: !!data?.session,
+        userId: data?.user?.id,
+        userEmail: data?.user?.email,
+        emailConfirmed: !!data?.user?.email_confirmed_at,
+        sessionAccessToken: data?.session?.access_token ? 'present' : 'missing',
+        error: signInError ? {
+          message: signInError.message,
+          status: signInError.status,
+          name: signInError.name,
+        } : null,
       });
 
       if (signInError) {
@@ -37,29 +55,69 @@ export default function SignInPage() {
           errorMessage = 'Usuário não encontrado. Verifique se o email está correto.';
         }
         
+        console.error('❌ [DEBUG] Erro no login:', errorMessage);
         setError(errorMessage);
         return;
       }
 
       if (data.user && data.session) {
-        // Sessão criada com sucesso
+        console.log('✅ [DEBUG] Login bem-sucedido:', {
+          userId: data.user.id,
+          email: data.user.email,
+          sessionToken: data.session.access_token.substring(0, 20) + '...',
+          sessionExpiresAt: data.session.expires_at,
+        });
+
+        // Verificar cookies antes de redirecionar
+        console.log('🔍 [DEBUG] Cookies antes de redirecionar:', {
+          sbAccessToken: document.cookie.includes('sb-') ? 'present' : 'missing',
+          allCookies: document.cookie.split(';').map(c => c.trim().split('=')[0]),
+        });
+
         // Aguardar um pouco para garantir que cookies sejam salvos
+        console.log('⏳ [DEBUG] Aguardando cookies serem salvos...');
         await new Promise(resolve => setTimeout(resolve, 200));
+
+        // Verificar cookies após aguardar
+        console.log('🔍 [DEBUG] Cookies após aguardar:', {
+          sbAccessToken: document.cookie.includes('sb-') ? 'present' : 'missing',
+          supabaseCookies: document.cookie.split(';').filter(c => c.includes('sb-')),
+        });
+
+        // Verificar sessão atual do Supabase
+        const { data: currentUser } = await supabase.auth.getUser();
+        console.log('🔍 [DEBUG] Usuário atual após login:', {
+          hasUser: !!currentUser?.user,
+          userId: currentUser?.user?.id,
+        });
+
+        console.log('🚀 [DEBUG] Redirecionando para /dashboard...');
         
         // Forçar reload completo da página para garantir que middleware veja a sessão
         // Usar window.location.href em vez de router.push para garantir que cookies sejam lidos
         window.location.href = '/dashboard';
       } else if (data.user && !data.session) {
+        console.warn('⚠️ [DEBUG] Usuário existe mas sessão não foi criada:', {
+          userId: data.user.id,
+          email: data.user.email,
+          emailConfirmed: !!data.user.email_confirmed_at,
+        });
         // Usuário existe mas sessão não foi criada (pode precisar confirmar email)
         setError('Por favor, confirme seu email antes de fazer login. Verifique sua caixa de entrada.');
       } else {
+        console.error('❌ [DEBUG] Caso inesperado:', {
+          hasUser: !!data?.user,
+          hasSession: !!data?.session,
+        });
         // Caso inesperado
         setError('Erro ao criar sessão. Tente novamente.');
       }
     } catch (err: any) {
+      console.error('❌ [DEBUG] Erro capturado:', err);
       setError(err.message || 'Erro ao fazer login');
     } finally {
       setLoading(false);
+      console.log('🏁 [DEBUG] Login finalizado');
     }
   };
 

@@ -72,14 +72,40 @@ export async function middleware(request: NextRequest) {
   // Verificar autenticação do usuário
   const {
     data: { user },
+    error: authError,
   } = await supabase.auth.getUser();
+
+  // Debug: Log para entender o que está acontecendo
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔍 [MIDDLEWARE DEBUG]', {
+      pathname: request.nextUrl.pathname,
+      hasUser: !!user,
+      userId: user?.id,
+      userEmail: user?.email,
+      authError: authError ? {
+        message: authError.message,
+        status: authError.status,
+      } : null,
+      cookies: {
+        hasSbCookie: request.cookies.toString().includes('sb-'),
+        cookieNames: request.cookies.getAll().map(c => c.name),
+      },
+    });
+  }
 
   // Se não estiver autenticado, redirecionar para sign-in
   if (!user) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('❌ [MIDDLEWARE DEBUG] Usuário não autenticado, redirecionando para /sign-in');
+    }
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = '/sign-in';
     redirectUrl.searchParams.set('redirectedFrom', request.nextUrl.pathname);
     return NextResponse.redirect(redirectUrl);
+  }
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log('✅ [MIDDLEWARE DEBUG] Usuário autenticado, permitindo acesso');
   }
 
   return supabaseResponse;
