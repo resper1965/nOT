@@ -1,0 +1,5 @@
+# Adicionar ao PATH no ~/.bashrc ou ~/.zshrc para persistir
+export PATH="$HOME/.local/bin:$PATH"
+
+# Depois, você pode usar:
+# uvx --from git+https://github.com/github/spec-kit.git specify init --here
