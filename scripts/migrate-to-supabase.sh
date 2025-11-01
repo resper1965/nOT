@@ -1,82 +1,140 @@
 #!/bin/bash
-# Script de migração para Supabase - ness. OT GRC
-# Exporta schema do PostgreSQL local para importar no Supabase
+
+# Script para migrar schema do PostgreSQL local para Supabase
+# ness. OT GRC - Migração Supabase
 
 set -e
 
-# Cores para output
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
-
-echo -e "${BLUE}🔄 Migração para Supabase - ness. OT GRC${NC}"
+echo "🔄 Iniciando migração de schema para Supabase..."
 echo ""
 
-# Variáveis
-DB_HOST="${DB_HOST:-localhost}"
-DB_PORT="${DB_PORT:-5434}"
-DB_USER="${DB_USER:-ness_admin}"
-DB_NAME="${DB_NAME:-ness_ot_grc}"
-OUTPUT_DIR="${OUTPUT_DIR:-./migration}"
-
-# Criar diretório de output
-mkdir -p "$OUTPUT_DIR"
-
-echo -e "${YELLOW}📊 Passo 1: Exportando schema...${NC}"
-
-# Exportar schema completo (sem dados)
-pg_dump -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
-  --schema-only \
-  --no-owner \
-  --no-privileges \
-  --file="$OUTPUT_DIR/schema.sql" 2>/dev/null || {
-    echo "❌ Erro ao exportar schema. Verifique se PostgreSQL está rodando e acessível."
+# Verificar se Docker está rodando
+if ! docker ps > /dev/null 2>&1; then
+    echo "❌ Docker não está rodando. Inicie o Docker e tente novamente."
     exit 1
-  }
-
-echo -e "${GREEN}✅ Schema exportado: $OUTPUT_DIR/schema.sql${NC}"
-
-# Exportar apenas estrutura (sem constraints complexas)
-echo -e "${YELLOW}📊 Passo 2: Criando versão simplificada do schema...${NC}"
-
-pg_dump -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
-  --schema-only \
-  --no-owner \
-  --no-privileges \
-  --no-tablespaces \
-  --file="$OUTPUT_DIR/schema-simple.sql" 2>/dev/null
-
-echo -e "${GREEN}✅ Schema simplificado criado: $OUTPUT_DIR/schema-simple.sql${NC}"
-
-# Exportar dados (opcional)
-read -p "Deseja exportar dados também? (s/N): " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Ss]$ ]]; then
-    echo -e "${YELLOW}📊 Passo 3: Exportando dados...${NC}"
-    
-    pg_dump -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
-      --data-only \
-      --no-owner \
-      --no-privileges \
-      --file="$OUTPUT_DIR/data.sql" 2>/dev/null || {
-        echo "⚠️  Aviso: Não foi possível exportar dados."
-      }
-    
-    echo -e "${GREEN}✅ Dados exportados: $OUTPUT_DIR/data.sql${NC}"
 fi
 
-echo ""
-echo -e "${BLUE}📋 Próximos passos:${NC}"
-echo ""
-echo "1. Acesse o Supabase SQL Editor:"
-echo "   https://supabase.com/dashboard/project/bingfdowmvyfeffieujk/sql"
-echo ""
-echo "2. Execute o arquivo: $OUTPUT_DIR/schema.sql"
-echo ""
-echo "3. Verifique os schemas criados"
-echo ""
-echo "4. Configure Row Level Security (RLS) se necessário"
-echo ""
-echo -e "${GREEN}✅ Migração preparada com sucesso!${NC}"
+# Verificar se container do banco existe
+CONTAINER_NAME="ness-ot-grc-db"
+if ! docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+    echo "❌ Container ${CONTAINER_NAME} não encontrado."
+    echo "💡 Execute: docker-compose up -d"
+    exit 1
+fi
 
+echo "✅ Docker e container verificados"
+echo ""
+
+# Diretório de saída
+OUTPUT_DIR="migration"
+mkdir -p "$OUTPUT_DIR"
+
+echo "📤 Exportando schema do PostgreSQL local..."
+
+# Exportar schema completo
+docker exec "${CONTAINER_NAME}" pg_dump -U ness_admin -d ness_ot_grc \
+  --schema-only \
+  --no-owner \
+  --no-privileges \
+  > "${OUTPUT_DIR}/schema-complete.sql"
+
+if [ $? -eq 0 ]; then
+    echo "✅ Schema completo exportado: ${OUTPUT_DIR}/schema-complete.sql"
+else
+    echo "❌ Erro ao exportar schema"
+    exit 1
+fi
+
+# Exportar apenas estrutura (schemas e tabelas)
+echo "📤 Exportando estrutura de schemas..."
+
+docker exec "${CONTAINER_NAME}" pg_dump -U ness_admin -d ness_ot_grc \
+  --schema-only \
+  --no-owner \
+  --no-privileges \
+  --no-comments \
+  > "${OUTPUT_DIR}/schema-structure.sql"
+
+echo "✅ Estrutura exportada: ${OUTPUT_DIR}/schema-structure.sql"
+echo ""
+
+# Criar arquivo SQL otimizado para Supabase
+echo "🔧 Criando arquivo SQL otimizado para Supabase..."
+
+cat > "${OUTPUT_DIR}/supabase-migration.sql" << 'EOF'
+-- ============================================================================
+-- Migração de Schema para Supabase - ness. OT GRC
+-- ============================================================================
+-- Este arquivo contém o schema otimizado para Supabase
+-- Data: $(date +%Y-%m-%d)
+-- ============================================================================
+
+-- Criar schemas se não existirem
+CREATE SCHEMA IF NOT EXISTS security;
+CREATE SCHEMA IF NOT EXISTS topology;
+CREATE SCHEMA IF NOT EXISTS compliance;
+CREATE SCHEMA IF NOT EXISTS audit;
+
+-- Nota: As extensões UUID e crypto já estão disponíveis no Supabase
+-- Não é necessário criar extensões manualmente
+
+EOF
+
+# Adicionar conteúdo do schema
+cat "${OUTPUT_DIR}/schema-complete.sql" >> "${OUTPUT_DIR}/supabase-migration.sql"
+
+# Adicionar configuração de RLS
+cat >> "${OUTPUT_DIR}/supabase-migration.sql" << 'EOF'
+
+-- ============================================================================
+-- Configuração de Row Level Security (RLS)
+-- ============================================================================
+
+-- Habilitar RLS nas tabelas principais
+ALTER TABLE compliance.documents ENABLE ROW LEVEL SECURITY;
+ALTER TABLE security.assets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE topology.vlans ENABLE ROW LEVEL SECURITY;
+
+-- Políticas básicas para compliance.documents
+CREATE POLICY "Users can view documents"
+ON compliance.documents
+FOR SELECT
+USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Users can insert documents"
+ON compliance.documents
+FOR INSERT
+WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "Users can update documents"
+ON compliance.documents
+FOR UPDATE
+USING (auth.role() = 'authenticated');
+
+-- Políticas básicas para security.assets
+CREATE POLICY "Users can view assets"
+ON security.assets
+FOR SELECT
+USING (auth.role() = 'authenticated');
+
+-- Políticas básicas para topology.vlans
+CREATE POLICY "Users can view vlans"
+ON topology.vlans
+FOR SELECT
+USING (auth.role() = 'authenticated');
+
+-- ============================================================================
+-- Migração concluída
+-- ============================================================================
+EOF
+
+echo "✅ Arquivo otimizado criado: ${OUTPUT_DIR}/supabase-migration.sql"
+echo ""
+
+echo "📋 Próximos passos:"
+echo "   1. Acesse: https://supabase.com/dashboard/project/bingfdowmvyfeffieujk/sql"
+echo "   2. Cole o conteúdo de: ${OUTPUT_DIR}/supabase-migration.sql"
+echo "   3. Execute o script SQL"
+echo "   4. Verifique a migração com as queries em MIGRATION-GUIDE.md"
+echo ""
+echo "✅ Migração de schema preparada!"

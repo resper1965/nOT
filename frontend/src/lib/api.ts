@@ -1,7 +1,18 @@
 // API client for ness. OT GRC backend
-// Supports both Supabase and FastAPI backend
+// Supports both Supabase (primary) and FastAPI backend (fallback)
+// Priority: Use Supabase when available, fallback to FastAPI
 
-// Get API URL from environment variables
+// Import Supabase functions
+import {
+  getAssetsStatsFromSupabase,
+  getVLANsFromSupabase,
+  getComplianceDocumentsFromSupabase,
+  getOnsControlsFromSupabase,
+  getNetworkTopologyFromSupabase,
+  getAssetsListFromSupabase,
+} from './api-supabase';
+
+// Get API URL from environment variables (for FastAPI fallback)
 const getApiUrl = (): string => {
   // Use environment variable if available
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -21,7 +32,23 @@ const getApiUrl = (): string => {
 
 const API_BASE_URL = getApiUrl();
 
+// Configuration: Use Supabase by default
+const USE_SUPABASE = process.env.NEXT_PUBLIC_USE_SUPABASE !== 'false';
+
 export async function getAssetsStats() {
+  // Use Supabase if configured, otherwise fallback to FastAPI
+  if (USE_SUPABASE) {
+    try {
+      return await getAssetsStatsFromSupabase();
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Supabase query failed, falling back to FastAPI:', error);
+      }
+    }
+  }
+  
+  // Fallback to FastAPI
   const res = await fetch(`${API_BASE_URL}/api/assets/stats`, { cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to fetch assets stats');
   return res.json();
@@ -34,12 +61,39 @@ export async function getTopDevices() {
 }
 
 export async function getNetworkTopology() {
+  // Use Supabase if configured
+  if (USE_SUPABASE) {
+    try {
+      return await getNetworkTopologyFromSupabase();
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Supabase query failed, falling back to FastAPI:', error);
+      }
+    }
+  }
+  
+  // Fallback to FastAPI
   const res = await fetch(`${API_BASE_URL}/api/network/topology-summary`, { cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to fetch network topology');
   return res.json();
 }
 
 export async function getVLANs() {
+  // Use Supabase if configured
+  if (USE_SUPABASE) {
+    try {
+      const result = await getVLANsFromSupabase();
+      return result;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Supabase query failed, falling back to FastAPI:', error);
+      }
+    }
+  }
+  
+  // Fallback to FastAPI
   const res = await fetch(`${API_BASE_URL}/api/network/vlans`, { cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to fetch VLANs');
   return res.json();
@@ -52,6 +106,19 @@ export async function getIPSummary() {
 }
 
 export async function getAssetsList(limit = 100, offset = 0) {
+  // Use Supabase if configured
+  if (USE_SUPABASE) {
+    try {
+      return await getAssetsListFromSupabase(limit, offset);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Supabase query failed, falling back to FastAPI:', error);
+      }
+    }
+  }
+  
+  // Fallback to FastAPI
   const res = await fetch(`${API_BASE_URL}/api/assets/list?limit=${limit}&offset=${offset}`, { cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to fetch assets list');
   return res.json();
@@ -59,12 +126,40 @@ export async function getAssetsList(limit = 100, offset = 0) {
 
 // Compliance API functions
 export async function getComplianceDocuments() {
+  // Use Supabase if configured
+  if (USE_SUPABASE) {
+    try {
+      const result = await getComplianceDocumentsFromSupabase();
+      return result;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Supabase query failed, falling back to FastAPI:', error);
+      }
+    }
+  }
+  
+  // Fallback to FastAPI
   const res = await fetch(`${API_BASE_URL}/api/compliance/documents`, { cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to fetch compliance documents');
   return res.json();
 }
 
 export async function getOnsControls() {
+  // Use Supabase if configured
+  if (USE_SUPABASE) {
+    try {
+      const result = await getOnsControlsFromSupabase();
+      return result;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Supabase query failed, falling back to FastAPI:', error);
+      }
+    }
+  }
+  
+  // Fallback to FastAPI
   const res = await fetch(`${API_BASE_URL}/api/compliance/ons-controls`, { cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to fetch ONS controls');
   return res.json();

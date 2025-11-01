@@ -1,0 +1,45 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "profile": "Profile",
+    "logout": "Sign Out",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "filter": "Filter",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "signInSuccess": "Successfully signed in!",
+    "signOutSuccess": "Successfully signed out"
+  },
+  "dashboard": {
+    "overview": "Overview",
+    "compliance": "Compliance",
+    "network": "Network Analysis",
+    "remediation": "Remediation",
+    "reports": "Reports"
+  },
+  "company": {
+    "name": "ness.",
+    "subtitle": "OT GRC",
+    "client": "TBE",
+    "segment": "Electric Sector"
+  }
+}
+
