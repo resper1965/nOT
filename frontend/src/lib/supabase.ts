@@ -1,14 +1,16 @@
 // Supabase client configuration for ness. OT GRC
 // Supports both client-side and server-side rendering
 
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
+import type { SupabaseClient as SupabaseClientType } from '@supabase/supabase-js';
 
 // Supabase connection configuration
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
-// Validate environment variables
-if (typeof window !== 'undefined' && (!supabaseUrl || !supabaseAnonKey)) {
+// Validate environment variables (only in development)
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development' && (!supabaseUrl || !supabaseAnonKey)) {
+  // eslint-disable-next-line no-console
   console.warn(
     '⚠️ Supabase environment variables not configured. ' +
     'Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY'
@@ -65,5 +67,5 @@ export function getSupabaseClient() {
 }
 
 // Database helper types
-export type SupabaseClient = ReturnType<typeof createClient>;
+export type SupabaseClient = SupabaseClientType<any>;
 
