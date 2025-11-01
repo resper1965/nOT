@@ -60,34 +60,63 @@ Redes **OT (Operational Technology)** são fundamentalmente diferentes de redes 
 
 ---
 
-## ⚡ Quick Start com Docker
+## ⚡ Quick Start
+
+### Opção 1: Docker (Desenvolvimento Local)
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/ness/ot-grc.git
-cd ot-grc
+git clone https://github.com/resper1965/nOT.git
+cd TBE-OT
 
 # 2. Suba a stack completa
 docker-compose up -d
 
 # 3. Acesse os serviços
-# Frontend:  http://localhost:3000
-# Backend:   http://localhost:8000
+# Frontend:  http://localhost:3002
+# Backend:   http://localhost:8001
 # pgAdmin:   http://localhost:5050
-# Database:  localhost:5432
+# Database:  localhost:5434
 ```
 
 **Pronto!** Toda a infraestrutura está rodando localmente.
+
+### Opção 2: Vercel + Supabase (Produção)
+
+O projeto está configurado para deploy na Vercel com Supabase:
+
+- **Frontend**: https://frontend-pawz6kwnj-nessbr-projects.vercel.app
+- **Database**: Supabase PostgreSQL
+- **Auth**: Supabase Auth
+- **Storage**: Supabase Storage (para documentos)
+
+Consulte `VERCEL-SETUP.md` e `SUPABASE-INTEGRATION.md` para mais detalhes.
 
 ---
 
 ## 📊 Arquitetura
 
+### Arquitetura Atual (Vercel + Supabase)
+
+```
+┌─────────────────────────────────────────────────┐
+│          VERCEL - Frontend Next.js 15            │
+│     ness. OT GRC Dashboard (React 19)           │
+│  Governance | Risk | Compliance | Documents     │
+└──────────────┬──────────────────────────────────┘
+               │
+               ├─► Supabase PostgreSQL (banco de dados)
+               ├─► Supabase Auth (autenticação)
+               ├─► Supabase Storage (documentos)
+               └─► FastAPI Backend (opcional - processamento pesado)
+```
+
+### Arquitetura Local (Docker)
+
 ```
 ┌─────────────────────────────────────────────────┐
 │          FRONTEND - Next.js 15                  │
 │     ness. OT GRC Dashboard (React 19)           │
-│  Governance | Risk | Compliance | Documents     │
 └───────────────────┬─────────────────────────────┘
                     │
                     ▼
@@ -102,7 +131,7 @@ docker-compose up -d
   ┌─────────┐ ┌──────────┐ ┌────────┐
   │PostgreSQL│ │  Redis   │ │ Files  │
   │ Schemas │ │  Cache   │ │Storage │
-  │ 4 schemas│ │ Sessions │ │  S3    │
+  │ 4 schemas│ │ Sessions │ │ Local  │
   └─────────┘ └──────────┘ └────────┘
 ```
 
@@ -284,24 +313,30 @@ Cada documento tem:
 - [x] Design system ness.
 - [x] Logo e branding OT GRC
 - [x] Docker stack completo
+- [x] Integração Supabase
+- [x] Deploy na Vercel
+- [x] Autenticação Supabase Auth
 
 ### Fase 2: Gestão Documental (Q1 2025)
-- [ ] Upload e versionamento
+- [x] Dashboard de documentos
+- [ ] Upload e versionamento (Supabase Storage)
 - [ ] Workflow de aprovação
 - [ ] Alertas de revisão
-- [ ] Dashboard de conformidade
+- [x] Dashboard de conformidade
 
 ### Fase 3: Módulo de Riscos (Q2 2025)
-- [ ] Análise de vulnerabilidades
-- [ ] Risk register
+- [x] Análise de topologia OT
+- [x] Dashboard de gaps críticos
+- [ ] Risk register completo
 - [ ] Matriz de riscos
 - [ ] Integração com scanners
 
 ### Fase 4: Módulo de Governança (Q2 2025)
+- [x] Dashboard de compliance
 - [ ] Políticas e procedimentos
 - [ ] Estrutura organizacional
 - [ ] KPIs de maturidade
-- [ ] Dashboard executivo
+- [x] Dashboard executivo
 
 ### Fase 5: Integrações (Q3 2025)
 - [ ] SIEM integration
@@ -334,6 +369,32 @@ Propriedade **ness.** - Todos os direitos reservados © 2025
 - [IEC 62443](https://www.isa.org/standards-and-publications/isa-standards/isa-iec-62443-series-of-standards)
 - [NIST CSF](https://www.nist.gov/cyberframework)
 - [LGPD](https://www.gov.br/esporte/pt-br/acesso-a-informacao/lgpd)
+
+## 📚 Documentação Adicional
+
+- [`SUPABASE-INTEGRATION.md`](./SUPABASE-INTEGRATION.md) - Guia de integração Supabase
+- [`VERCEL-SETUP.md`](./VERCEL-SETUP.md) - Guia de deploy na Vercel
+- [`SPEC-KIT-DOCUMENTATION.md`](./SPEC-KIT-DOCUMENTATION.md) - Documentação do GitHub Spec Kit
+- [`.spec/`](./.spec/) - Especificações do projeto (Spec Kit)
+
+## 🚀 Deploy
+
+### Status Atual
+
+- ✅ **Frontend**: Deployado na Vercel
+  - URL: https://frontend-pawz6kwnj-nessbr-projects.vercel.app
+  - Framework: Next.js 15
+  - Status: Ready
+
+- ✅ **Database**: Supabase PostgreSQL
+  - URL: https://bingfdowmvyfeffieujk.supabase.co
+  - Status: Configurado
+
+- ✅ **Auth**: Supabase Auth
+  - Status: Integrado
+
+- ✅ **Storage**: Supabase Storage
+  - Status: Configurado
 
 ---
 
