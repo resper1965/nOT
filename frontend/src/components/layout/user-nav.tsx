@@ -47,7 +47,6 @@ export function UserNav() {
           <Button variant='ghost' className='relative h-8 w-8 rounded-full'>
             <UserAvatarProfile 
               user={{
-                id: user.id,
                 fullName: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Usuário',
                 emailAddresses: [{ emailAddress: user.email || '' }],
                 imageUrl: user.user_metadata?.avatar_url || undefined,
