@@ -110,7 +110,7 @@ export default function LandingContent() {
               <div className="space-y-4">
                 <Link href="/sign-in">
                   <button className="w-full px-6 py-4 bg-[#00ade8] text-gray-950 rounded-lg hover:bg-[#00ade8]/90 transition-all font-semibold text-base shadow-lg shadow-[#00ade8]/20">
-                    Entrar com Clerk
+                    Entrar
                   </button>
                 </Link>
 
@@ -226,7 +226,7 @@ export default function LandingContent() {
             <div className="flex items-center gap-6 text-sm text-gray-500">
               <span>Cliente: TBE - Setor Elétrico</span>
               <span>•</span>
-              <span>Powered by Clerk Authentication</span>
+              <span>Powered by Supabase Authentication</span>
             </div>
           </div>
         </div>

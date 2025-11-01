@@ -1,6 +1,65 @@
-import { SignUp } from '@clerk/nextjs';
+'use client';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import Link from 'next/link';
 
 export default function SignUpPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    if (password !== confirmPassword) {
+      setError('As senhas não coincidem');
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+          },
+        },
+      });
+
+      if (signUpError) {
+        setError(signUpError.message);
+        return;
+      }
+
+      if (data.user) {
+        router.push('/dashboard');
+        router.refresh();
+      }
+    } catch (err: any) {
+      setError(err.message || 'Erro ao criar conta');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background to-muted">
       <div className="w-full max-w-md space-y-8 px-4">
@@ -18,44 +77,87 @@ export default function SignUpPage() {
           </p>
         </div>
 
-        {/* Clerk Sign Up Component */}
-        <div className="flex justify-center">
-          <SignUp 
-            appearance={{
-              baseTheme: undefined,
-              elements: {
-                rootBox: "w-full",
-                card: "bg-gray-900 text-gray-50 border border-gray-700 shadow-xl rounded-lg",
-                headerTitle: "hidden",
-                headerSubtitle: "hidden",
-                formFieldLabel: "text-gray-300 text-sm font-medium",
-                formFieldInput: "bg-gray-800 border-gray-600 text-gray-50 rounded-md focus:border-[#00ade8] focus:ring-[#00ade8]/20",
-                formButtonPrimary: "bg-[#00ade8] hover:bg-[#00ade8]/90 text-gray-950 font-medium rounded-md transition-colors",
-                formButtonSecondary: "bg-gray-700 hover:bg-gray-600 text-gray-50 border-gray-600 rounded-md",
-                footerActionText: "text-gray-400 text-sm",
-                footerActionLink: "text-[#00ade8] hover:text-[#00ade8]/80 font-medium",
-                socialButtonsBlockButton: "bg-gray-800 border-gray-600 text-gray-50 hover:bg-gray-700 rounded-md transition-colors",
-                dividerLine: "bg-gray-700",
-                dividerText: "text-gray-500 text-sm",
-                formFieldSuccessText: "text-green-400",
-                formFieldErrorText: "text-red-400",
-                alertText: "text-yellow-400"
-              },
-              variables: {
-                colorPrimary: "#00ade8",
-                colorText: "#e2e8f0",
-                colorBackground: "#111827",
-                colorInputBackground: "#1f2937",
-                colorInputText: "#f9fafb",
-                borderRadius: "0.375rem"
-              }
-            }}
-            routing="path"
-            path="/sign-up"
-            redirectUrl="/dashboard"
-            signInUrl="/sign-in"
-          />
-        </div>
+        {/* Sign Up Form */}
+        <form onSubmit={handleSignUp} className="space-y-6 rounded-lg border border-border bg-card p-6 shadow-lg">
+          <div className="space-y-2">
+            <Label htmlFor="fullName">Nome Completo</Label>
+            <Input
+              id="fullName"
+              type="text"
+              placeholder="Seu Nome"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              required
+              disabled={loading}
+              className="bg-background"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="seu@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={loading}
+              className="bg-background"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="password">Senha</Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              disabled={loading}
+              className="bg-background"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Confirmar Senha</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              placeholder="••••••••"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              disabled={loading}
+              className="bg-background"
+            />
+          </div>
+
+          {error && (
+            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+              {error}
+            </div>
+          )}
+
+          <Button
+            type="submit"
+            className="w-full bg-[#00ade8] hover:bg-[#00ade8]/90 text-gray-950 font-medium"
+            disabled={loading}
+          >
+            {loading ? 'Criando conta...' : 'Criar Conta'}
+          </Button>
+
+          <div className="text-center text-sm">
+            <Link
+              href="/sign-in"
+              className="text-[#00ade8] hover:text-[#00ade8]/80 font-medium"
+            >
+              Já tem uma conta? Entre
+            </Link>
+          </div>
+        </form>
 
         {/* Footer */}
         <div className="text-center">
@@ -70,4 +172,3 @@ export default function SignUpPage() {
     </div>
   );
 }
-

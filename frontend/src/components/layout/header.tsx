@@ -2,7 +2,7 @@ import React from 'react';
 import { SidebarTrigger } from '../ui/sidebar';
 import { Separator } from '../ui/separator';
 import { Breadcrumbs } from '../breadcrumbs';
-import { UserButton } from '@clerk/nextjs';
+import { UserNav } from './user-nav';
 import { Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/layout/ThemeToggle/theme-toggle';
@@ -32,19 +32,8 @@ export default function Header() {
           <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-[#00ade8]" />
         </Button>
         
-        {/* User Button from Clerk */}
-        <UserButton 
-          appearance={{
-            elements: {
-              avatarBox: "h-8 w-8",
-              userButtonPopoverCard: "shadow-xl border border-border/50",
-              userButtonPopoverActionButton: "hover:bg-accent",
-              userButtonPopoverActionButtonText: "text-sm",
-              userButtonPopoverFooter: "hidden"
-            }
-          }}
-          afterSignOutUrl="/sign-in"
-        />
+        {/* User Nav com Supabase */}
+        <UserNav />
       </div>
     </header>
   );

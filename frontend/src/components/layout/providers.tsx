@@ -1,5 +1,4 @@
 'use client';
-import { ClerkProvider } from '@clerk/nextjs';
 import React from 'react';
 import { ActiveThemeProvider } from '../active-theme';
 
@@ -13,9 +12,7 @@ export default function Providers({
   return (
     <>
       <ActiveThemeProvider initialTheme={activeThemeValue}>
-        <ClerkProvider>
-          {children}
-        </ClerkProvider>
+        {children}
       </ActiveThemeProvider>
     </>
   );

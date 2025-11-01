@@ -1,16 +1,16 @@
-import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import { getServerUser } from '@/lib/supabase-server';
 
 export default async function PgAdminPage() {
-  const { userId } = await auth();
+  const user = await getServerUser();
   
   // Verificar se o usuário está autenticado
-  if (!userId) {
+  if (!user) {
     redirect('/sign-in');
   }
 
   // Aqui você pode adicionar lógica adicional para verificar se o usuário é admin
-  // Por exemplo, verificando roles/metadata do Clerk
+  // Por exemplo, verificando roles/metadata do Supabase
   
   return (
     <div className="flex flex-col h-screen">

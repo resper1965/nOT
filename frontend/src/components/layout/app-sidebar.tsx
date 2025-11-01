@@ -34,7 +34,9 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useUser } from '@clerk/nextjs';
+import { supabase } from '@/lib/supabase';
+import { useEffect, useState } from 'react';
+import type { User } from '@supabase/supabase-js';
 import * as React from 'react';
 
 // Dados do sistema ness. OT GRC
@@ -121,7 +123,23 @@ const navItems = [
 
 export default function AppSidebar() {
   const pathname = usePathname();
-  const { user } = useUser();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    // Obter usuário atual
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+    });
+
+    // Escutar mudanças na autenticação
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   return (
     <Sidebar collapsible='icon'>

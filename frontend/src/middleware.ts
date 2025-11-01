@@ -1,52 +1,88 @@
-// ness. OT GRC - Authentication Middleware
-// Suporte para Clerk (opcional) e Supabase
-
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+// ness. OT GRC - Authentication Middleware com Supabase
+import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 // Define rotas públicas (landing page + autenticação)
-const isPublicRoute = createRouteMatcher([
+const publicRoutes = [
   '/',
-  '/sign-in(.*)',
-  '/sign-up(.*)',
+  '/sign-in',
+  '/sign-up',
+  '/auth(.*)',
   '/api(.*)',
-]);
+];
 
-// Verifica se o Clerk está configurado
-const isClerkConfigured = () => {
-  return !!(
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
-    process.env.CLERK_SECRET_KEY
-  );
-};
+function isPublicRoute(pathname: string): boolean {
+  return publicRoutes.some(route => {
+    if (route.endsWith('(.*)')) {
+      const baseRoute = route.replace('(.*)', '');
+      return pathname.startsWith(baseRoute);
+    }
+    return pathname === route;
+  });
+}
 
-// Middleware condicional: usa Clerk se configurado, senão permite acesso público
-export default async function middleware(request: NextRequest) {
-  // Se Clerk estiver configurado, usa o middleware do Clerk
-  if (isClerkConfigured()) {
-    return clerkMiddleware(async (auth) => {
-      // Protege todas as rotas exceto as públicas
-      if (!isPublicRoute(request)) {
-        try {
-          await auth.protect();
-        } catch (error) {
-          // Se houver erro na proteção, permite acesso (modo keyless)
-          console.error('Clerk protection error:', error);
-        }
-      }
-    })(request);
-  }
-
-  // Se Clerk não estiver configurado, permite acesso a todas as rotas
-  // (aplicação funcionará com Supabase ou sem autenticação)
-  if (isPublicRoute(request)) {
+export async function middleware(request: NextRequest) {
+  // Permitir acesso a rotas públicas
+  if (isPublicRoute(request.nextUrl.pathname)) {
     return NextResponse.next();
   }
 
-  // Para rotas protegidas sem Clerk, você pode implementar verificação Supabase aqui
-  // Por enquanto, permite acesso (pode ser protegido no nível de página/componente)
-  return NextResponse.next();
+  let supabaseResponse = NextResponse.next({
+    request,
+  });
+
+  // Criar cliente Supabase para verificar autenticação
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value;
+        },
+        set(name: string, value: string, options: any) {
+          request.cookies.set({
+            name,
+            value,
+            ...options,
+          });
+          supabaseResponse.cookies.set({
+            name,
+            value,
+            ...options,
+          });
+        },
+        remove(name: string, options: any) {
+          request.cookies.set({
+            name,
+            value: '',
+            ...options,
+          });
+          supabaseResponse.cookies.set({
+            name,
+            value: '',
+            ...options,
+          });
+        },
+      },
+    }
+  );
+
+  // Verificar autenticação do usuário
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Se não estiver autenticado, redirecionar para sign-in
+  if (!user) {
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = '/sign-in';
+    redirectUrl.searchParams.set('redirectedFrom', request.nextUrl.pathname);
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  return supabaseResponse;
 }
 
 export const config = {

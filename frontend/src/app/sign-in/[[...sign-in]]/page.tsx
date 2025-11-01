@@ -1,6 +1,46 @@
-import { SignIn } from '@clerk/nextjs';
+'use client';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import Link from 'next/link';
 
 export default function SignInPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (signInError) {
+        setError(signInError.message);
+        return;
+      }
+
+      if (data.user) {
+        router.push('/dashboard');
+        router.refresh();
+      }
+    } catch (err: any) {
+      setError(err.message || 'Erro ao fazer login');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background to-muted">
       <div className="w-full max-w-md space-y-8 px-4">
@@ -18,44 +58,59 @@ export default function SignInPage() {
           </p>
         </div>
 
-        {/* Clerk Sign In Component */}
-        <div className="flex justify-center">
-          <SignIn 
-            appearance={{
-              baseTheme: undefined,
-              elements: {
-                rootBox: "w-full",
-                card: "bg-gray-900 text-gray-50 border border-gray-700 shadow-xl rounded-lg",
-                headerTitle: "hidden",
-                headerSubtitle: "hidden",
-                formFieldLabel: "text-gray-300 text-sm font-medium",
-                formFieldInput: "bg-gray-800 border-gray-600 text-gray-50 rounded-md focus:border-[#00ade8] focus:ring-[#00ade8]/20",
-                formButtonPrimary: "bg-[#00ade8] hover:bg-[#00ade8]/90 text-gray-950 font-medium rounded-md transition-colors",
-                formButtonSecondary: "bg-gray-700 hover:bg-gray-600 text-gray-50 border-gray-600 rounded-md",
-                footerActionText: "text-gray-400 text-sm",
-                footerActionLink: "text-[#00ade8] hover:text-[#00ade8]/80 font-medium",
-                socialButtonsBlockButton: "bg-gray-800 border-gray-600 text-gray-50 hover:bg-gray-700 rounded-md transition-colors",
-                dividerLine: "bg-gray-700",
-                dividerText: "text-gray-500 text-sm",
-                formFieldSuccessText: "text-green-400",
-                formFieldErrorText: "text-red-400",
-                alertText: "text-yellow-400"
-              },
-              variables: {
-                colorPrimary: "#00ade8",
-                colorText: "#e2e8f0",
-                colorBackground: "#111827",
-                colorInputBackground: "#1f2937",
-                colorInputText: "#f9fafb",
-                borderRadius: "0.375rem"
-              }
-            }}
-            routing="path"
-            path="/sign-in"
-            redirectUrl="/dashboard"
-            signUpUrl="/sign-up"
-          />
-        </div>
+        {/* Sign In Form */}
+        <form onSubmit={handleSignIn} className="space-y-6 rounded-lg border border-border bg-card p-6 shadow-lg">
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="seu@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={loading}
+              className="bg-background"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="password">Senha</Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              disabled={loading}
+              className="bg-background"
+            />
+          </div>
+
+          {error && (
+            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+              {error}
+            </div>
+          )}
+
+          <Button
+            type="submit"
+            className="w-full bg-[#00ade8] hover:bg-[#00ade8]/90 text-gray-950 font-medium"
+            disabled={loading}
+          >
+            {loading ? 'Entrando...' : 'Entrar'}
+          </Button>
+
+          <div className="text-center text-sm">
+            <Link
+              href="/sign-up"
+              className="text-[#00ade8] hover:text-[#00ade8]/80 font-medium"
+            >
+              Não tem uma conta? Cadastre-se
+            </Link>
+          </div>
+        </form>
 
         {/* Footer */}
         <div className="text-center">
@@ -70,4 +125,3 @@ export default function SignInPage() {
     </div>
   );
 }
-

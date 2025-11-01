@@ -1,12 +1,12 @@
-import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import LandingContent from '@/components/landing/landing-content';
+import { getServerUser } from '@/lib/supabase-server';
 
 export default async function LandingPage() {
-  const { userId } = await auth();
+  const user = await getServerUser();
   
   // Se já autenticado, redireciona para dashboard
-  if (userId) {
+  if (user) {
     redirect('/dashboard');
   }
 
