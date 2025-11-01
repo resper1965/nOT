@@ -44,20 +44,33 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 
 // Server-side Supabase client (for use in API routes and Server Components)
 // Optimized for server-side rendering
+// Uses SERVICE_ROLE_KEY for elevated privileges (bypasses RLS)
 export function createServerClient() {
   // Use dynamic import to avoid client-side bundling
   if (typeof window !== 'undefined') {
     return supabase; // Return client-side client
   }
 
-  // Server-side: use environment variables
+  // Server-side: use SERVICE_ROLE_KEY for elevated privileges
+  // WARNING: SERVICE_ROLE_KEY bypasses Row Level Security (RLS)
+  // Only use for server-side operations that need admin access
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  
+  // Use SERVICE_ROLE_KEY if available, otherwise fallback to anon key
+  const key = serviceRoleKey || anonKey;
+  
+  if (!key) {
+    throw new Error('Missing Supabase credentials: SUPABASE_SERVICE_ROLE_KEY or NEXT_PUBLIC_SUPABASE_ANON_KEY');
+  }
   
   return createClient(url, key, {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
+      // Service role key bypasses RLS - use with caution
+      flowType: 'pkce',
     },
     db: {
       schema: 'public',

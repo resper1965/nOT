@@ -1,15 +1,21 @@
 // Supabase-based API client for ness. OT GRC
 // Real queries using Supabase PostgREST API
 // Based on database schema: security.*, topology.*, compliance.*, audit.*
+// Uses SERVICE_ROLE_KEY for server-side operations (bypasses RLS when needed)
 
 import { getSupabaseClient, supabaseHelpers } from './supabase';
+import { getAdminSupabaseClient } from './supabase-admin';
 
 /**
  * Get assets statistics using Supabase
  * Returns aggregated stats from security.assets table
  */
 export async function getAssetsStatsFromSupabase() {
-  const supabase = getSupabaseClient();
+  // Use admin client for server-side operations (bypasses RLS)
+  // For client-side, use regular client (respects RLS)
+  const supabase = typeof window === 'undefined' 
+    ? getAdminSupabaseClient() 
+    : getSupabaseClient();
   
   try {
     // Get total count
@@ -91,7 +97,9 @@ export async function getAssetsStatsFromSupabase() {
  * Returns VLANs from topology.vlans table
  */
 export async function getVLANsFromSupabase() {
-  const supabase = getSupabaseClient();
+  const supabase = typeof window === 'undefined' 
+    ? getAdminSupabaseClient() 
+    : getSupabaseClient();
   
   try {
     const { data, error } = await supabase
@@ -115,7 +123,9 @@ export async function getVLANsFromSupabase() {
  * Get network topology summary using Supabase
  */
 export async function getNetworkTopologyFromSupabase() {
-  const supabase = getSupabaseClient();
+  const supabase = typeof window === 'undefined' 
+    ? getAdminSupabaseClient() 
+    : getSupabaseClient();
   
   try {
     // Get VLAN count
@@ -167,7 +177,9 @@ export async function getNetworkTopologyFromSupabase() {
  * Returns documents with stats for compatibility with existing components
  */
 export async function getComplianceDocumentsFromSupabase() {
-  const supabase = getSupabaseClient();
+  const supabase = typeof window === 'undefined' 
+    ? getAdminSupabaseClient() 
+    : getSupabaseClient();
   
   try {
     const { data, error } = await supabase
@@ -217,7 +229,9 @@ export async function getComplianceDocumentsFromSupabase() {
  * Returns controls in format compatible with existing components
  */
 export async function getOnsControlsFromSupabase() {
-  const supabase = getSupabaseClient();
+  const supabase = typeof window === 'undefined' 
+    ? getAdminSupabaseClient() 
+    : getSupabaseClient();
   
   try {
     const { data, error } = await supabase
@@ -257,7 +271,9 @@ export async function getOnsControlsFromSupabase() {
  * Get assets list with pagination
  */
 export async function getAssetsListFromSupabase(limit = 100, offset = 0) {
-  const supabase = getSupabaseClient();
+  const supabase = typeof window === 'undefined' 
+    ? getAdminSupabaseClient() 
+    : getSupabaseClient();
   
   try {
     const { data, error, count } = await supabase
