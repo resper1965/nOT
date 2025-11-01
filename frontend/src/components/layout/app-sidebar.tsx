@@ -248,14 +248,14 @@ export default function AppSidebar() {
             <SidebarMenuItem className="border-t pt-3">
               <div className="flex items-center gap-3 px-2 py-2">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#00ade8]/10 border border-[#00ade8]/20 text-sm font-semibold text-[#00ade8]">
-                  {user.firstName?.[0]?.toUpperCase() || user.emailAddresses[0]?.emailAddress[0]?.toUpperCase() || 'U'}
+                  {user.user_metadata?.full_name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
                 </div>
                 <div className="flex-1 overflow-hidden">
                   <div className="text-sm font-medium truncate">
-                    {user.firstName || 'Usuário'}
+                    {user.user_metadata?.full_name || user.email?.split('@')[0] || 'Usuário'}
                   </div>
                   <div className="text-xs text-muted-foreground truncate">
-                    {user.emailAddresses[0]?.emailAddress}
+                    {user.email}
                   </div>
                 </div>
               </div>
