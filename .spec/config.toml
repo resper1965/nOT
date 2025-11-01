@@ -1,0 +1,18 @@
+# GitHub Spec Kit Configuration
+# ness. OT GRC - Governance, Risk & Compliance
+
+[project]
+name = "TBE-OT"
+description = "OT GRC - Governance, Risk & Compliance for Operational Technology Networks"
+version = "1.0.0"
+
+[ai]
+# Agente de IA configurado
+agent = "cursor-agent"  # Cursor AI Agent
+# Opções disponíveis: copilot, claude, gemini, cursor-agent, qwen, opencode, codex, windsurf, kilocode, auggie
+
+[paths]
+# Caminhos para arquivos de especificação
+spec_dir = ".spec"
+docs_dir = "docs"
+
