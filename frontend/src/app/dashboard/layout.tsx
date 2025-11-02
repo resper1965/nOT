@@ -1,8 +1,5 @@
-import AppSidebar from '@/components/layout/app-sidebar';
-import Header from '@/components/layout/header';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { DashboardLayout as NewDashboardLayout } from '@/components/dashboard/dashboard-layout';
 import type { Metadata } from 'next';
-import { cookies } from 'next/headers';
 
 export const metadata: Metadata = {
   title: 'ness. OT GRC - Dashboard',
@@ -14,18 +11,9 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Persisting the sidebar state in the cookie.
-  const cookieStore = await cookies();
-  const defaultOpen = cookieStore.get("sidebar_state")?.value === "true"
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
-      <AppSidebar />
-      <SidebarInset>
-        <Header />
-        {/* page main content */}
-        {children}
-        {/* page main content ends */}
-      </SidebarInset>
-    </SidebarProvider>
+    <NewDashboardLayout>
+      {children}
+    </NewDashboardLayout>
   );
 }
