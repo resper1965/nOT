@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,91 @@ export default function SignInPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [authStatus, setAuthStatus] = useState<'checking' | 'authenticated' | 'not-authenticated'>('checking');
+
+  // Verificar autenticação ao carregar a página
+  useEffect(() => {
+    console.log('🔍 [DEBUG] Página sign-in carregada, verificando autenticação...');
+    
+    const checkAuth = async () => {
+      try {
+        // Verificar sessão atual
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        console.log('🔍 [DEBUG] Verificação de sessão:', {
+          hasSession: !!session,
+          hasAccessToken: !!session?.access_token,
+          userId: session?.user?.id,
+          error: sessionError ? sessionError.message : null,
+        });
+
+        // Verificar usuário atual
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        console.log('🔍 [DEBUG] Verificação de usuário:', {
+          hasUser: !!user,
+          userId: user?.id,
+          userEmail: user?.email,
+          error: userError ? userError.message : null,
+        });
+
+        // Se há sessão e usuário, redirecionar para dashboard
+        if (session && user) {
+          console.log('✅ [DEBUG] Usuário já autenticado, redirecionando para /dashboard');
+          setAuthStatus('authenticated');
+          
+          // Verificar parâmetro redirectedFrom na URL
+          const urlParams = new URLSearchParams(window.location.search);
+          const redirectedFrom = urlParams.get('redirectedFrom');
+          const redirectPath = redirectedFrom || '/dashboard';
+          
+          console.log('🚀 [DEBUG] Redirecionando para:', redirectPath);
+          
+          // Aguardar um pouco para garantir que logs apareçam
+          setTimeout(() => {
+            router.push(redirectPath);
+          }, 500);
+        } else {
+          console.log('❌ [DEBUG] Usuário não autenticado, mostrando formulário de login');
+          setAuthStatus('not-authenticated');
+        }
+      } catch (err: any) {
+        console.error('❌ [DEBUG] Erro ao verificar autenticação:', err);
+        setAuthStatus('not-authenticated');
+      }
+    };
+
+    checkAuth();
+
+    // Listener para mudanças de autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('🔄 [DEBUG] Mudança de estado de autenticação:', {
+        event,
+        hasSession: !!session,
+        userId: session?.user?.id,
+      });
+
+      if (event === 'SIGNED_IN' && session) {
+        console.log('✅ [DEBUG] Usuário autenticado via listener, redirecionando...');
+        setAuthStatus('authenticated');
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectedFrom = urlParams.get('redirectedFrom');
+        const redirectPath = redirectedFrom || '/dashboard';
+        
+        setTimeout(() => {
+          router.push(redirectPath);
+        }, 500);
+      } else if (event === 'SIGNED_OUT') {
+        console.log('❌ [DEBUG] Usuário desautenticado');
+        setAuthStatus('not-authenticated');
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [router]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,6 +213,17 @@ export default function SignInPage() {
       setLoading(false);
     }
   };
+
+  // Mostrar loading enquanto verifica autenticação
+  if (authStatus === 'checking') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background to-muted">
+        <div className="w-full max-w-md space-y-8 px-4 text-center">
+          <p className="text-muted-foreground">Verificando autenticação...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background to-muted">
