@@ -12,7 +12,7 @@ export async function GET(
       return NextResponse.json({ error: 'Document ID required' }, { status: 400 })
     }
 
-    const supabase = getServerSupabaseClient()
+    const supabase = await getServerSupabaseClient()
 
     // Verificar autenticação
     const { data: { user }, error: authError } = await supabase.auth.getUser()

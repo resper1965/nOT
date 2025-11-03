@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAdminSupabaseClient } from '@/lib/supabase-server'
+import { getAdminSupabaseClient } from '@/lib/supabase-admin'
 import { convertDocumentToMarkdown, formatMarkdownWithFrontmatter } from '@/lib/document-converter'
-import crypto from 'crypto'
 
 export async function POST(
   request: NextRequest,

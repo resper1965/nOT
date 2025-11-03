@@ -4,7 +4,7 @@ import crypto from 'crypto'
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = getServerSupabaseClient()
+    const supabase = await getServerSupabaseClient()
     
     // Verificar autenticação
     const { data: { user }, error: authError } = await supabase.auth.getUser()
