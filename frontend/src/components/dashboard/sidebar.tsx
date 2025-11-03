@@ -43,7 +43,7 @@ const navItems = [
     title: "Análise de Rede",
     url: "/dashboard/network",
     icon: Activity,
-    badge: "14.6k",
+    badge: null, // Será preenchido dinamicamente
     badgeColor: "text-green-500",
     items: [
       { title: "Assets & Inventário", url: "/dashboard/network/assets" },
@@ -58,7 +58,7 @@ const navItems = [
     title: "Adequação",
     url: "/dashboard/remediation",
     icon: AlertTriangle,
-    badge: "6 gaps",
+    badge: null, // Será preenchido dinamicamente
     badgeColor: "text-red-500",
     items: [
       { title: "Gap Analysis ONS", url: "/dashboard/remediation/gaps" },
@@ -96,6 +96,8 @@ export function Sidebar() {
   const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const [assetsCount, setAssetsCount] = useState<string | null>(null);
+  const [gapsCount, setGapsCount] = useState<string | null>(null);
 
   useEffect(() => {
     // Obter usuário atual
@@ -115,6 +117,36 @@ export function Sidebar() {
       .filter((item) => pathname.startsWith(item.url))
       .map((item) => item.title);
     setExpandedItems(activeItems);
+
+    // Buscar total de assets
+    fetch('/api/assets/stats')
+      .then((res) => res.json())
+      .then((data) => {
+        const total = data.total_assets || 0;
+        if (total >= 1000) {
+          setAssetsCount(`${(total / 1000).toFixed(1)}k`);
+        } else {
+          setAssetsCount(total.toString());
+        }
+      })
+      .catch(() => {
+        setAssetsCount(null);
+      });
+
+    // Buscar total de gaps
+    fetch('/api/remediation/gaps')
+      .then((res) => res.json())
+      .then((data) => {
+        const total = data.stats?.total_gaps || 0;
+        if (total > 0) {
+          setGapsCount(`${total} gaps`);
+        } else {
+          setGapsCount(null);
+        }
+      })
+      .catch(() => {
+        setGapsCount(null);
+      });
 
     return () => subscription.unsubscribe();
   }, [pathname]);
@@ -159,6 +191,14 @@ export function Sidebar() {
               const hasSubItems = item.items && item.items.length > 0;
               const isExpanded = expandedItems.includes(item.title);
 
+              // Determinar badge dinâmico
+              let badge = item.badge;
+              if (item.title === 'Análise de Rede' && assetsCount) {
+                badge = assetsCount;
+              } else if (item.title === 'Adequação' && gapsCount) {
+                badge = gapsCount;
+              }
+
               return (
                 <div key={item.title}>
                   {hasSubItems ? (
@@ -176,9 +216,9 @@ export function Sidebar() {
                           <Icon className="h-4 w-4" />
                           <span>{item.title}</span>
                         </div>
-                        {item.badge && (
+                        {badge && (
                           <span className={cn("text-xs", item.badgeColor)}>
-                            {item.badge}
+                            {badge}
                           </span>
                         )}
                         <span
@@ -226,9 +266,9 @@ export function Sidebar() {
                         <Icon className="h-4 w-4" />
                         <span>{item.title}</span>
                       </div>
-                      {item.badge && (
+                      {badge && (
                         <span className={cn("text-xs", item.badgeColor)}>
-                          {item.badge}
+                          {badge}
                         </span>
                       )}
                     </Link>

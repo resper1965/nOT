@@ -71,7 +71,7 @@ const navItems = [
     title: 'Análise de Rede',
     url: '/dashboard/network',
     icon: Activity,
-    badge: '14.6k',
+    badge: null, // Será preenchido dinamicamente
     badgeColor: 'text-green-500',
     items: [
       { title: 'Assets & Inventário', url: '/dashboard/network/assets' },
@@ -86,7 +86,7 @@ const navItems = [
     title: 'Adequação',
     url: '/dashboard/remediation',
     icon: AlertTriangle,
-    badge: '6 gaps',
+    badge: null, // Será preenchido dinamicamente
     badgeColor: 'text-red-500',
     items: [
       { title: 'Gap Analysis ONS', url: '/dashboard/remediation/gaps' },
@@ -123,6 +123,8 @@ const navItems = [
 export default function AppSidebar() {
   const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
+  const [assetsCount, setAssetsCount] = useState<string | null>(null);
+  const [gapsCount, setGapsCount] = useState<string | null>(null);
 
   useEffect(() => {
     // Obter usuário atual
@@ -136,6 +138,36 @@ export default function AppSidebar() {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
+
+    // Buscar total de assets
+    fetch('/api/assets/stats')
+      .then((res) => res.json())
+      .then((data) => {
+        const total = data.total_assets || 0;
+        if (total >= 1000) {
+          setAssetsCount(`${(total / 1000).toFixed(1)}k`);
+        } else {
+          setAssetsCount(total.toString());
+        }
+      })
+      .catch(() => {
+        setAssetsCount(null);
+      });
+
+    // Buscar total de gaps
+    fetch('/api/remediation/gaps')
+      .then((res) => res.json())
+      .then((data) => {
+        const total = data.stats?.total_gaps || 0;
+        if (total > 0) {
+          setGapsCount(`${total} gaps`);
+        } else {
+          setGapsCount(null);
+        }
+      })
+      .catch(() => {
+        setGapsCount(null);
+      });
 
     return () => subscription.unsubscribe();
   }, []);
@@ -174,6 +206,14 @@ export default function AppSidebar() {
           <SidebarMenu>
             {navItems.map((item) => {
               const Icon = item.icon;
+              // Determinar badge dinâmico
+              let badge = item.badge;
+              if (item.title === 'Análise de Rede' && assetsCount) {
+                badge = assetsCount;
+              } else if (item.title === 'Adequação' && gapsCount) {
+                badge = gapsCount;
+              }
+              
               return item?.items && item?.items?.length > 0 ? (
                 <Collapsible
                   key={item.title}
@@ -189,9 +229,9 @@ export default function AppSidebar() {
                       >
                         {item.icon && <item.icon className='size-4' />}
                         <span>{item.title}</span>
-                        {item.badge && (
+                        {badge && (
                           <span className={`ml-auto text-xs ${item.badgeColor}`}>
-                            {item.badge}
+                            {badge}
                           </span>
                         )}
                         <ChevronRight className='ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
@@ -225,9 +265,9 @@ export default function AppSidebar() {
                     <Link href={item.url}>
                       <Icon className='size-4' />
                       <span>{item.title}</span>
-                      {item.badge && (
+                      {badge && (
                         <span className={`ml-auto text-xs ${item.badgeColor}`}>
-                          {item.badge}
+                          {badge}
                         </span>
                       )}
                     </Link>

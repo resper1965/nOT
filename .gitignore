@@ -98,3 +98,4 @@ docs/incidents/INC-002-notificacao-*.md
 
 # Manter estrutura de pastas vazias
 !**/.gitkeep
+.vercel
