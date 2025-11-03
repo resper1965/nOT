@@ -25,13 +25,8 @@ export default function LandingContent() {
             
             <div className="flex items-center gap-4">
               <Link href="/sign-in">
-                <button className="px-4 py-2 text-sm text-gray-300 hover:text-white transition-colors">
-                  Entrar
-                </button>
-              </Link>
-              <Link href="/sign-up">
                 <button className="px-6 py-2 bg-[#00ade8] text-gray-950 rounded-lg hover:bg-[#00ade8]/90 transition-all font-medium text-sm">
-                  Começar Agora
+                  Entrar
                 </button>
               </Link>
             </div>
@@ -64,32 +59,11 @@ export default function LandingContent() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/sign-up">
-                <button className="px-8 py-4 bg-[#00ade8] text-gray-950 rounded-lg hover:bg-[#00ade8]/90 transition-all font-semibold text-lg shadow-xl shadow-[#00ade8]/20">
-                  Começar Gratuitamente
-                </button>
-              </Link>
               <Link href="/sign-in">
-                <button className="px-8 py-4 border border-gray-700 text-white rounded-lg hover:border-[#00ade8] hover:bg-[#00ade8]/5 transition-all font-semibold text-lg">
-                  Fazer Login
+                <button className="px-8 py-4 bg-[#00ade8] text-gray-950 rounded-lg hover:bg-[#00ade8]/90 transition-all font-semibold text-lg shadow-xl shadow-[#00ade8]/20">
+                  Acessar Plataforma
                 </button>
               </Link>
-            </div>
-
-            {/* Trust Indicators */}
-            <div className="flex items-center gap-6 pt-4">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-green-500" />
-                <span className="text-sm text-gray-400">21.909 Assets</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-green-500" />
-                <span className="text-sm text-gray-400">59 VLANs</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-green-500" />
-                <span className="text-sm text-gray-400">100% Segmentação</span>
-              </div>
             </div>
           </div>
 
@@ -114,27 +88,12 @@ export default function LandingContent() {
                   </button>
                 </Link>
 
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-700"></div>
+                {/* Security Badge */}
+                <div className="pt-4 border-t border-gray-800">
+                  <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
+                    <Lock className="w-3 h-3" />
+                    <span>Protegido com autenticação multi-fator</span>
                   </div>
-                  <div className="relative flex justify-center text-xs">
-                    <span className="bg-gray-900 px-2 text-gray-500">Primeira vez?</span>
-                  </div>
-                </div>
-
-                <Link href="/sign-up">
-                  <button className="w-full px-6 py-4 border border-gray-700 text-white rounded-lg hover:border-[#00ade8] hover:bg-[#00ade8]/5 transition-all font-medium text-base">
-                    Criar Conta Gratuita
-                  </button>
-                </Link>
-              </div>
-
-              {/* Security Badge */}
-              <div className="mt-6 pt-6 border-t border-gray-800">
-                <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
-                  <Lock className="w-3 h-3" />
-                  <span>Protegido com autenticação multi-fator</span>
                 </div>
               </div>
             </div>
@@ -152,12 +111,9 @@ export default function LandingContent() {
             <h3 className="text-xl font-semibold text-white mb-3">Análise de Rede</h3>
             <p className="text-gray-400 text-sm leading-relaxed">
               Mapeamento automático de topologia, VLANs, roteamento Layer 3 e 
-              análise de vulnerabilidades com NetworkX.
+              análise de vulnerabilidades com NetworkX. Identificação automática de 
+              dispositivos, conexões e análise de fluxo de tráfego.
             </p>
-            <div className="mt-4 flex items-center gap-2 text-xs text-[#00ade8]">
-              <CheckCircle className="w-4 h-4" />
-              <span>170 rotas analisadas</span>
-            </div>
           </div>
 
           <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-6 hover:border-[#00ade8]/50 transition-all">
@@ -167,12 +123,9 @@ export default function LandingContent() {
             <h3 className="text-xl font-semibold text-white mb-3">Compliance</h3>
             <p className="text-gray-400 text-sm leading-relaxed">
               Conformidade com ANEEL RN 964/2021, Controles ONS e frameworks 
-              internacionais (IEC 62443, NIST, ISO 27001).
+              internacionais (IEC 62443, NIST, ISO 27001). Gestão de documentos 
+              de compliance e auditoria automatizada.
             </p>
-            <div className="mt-4 flex items-center gap-2 text-xs text-[#00ade8]">
-              <CheckCircle className="w-4 h-4" />
-              <span>23 documentos obrigatórios</span>
-            </div>
           </div>
 
           <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-6 hover:border-[#00ade8]/50 transition-all">
@@ -182,36 +135,9 @@ export default function LandingContent() {
             <h3 className="text-xl font-semibold text-white mb-3">Modelo Purdue</h3>
             <p className="text-gray-400 text-sm leading-relaxed">
               Classificação automática de VLANs em níveis Purdue (0-5), geração 
-              de regras de firewall e análise de segmentação OT/IT.
+              de regras de firewall e análise de segmentação OT/IT. Mapeamento 
+              de zonas de segurança e isolamento de redes críticas.
             </p>
-            <div className="mt-4 flex items-center gap-2 text-xs text-[#00ade8]">
-              <CheckCircle className="w-4 h-4" />
-              <span>59 VLANs classificadas</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Banner */}
-      <section className="border-t border-gray-800 bg-gray-950/80 backdrop-blur-sm">
-        <div className="container mx-auto px-6 py-12">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-4xl font-bold text-[#00ade8] mb-2">21.909</div>
-              <div className="text-sm text-gray-400">Assets Catalogados</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-[#00ade8] mb-2">0</div>
-              <div className="text-sm text-gray-400">Vulnerabilidades Críticas</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-[#00ade8] mb-2">100%</div>
-              <div className="text-sm text-gray-400">VLANs Classificadas</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-[#00ade8] mb-2">40</div>
-              <div className="text-sm text-gray-400">Dispositivos L3</div>
-            </div>
           </div>
         </div>
       </section>
@@ -224,8 +150,6 @@ export default function LandingContent() {
               © 2025 <span className="text-white font-medium">ness.</span> - OT GRC Platform
             </div>
             <div className="flex items-center gap-6 text-sm text-gray-500">
-              <span>Cliente: TBE - Setor Elétrico</span>
-              <span>•</span>
               <span>Powered by Supabase Authentication</span>
             </div>
           </div>
@@ -234,4 +158,3 @@ export default function LandingContent() {
     </div>
   );
 }
-
