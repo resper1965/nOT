@@ -466,6 +466,22 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Drop existing triggers if they exist (for idempotent execution)
+DROP TRIGGER IF EXISTS update_assets_updated_at ON security.assets;
+DROP TRIGGER IF EXISTS update_vulnerabilities_updated_at ON security.vulnerabilities;
+DROP TRIGGER IF EXISTS update_incidents_updated_at ON security.incidents;
+DROP TRIGGER IF EXISTS update_subnets_updated_at ON topology.ip_subnets;
+DROP TRIGGER IF EXISTS update_ips_updated_at ON topology.ip_addresses;
+DROP TRIGGER IF EXISTS update_vlans_updated_at ON topology.vlans;
+DROP TRIGGER IF EXISTS update_connections_updated_at ON topology.connections;
+DROP TRIGGER IF EXISTS update_frameworks_updated_at ON compliance.frameworks;
+DROP TRIGGER IF EXISTS update_controls_updated_at ON compliance.controls;
+DROP TRIGGER IF EXISTS update_documents_updated_at ON compliance.documents;
+DROP TRIGGER IF EXISTS update_document_categories_updated_at ON compliance.document_categories;
+DROP TRIGGER IF EXISTS update_required_documents_updated_at ON compliance.required_documents;
+DROP TRIGGER IF EXISTS update_document_status_updated_at ON compliance.document_status;
+DROP TRIGGER IF EXISTS update_document_review_schedule_updated_at ON compliance.document_review_schedule;
+
 -- Apply triggers to all tables with updated_at
 CREATE TRIGGER update_assets_updated_at BEFORE UPDATE ON security.assets
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
