@@ -91,40 +91,36 @@ export default function SignInPage() {
 
       console.log('✅ [DEBUG] Sessão confirmada, preparando redirecionamento');
 
-      // Aguardar um pouco para garantir que cookies sejam salvos
-      await new Promise(resolve => setTimeout(resolve, 500));
-
       // Verificar parâmetro redirectedFrom na URL
       const urlParams = new URLSearchParams(window.location.search);
       const redirectedFrom = urlParams.get('redirectedFrom');
       const redirectPath = redirectedFrom || '/dashboard';
       
       console.log('🚀 [DEBUG] Redirecionando para:', redirectPath);
-      
-      // Forçar refresh da sessão antes de redirecionar
-      await supabase.auth.refreshSession();
-      
-      // Aguardar mais um pouco após refresh
-      await new Promise(resolve => setTimeout(resolve, 300));
-
-      // Verificar sessão final antes de redirecionar
-      const { data: finalSession } = await supabase.auth.getSession();
-      if (!finalSession?.session) {
-        console.error('❌ [DEBUG] Sessão não disponível após refresh');
-        setError('Erro ao atualizar sessão. Tente novamente.');
-        setLoading(false);
-        return;
-      }
-
-      console.log('✅ [DEBUG] Redirecionando agora para:', redirectPath);
       console.log('🔍 [DEBUG] Cookies antes do redirecionamento:', {
         cookies: document.cookie.split(';').map(c => c.trim().split('=')[0]),
         hasSbCookies: document.cookie.includes('sb-'),
       });
 
-      // Usar window.location.replace para forçar reload completo
+      // Aguardar um pouco para garantir que cookies sejam salvos
+      await new Promise(resolve => setTimeout(resolve, 200));
+
+      // Redirecionar usando window.location.replace para forçar reload completo
       // Isso garante que o middleware veja a sessão
-      window.location.replace(redirectPath);
+      // IMPORTANTE: Não usar await ou return após isso
+      console.log('🔄 [DEBUG] Executando redirecionamento agora...');
+      
+      // Usar window.location.href como fallback se replace não funcionar
+      try {
+        window.location.replace(redirectPath);
+        // Se chegou aqui, replace não funcionou
+        console.warn('⚠️ [DEBUG] window.location.replace não redirecionou, tentando href...');
+        window.location.href = redirectPath;
+      } catch (err) {
+        console.error('❌ [DEBUG] Erro ao redirecionar:', err);
+        // Última tentativa: usar router
+        router.push(redirectPath);
+      }
       
     } catch (err: any) {
       console.error('❌ [DEBUG] Erro capturado:', err);
