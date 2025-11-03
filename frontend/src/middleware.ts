@@ -69,44 +69,46 @@ export async function middleware(request: NextRequest) {
     }
   );
 
+  // Atualizar sessão do Supabase antes de verificar (importante após login)
+  // Isso garante que cookies sejam atualizados corretamente
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
   // Verificar autenticação do usuário
   const {
     data: { user },
     error: authError,
   } = await supabase.auth.getUser();
 
-  // Debug: Log para entender o que está acontecendo
-  if (process.env.NODE_ENV === 'development') {
-    console.log('🔍 [MIDDLEWARE DEBUG]', {
-      pathname: request.nextUrl.pathname,
-      hasUser: !!user,
-      userId: user?.id,
-      userEmail: user?.email,
-      authError: authError ? {
-        message: authError.message,
-        status: authError.status,
-      } : null,
-      cookies: {
-        hasSbCookie: request.cookies.toString().includes('sb-'),
-        cookieNames: request.cookies.getAll().map(c => c.name),
-      },
-    });
-  }
+  // Debug: Log para entender o que está acontecendo (sempre logar para debug)
+  console.log('🔍 [MIDDLEWARE DEBUG]', {
+    pathname: request.nextUrl.pathname,
+    hasUser: !!user,
+    hasSession: !!session,
+    userId: user?.id,
+    userEmail: user?.email,
+    authError: authError ? {
+      message: authError.message,
+      status: authError.status,
+    } : null,
+    cookies: {
+      hasSbCookie: request.cookies.toString().includes('sb-'),
+      cookieNames: request.cookies.getAll().map(c => c.name),
+      sbCookies: request.cookies.getAll().filter(c => c.name.startsWith('sb-')).map(c => c.name),
+    },
+  });
 
   // Se não estiver autenticado, redirecionar para sign-in
   if (!user) {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('❌ [MIDDLEWARE DEBUG] Usuário não autenticado, redirecionando para /sign-in');
-    }
+    console.log('❌ [MIDDLEWARE DEBUG] Usuário não autenticado, redirecionando para /sign-in');
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = '/sign-in';
     redirectUrl.searchParams.set('redirectedFrom', request.nextUrl.pathname);
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (process.env.NODE_ENV === 'development') {
-    console.log('✅ [MIDDLEWARE DEBUG] Usuário autenticado, permitindo acesso');
-  }
+  console.log('✅ [MIDDLEWARE DEBUG] Usuário autenticado, permitindo acesso');
 
   return supabaseResponse;
 }
