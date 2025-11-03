@@ -1,12 +1,12 @@
 // API Route for IP Address Management (IPAM) data
 import { NextResponse } from 'next/server';
-import { getAdminSupabaseClient } from '@/lib/supabase-admin';
+import { createServerClient } from '@/lib/supabase-server';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const supabase = getAdminSupabaseClient();
+    const supabase = await createServerClient();
 
     // 1. Get total subnets
     const { data: subnets, error: subnetsError } = await supabase
