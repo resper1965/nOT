@@ -45,7 +45,6 @@ export const brandConfig = {
     es: 'Gobernanza, Riesgo y Cumplimiento para Redes OT',
   },
   client: {
-    name: 'TBE',
     segment: {
       pt: 'Setor Elétrico',
       en: 'Electric Sector',

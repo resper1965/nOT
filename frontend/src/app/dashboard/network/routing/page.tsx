@@ -245,7 +245,7 @@ export default async function RoutingPage() {
         </div>
         <div className='p-4'>
           <div className='bg-gray-900 rounded-lg p-4 font-mono text-xs'>
-            <div className='text-brand-cyan mb-3'>📊 ANÁLISE DE ROTEAMENTO OT - TBE</div>
+            <div className='text-brand-cyan mb-3'>📊 ANÁLISE DE ROTEAMENTO OT</div>
             <div className='space-y-2 text-gray-300'>
               <div>
                 <span className='text-green-500'>✓</span> Parsing de configurações: 40 dispositivos processados
@@ -272,7 +272,7 @@ export default async function RoutingPage() {
                 <span className='text-green-500'>✓</span> Resultado: 0 vulnerabilidades detectadas
               </div>
               <div className='mt-3 pt-3 border-t border-gray-700'>
-                <span className='text-green-500'>CONCLUSÃO:</span> Rede TBE corretamente segmentada
+                <span className='text-green-500'>CONCLUSÃO:</span> Rede corretamente segmentada
               </div>
               <div className='text-gray-400 ml-4'>
                 Nenhum caminho direto entre zonas críticas (IT → SCADA/PLC)

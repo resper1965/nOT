@@ -339,7 +339,7 @@ export default function RemediationPage() {
             <div>
               <h3 className="font-semibold mb-2 text-orange-500">Pronto para Iniciar Gap Analysis</h3>
               <p className="text-sm text-gray-400 mb-4">
-                O sistema identificou automaticamente 6 gaps críticos baseado nos dados da rede TBE (3.907 ativos, 109 subnets, 59 VLANs) 
+                O sistema identificou automaticamente 6 gaps críticos baseado nos dados da rede (3.907 ativos, 109 subnets, 59 VLANs) 
                 cruzados com os requisitos ONS. Esforço total estimado: <strong>560 horas</strong> (14 semanas-pessoa).
               </p>
               <div className="flex gap-3">

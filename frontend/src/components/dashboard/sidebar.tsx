@@ -18,7 +18,7 @@ import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 import * as React from "react";
 
-// Menu principal TBE-OT
+// Menu principal OT GRC
 const navItems = [
   {
     title: "Visão Geral",

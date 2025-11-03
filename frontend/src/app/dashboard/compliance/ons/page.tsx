@@ -22,7 +22,7 @@ export default async function OnsControlsPage() {
         <div>
           <h1 className='text-3xl font-bold'>Controles ONS</h1>
           <p className='text-muted-foreground'>
-            10 controles de segurança baseados na análise real da rede TBE
+            10 controles de segurança baseados na análise real da rede
           </p>
         </div>
         <div className='flex items-center gap-2 text-sm text-muted-foreground'>
@@ -75,7 +75,7 @@ export default async function OnsControlsPage() {
         <div className='p-4 border-b'>
           <h2 className='text-lg font-semibold'>Status dos Controles ONS</h2>
           <p className='text-sm text-muted-foreground mt-1'>
-            Baseado na análise real da infraestrutura TBE
+            Baseado na análise real da infraestrutura
           </p>
         </div>
         <div className='p-4'>

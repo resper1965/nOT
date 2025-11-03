@@ -20,7 +20,7 @@ export default async function AssetsPage() {
     <div className='flex flex-1 flex-col gap-4 p-4 pt-0'>
       <div className='flex items-center justify-between'>
         <div>
-          <h1 className='text-3xl font-bold'>Assets & Inventário da Rede TBE</h1>
+          <h1 className='text-3xl font-bold'>Assets & Inventário da Rede</h1>
           <p className='text-muted-foreground'>
             {stats.total_assets?.toLocaleString('pt-BR') || 0} ativos importados e analisados
           </p>
@@ -71,7 +71,7 @@ export default async function AssetsPage() {
             <HardDrive className='h-5 w-5 text-brand-cyan' />
           </div>
           <div className='text-3xl font-bold'>{stats.total_assets?.toLocaleString('pt-BR') || 0}</div>
-          <div className='text-xs text-muted-foreground mt-1'>Assets TBE</div>
+          <div className='text-xs text-muted-foreground mt-1'>Assets</div>
         </div>
       </div>
 

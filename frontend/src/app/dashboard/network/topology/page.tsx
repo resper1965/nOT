@@ -8,7 +8,7 @@ export default async function TopologyPage() {
   return (
     <div className='flex flex-1 flex-col gap-4 p-4 pt-0'>
       <div>
-        <h1 className='text-3xl font-bold'>Topologia Visual da Rede TBE</h1>
+        <h1 className='text-3xl font-bold'>Topologia Visual da Rede</h1>
         <p className='text-muted-foreground'>
           {stats.total_assets?.toLocaleString('pt-BR') || 0} assets | {topology.connections} conexões mapeadas
         </p>

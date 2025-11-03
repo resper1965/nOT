@@ -72,7 +72,7 @@ export default async function IPAMPage() {
               </div>
             </div>
             <p className='text-sm text-muted-foreground mb-4'>
-              <strong>Esforço</strong>: 80 horas (2 semanas) | <strong>Deliverable</strong>: TBE-SUBNET-PURDUE-MAPPING.xlsx
+              <strong>Esforço</strong>: 80 horas (2 semanas) | <strong>Deliverable</strong>: SUBNET-PURDUE-MAPPING.xlsx
             </p>
             <div className='flex gap-3'>
               <button className='px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-all text-sm font-medium'>

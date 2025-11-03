@@ -60,7 +60,7 @@ export default async function VLANsPage() {
               conforme Modelo Purdue.
             </p>
             <p className='text-sm text-muted-foreground mb-3'>
-              <strong>Realidade TBE</strong>: {topology.vlans || 0} VLANs identificadas mas NENHUMA está classificada por zona ou nível Purdue.
+              <strong>Realidade</strong>: {topology.vlans || 0} VLANs identificadas mas NENHUMA está classificada por zona ou nível Purdue.
             </p>
             <div className='flex gap-3'>
               <button className='px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-all text-sm font-medium'>

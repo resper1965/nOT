@@ -43,7 +43,6 @@ import * as React from 'react';
 const company = {
   name: 'ness.',
   subtitle: 'OT GRC',
-  client: 'TBE',
   plan: 'Enterprise'
 };
 
@@ -269,7 +268,7 @@ export default function AppSidebar() {
                 <Building2 className='size-4 text-purple-500' />
               </div>
               <div className='grid flex-1 text-left text-sm leading-tight'>
-                <span className='truncate font-semibold text-xs'>Cliente TBE</span>
+                <span className='truncate font-semibold text-xs'>Sistema OT GRC</span>
                 <span className='truncate text-[10px] text-muted-foreground'>
                   Setor Elétrico
                 </span>
