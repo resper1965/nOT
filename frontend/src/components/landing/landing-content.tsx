@@ -34,38 +34,37 @@ export default function LandingContent() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="container mx-auto px-6 pt-20 pb-32">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left: Content */}
-          <div className="space-y-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00ade8]/10 border border-[#00ade8]/20">
-              <Lock className="w-4 h-4 text-[#00ade8]" />
-              <span className="text-sm text-[#00ade8] font-medium">Compliance ANEEL RN 964/2021</span>
-            </div>
-            
-            <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-              <span className="text-white">Governance, Risk & Compliance</span>
-              <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00ade8] to-cyan-400">
-                para Redes OT
-              </span>
-            </h1>
-            
-            <p className="text-xl text-gray-400 leading-relaxed">
-              Plataforma completa de segurança cibernética para o setor elétrico. 
-              Análise automatizada de vulnerabilidades, compliance regulatório e 
-              modelo Purdue para segmentação de redes industriais.
-            </p>
+            {/* Hero Section */}
+            <section className="container mx-auto px-6 pt-12 pb-16">
+              <div className="grid lg:grid-cols-2 gap-8 items-center">
+                {/* Left: Content */}
+                <div className="space-y-6">
+                  <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
+                    <span className="text-white">Governance, Risk & Compliance</span>
+                    <br />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00ade8] to-cyan-400">
+                      para Redes OT
+                    </span>
+                  </h1>
+                  
+                  <p className="text-lg text-gray-400 leading-relaxed">
+                    Plataforma completa de segurança cibernética para o setor elétrico. 
+                    Análise automatizada de vulnerabilidades, compliance regulatório e 
+                    modelo Purdue para segmentação de redes industriais.
+                  </p>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/sign-in">
-                <button className="px-8 py-4 bg-[#00ade8] text-gray-950 rounded-lg hover:bg-[#00ade8]/90 transition-all font-semibold text-lg shadow-xl shadow-[#00ade8]/20">
-                  Acessar Plataforma
-                </button>
-              </Link>
-            </div>
-          </div>
+                  <div className="flex flex-col sm:flex-row gap-3 items-center">
+                    <Link href="/sign-in">
+                      <button className="px-8 py-4 bg-[#00ade8] text-gray-950 rounded-lg hover:bg-[#00ade8]/90 transition-all font-semibold text-lg shadow-xl shadow-[#00ade8]/20">
+                        Acessar Plataforma
+                      </button>
+                    </Link>
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00ade8]/10 border border-[#00ade8]/20">
+                      <Lock className="w-4 h-4 text-[#00ade8]" />
+                      <span className="text-sm text-[#00ade8] font-medium">Compliance ANEEL RN 964/2021</span>
+                    </div>
+                  </div>
+                </div>
 
           {/* Right: Auth Box */}
           <div className="relative">
@@ -101,9 +100,9 @@ export default function LandingContent() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="container mx-auto px-6 pb-20">
-        <div className="grid md:grid-cols-3 gap-8">
+            {/* Features Section */}
+            <section className="container mx-auto px-6 pb-12">
+              <div className="grid md:grid-cols-3 gap-6">
           <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-6 hover:border-[#00ade8]/50 transition-all">
             <div className="w-12 h-12 rounded-lg bg-[#00ade8]/10 flex items-center justify-center mb-4">
               <Network className="w-6 h-6 text-[#00ade8]" />
