@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { FileText, CheckCircle2, XCircle, Clock, AlertTriangle, ExternalLink, Upload } from 'lucide-react'
 import { getComplianceDocuments } from '@/lib/api'
 import { DocumentUploadDialog } from '@/components/compliance/DocumentUploadDialog'
