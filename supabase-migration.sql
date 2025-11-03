@@ -270,6 +270,29 @@ CREATE TABLE IF NOT EXISTS compliance.documents (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Add columns if table exists without them (for indexes)
+DO $$ 
+BEGIN
+    -- Add category column if missing
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'compliance' AND table_name = 'documents')
+       AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'compliance' AND table_name = 'documents' AND column_name = 'category')
+    THEN
+        ALTER TABLE compliance.documents ADD COLUMN category VARCHAR(100);
+    END IF;
+    -- Add status column if missing
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'compliance' AND table_name = 'documents')
+       AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'compliance' AND table_name = 'documents' AND column_name = 'status')
+    THEN
+        ALTER TABLE compliance.documents ADD COLUMN status VARCHAR(50) DEFAULT 'pending';
+    END IF;
+    -- Add framework_id column if missing
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'compliance' AND table_name = 'documents')
+       AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'compliance' AND table_name = 'documents' AND column_name = 'framework_id')
+    THEN
+        ALTER TABLE compliance.documents ADD COLUMN framework_id UUID REFERENCES compliance.frameworks(id) ON DELETE SET NULL;
+    END IF;
+END $$;
+
 CREATE INDEX IF NOT EXISTS idx_documents_category ON compliance.documents(category);
 CREATE INDEX IF NOT EXISTS idx_documents_status ON compliance.documents(status);
 CREATE INDEX IF NOT EXISTS idx_documents_framework ON compliance.documents(framework_id);
