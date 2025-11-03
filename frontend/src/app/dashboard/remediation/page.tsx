@@ -279,11 +279,12 @@ export default async function RemediationPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {phases.slice(0, 3).map((phase: any) => {
-                const phaseColors = {
+                const phaseColorsMap: Record<string, { bg: string; border: string; text: string }> = {
                   'phase-1': { bg: 'bg-brand-cyan/10', border: 'border-brand-cyan/20', text: 'text-brand-cyan' },
                   'phase-2': { bg: 'bg-purple-500/10', border: 'border-purple-500/20', text: 'text-purple-500' },
                   'phase-3': { bg: 'bg-green-500/10', border: 'border-green-500/20', text: 'text-green-500' },
-                }[phase.id] || { bg: 'bg-gray-900', border: 'border-gray-800', text: 'text-gray-400' };
+                };
+                const phaseColors = phaseColorsMap[phase.id as string] || { bg: 'bg-gray-900', border: 'border-gray-800', text: 'text-gray-400' };
                 
                 return (
                   <div key={phase.id} className={`surface-1 p-6 rounded-lg border ${phaseColors.border}`}>
