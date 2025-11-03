@@ -122,7 +122,9 @@ CREATE TABLE IF NOT EXISTS topology.ip_subnets (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX IF NOT EXISTS idx_subnets_network ON topology.ip_subnets USING GIST (network_address);
+-- GIST index requires inet_ops operator class or btree_gist extension
+-- Using B-tree index instead for compatibility
+CREATE INDEX IF NOT EXISTS idx_subnets_network ON topology.ip_subnets(network_address);
 CREATE INDEX IF NOT EXISTS idx_subnets_purdue ON topology.ip_subnets(purdue_level);
 
 -- IP Addresses
@@ -139,7 +141,9 @@ CREATE TABLE IF NOT EXISTS topology.ip_addresses (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX IF NOT EXISTS idx_ips_address ON topology.ip_addresses USING GIST (ip_address);
+-- GIST index requires inet_ops operator class or btree_gist extension
+-- Using B-tree index instead for compatibility
+CREATE INDEX IF NOT EXISTS idx_ips_address ON topology.ip_addresses(ip_address);
 CREATE INDEX IF NOT EXISTS idx_ips_subnet ON topology.ip_addresses(subnet_id);
 CREATE INDEX IF NOT EXISTS idx_ips_asset ON topology.ip_addresses(asset_id);
 
