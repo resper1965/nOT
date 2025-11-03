@@ -237,6 +237,17 @@ CREATE TABLE IF NOT EXISTS compliance.controls (
 );
 
 CREATE INDEX IF NOT EXISTS idx_controls_framework ON compliance.controls(framework_id);
+
+-- Add control_code column if table exists without it
+DO $$ 
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'compliance' AND table_name = 'controls')
+       AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'compliance' AND table_name = 'controls' AND column_name = 'control_code')
+    THEN
+        ALTER TABLE compliance.controls ADD COLUMN control_code VARCHAR(100);
+    END IF;
+END $$;
+
 CREATE INDEX IF NOT EXISTS idx_controls_code ON compliance.controls(control_code);
 
 -- Compliance Documents
