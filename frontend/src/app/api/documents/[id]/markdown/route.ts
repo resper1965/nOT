@@ -22,7 +22,7 @@ export async function GET(
 
     // Buscar documento
     const { data: document, error: docError } = await supabase
-      .from('compliance.documents')
+      .from('documents')
       .select('*')
       .eq('id', documentId)
       .single()
@@ -90,7 +90,7 @@ export async function PUT(
 
     // Buscar documento atual
     const { data: document, error: docError } = await supabase
-      .from('compliance.documents')
+      .from('documents')
       .select('*')
       .eq('id', documentId)
       .single()
@@ -129,7 +129,7 @@ export async function PUT(
 
     // Atualizar banco de dados
     const { error: updateError } = await supabase
-      .from('compliance.documents')
+      .from('documents')
       .update({
         markdown_content: content,
         markdown_path: markdownPath,

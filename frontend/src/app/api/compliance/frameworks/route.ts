@@ -9,7 +9,7 @@ export async function GET() {
 
     // Get frameworks
     const { data: frameworks, error: frameworksError } = await supabase
-      .from('compliance.frameworks')
+      .from('frameworks')
       .select('*')
       .order('framework_name', { ascending: true });
 
@@ -17,7 +17,7 @@ export async function GET() {
 
     // Get controls count per framework
     const { data: controls, error: controlsError } = await supabase
-      .from('compliance.controls')
+      .from('controls')
       .select('framework_id');
 
     if (controlsError) throw controlsError;
@@ -32,7 +32,7 @@ export async function GET() {
 
     // Get assessments to determine compliance status
     const { data: assessments, error: assessmentsError } = await supabase
-      .from('compliance.assessments')
+      .from('assessments')
       .select('framework_id, compliance_percentage, status');
 
     if (assessmentsError) throw assessmentsError;

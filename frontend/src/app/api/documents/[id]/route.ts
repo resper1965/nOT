@@ -22,7 +22,7 @@ export async function GET(
 
     // Buscar documento
     const { data: document, error: docError } = await supabase
-      .from('compliance.documents')
+      .from('documents')
       .select('*')
       .eq('id', documentId)
       .single()

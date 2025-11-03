@@ -9,25 +9,31 @@ export async function GET() {
     const supabase = createServerClient();
     
     // Get all compliance documents
+    // Note: Supabase PostgREST requires schema to be exposed or use views in public schema
+    // For now, we'll access the table directly - if it fails, we'll need to create views
     const { data: documents, error } = await supabase
-      .from('compliance.documents')
+      .from('documents')
       .select('*')
       .order('created_at', { ascending: false });
     
-    if (error) throw error;
+    if (error) {
+      // If table not found, try with schema prefix (may not work with PostgREST)
+      console.error('Error accessing documents table:', error);
+      throw error;
+    }
     
     // Get statistics
     const { count: total } = await supabase
-      .from('compliance.documents')
+      .from('documents')
       .select('*', { count: 'exact', head: true });
     
     const { count: approved } = await supabase
-      .from('compliance.documents')
+      .from('documents')
       .select('*', { count: 'exact', head: true })
       .eq('status', 'approved');
     
     const { count: pending } = await supabase
-      .from('compliance.documents')
+      .from('documents')
       .select('*', { count: 'exact', head: true })
       .eq('status', 'pending');
     

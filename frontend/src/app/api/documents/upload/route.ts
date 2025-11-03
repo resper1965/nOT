@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
 
     // Criar registro no banco de dados
     const { data: document, error: dbError } = await supabase
-      .from('compliance.documents')
+      .from('documents')
       .insert({
         id: documentId,
         original_filename: file.name,

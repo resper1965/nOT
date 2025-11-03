@@ -10,14 +10,14 @@ export async function GET() {
     
     // Get total assets count
     const { count: totalAssets, error: countError } = await supabase
-      .from('security.assets')
+      .from('assets')
       .select('*', { count: 'exact', head: true });
     
     if (countError) throw countError;
     
     // Get all assets for aggregation
     const { data: assets, error: assetsError } = await supabase
-      .from('security.assets')
+      .from('assets')
       .select('asset_type, criticality');
     
     if (assetsError) throw assetsError;
@@ -45,11 +45,11 @@ export async function GET() {
     
     // Get VLAN and IP counts
     const { count: vlanCount } = await supabase
-      .from('topology.vlans')
+      .from('vlans')
       .select('*', { count: 'exact', head: true });
     
     const { count: ipCount } = await supabase
-      .from('topology.ip_addresses')
+      .from('ip_addresses')
       .select('*', { count: 'exact', head: true });
     
     return NextResponse.json({

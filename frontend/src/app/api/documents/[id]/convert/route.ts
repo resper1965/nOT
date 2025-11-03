@@ -18,7 +18,7 @@ export async function POST(
 
     // Buscar informações do documento
     const { data: document, error: docError } = await supabase
-      .from('compliance.documents')
+      .from('documents')
       .select('*')
       .eq('id', documentId)
       .single()
@@ -42,7 +42,7 @@ export async function POST(
 
     // Atualizar status para "processing"
     await supabase
-      .from('compliance.documents')
+      .from('documents')
       .update({
         conversion_status: 'processing',
         updated_at: new Date().toISOString(),
@@ -59,7 +59,7 @@ export async function POST(
       
       // Atualizar status para "failed"
       await supabase
-        .from('compliance.documents')
+        .from('documents')
         .update({
           conversion_status: 'failed',
           conversion_error: `Storage download failed: ${storageError?.message}`,
@@ -108,7 +108,7 @@ export async function POST(
         
         // Atualizar status para "failed"
         await supabase
-          .from('compliance.documents')
+          .from('documents')
           .update({
             conversion_status: 'failed',
             conversion_error: `Markdown upload failed: ${markdownUploadError.message}`,
@@ -124,7 +124,7 @@ export async function POST(
 
       // Atualizar banco de dados com o Markdown
       const { error: updateError } = await supabase
-        .from('compliance.documents')
+        .from('documents')
         .update({
           markdown_content: markdownContent,
           markdown_path: markdownPath,
@@ -160,7 +160,7 @@ export async function POST(
       
       // Atualizar status para "failed"
       await supabase
-        .from('compliance.documents')
+        .from('documents')
         .update({
           conversion_status: 'failed',
           conversion_error: `Conversion failed: ${conversionError.message}`,

@@ -11,7 +11,7 @@ export async function GET() {
     
     // Simple query to test connection
     const { data, error } = await supabase
-      .from('security.assets')
+      .from('assets')
       .select('id')
       .limit(1);
     

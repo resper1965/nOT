@@ -20,14 +20,14 @@ export async function getAssetsStatsFromSupabase() {
   try {
     // Get total count
     const { count: totalAssets, error: countError } = await supabase
-      .from('security.assets')
+      .from('assets')
       .select('*', { count: 'exact', head: true });
     
     if (countError) throw countError;
     
     // Get assets by type
     const { data: byTypeData, error: byTypeError } = await supabase
-      .from('security.assets')
+      .from('assets')
       .select('asset_type')
       .not('asset_type', 'is', null);
     
@@ -47,7 +47,7 @@ export async function getAssetsStatsFromSupabase() {
     
     // Get assets by criticality
     const { data: byCriticalityData, error: byCriticalityError } = await supabase
-      .from('security.assets')
+      .from('assets')
       .select('criticality')
       .not('criticality', 'is', null);
     
@@ -66,11 +66,11 @@ export async function getAssetsStatsFromSupabase() {
     
     // Get VLAN and IP counts for complete stats
     const { count: vlanCount } = await supabase
-      .from('topology.vlans')
+      .from('vlans')
       .select('*', { count: 'exact', head: true });
     
     const { count: ipCount } = await supabase
-      .from('topology.ip_addresses')
+      .from('ip_addresses')
       .select('*', { count: 'exact', head: true });
     
     return {
@@ -103,7 +103,7 @@ export async function getVLANsFromSupabase() {
   
   try {
     const { data, error } = await supabase
-      .from('topology.vlans')
+      .from('vlans')
       .select('*')
       .order('vlan_id', { ascending: true });
     
@@ -130,17 +130,17 @@ export async function getNetworkTopologyFromSupabase() {
   try {
     // Get VLAN count
     const { count: vlanCount } = await supabase
-      .from('topology.vlans')
+      .from('vlans')
       .select('*', { count: 'exact', head: true });
     
     // Get IP addresses count
     const { count: ipCount } = await supabase
-      .from('topology.ip_addresses')
+      .from('ip_addresses')
       .select('*', { count: 'exact', head: true });
     
     // Get assets by type for devices summary
     const { data: assets } = await supabase
-      .from('security.assets')
+      .from('assets')
       .select('asset_type');
     
     const devicesMap = new Map<string, number>();
@@ -183,7 +183,7 @@ export async function getComplianceDocumentsFromSupabase() {
   
   try {
     const { data, error } = await supabase
-      .from('compliance.documents')
+      .from('documents')
       .select('*')
       .order('created_at', { ascending: false });
     
@@ -236,7 +236,7 @@ export async function getOnsControlsFromSupabase() {
   
   try {
     const { data, error } = await supabase
-      .from('compliance.ons_controls')
+      .from('ons_controls')
       .select('*')
       .order('control_id', { ascending: true });
     
@@ -278,7 +278,7 @@ export async function getAssetsListFromSupabase(limit = 100, offset = 0) {
   
   try {
     const { data, error, count } = await supabase
-      .from('security.assets')
+      .from('assets')
       .select('*', { count: 'exact' })
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);

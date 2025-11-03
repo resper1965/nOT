@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     
     // Get assets with pagination
     const { data: assets, error } = await supabase
-      .from('security.assets')
+      .from('assets')
       .select('*')
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
     
     // Get total count
     const { count } = await supabase
-      .from('security.assets')
+      .from('assets')
       .select('*', { count: 'exact', head: true });
     
     return NextResponse.json({

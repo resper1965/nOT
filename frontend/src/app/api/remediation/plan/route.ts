@@ -9,29 +9,29 @@ export async function GET() {
 
     // Compute gaps inline (reuse gaps logic)
     const { count: subnetCount } = await supabase
-      .from('topology.ip_subnets')
+      .from('ip_subnets')
       .select('*', { count: 'exact', head: true });
 
     const { count: subnetMappedCount } = await supabase
-      .from('topology.ip_subnets')
+      .from('ip_subnets')
       .select('*', { count: 'exact', head: true })
       .not('purdue_level', 'is', null);
 
     const { count: vlanCount } = await supabase
-      .from('topology.vlans')
+      .from('vlans')
       .select('*', { count: 'exact', head: true });
 
     const { count: vlanClassifiedCount } = await supabase
-      .from('topology.vlans')
+      .from('vlans')
       .select('*', { count: 'exact', head: true })
       .not('purdue_level', 'is', null);
 
     const { count: connectionCount } = await supabase
-      .from('topology.connections')
+      .from('network_connections')
       .select('*', { count: 'exact', head: true });
 
     const { count: firewallCount } = await supabase
-      .from('security.assets')
+      .from('assets')
       .select('*', { count: 'exact', head: true })
       .ilike('asset_type', '%firewall%');
 

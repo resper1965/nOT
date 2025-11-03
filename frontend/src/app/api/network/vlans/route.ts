@@ -10,7 +10,7 @@ export async function GET() {
     
     // Get all VLANs
     const { data: vlans, error } = await supabase
-      .from('topology.vlans')
+      .from('vlans')
       .select('*')
       .order('vlan_id');
     
@@ -18,7 +18,7 @@ export async function GET() {
     
     // Get count
     const { count } = await supabase
-      .from('topology.vlans')
+      .from('vlans')
       .select('*', { count: 'exact', head: true });
     
     return NextResponse.json({

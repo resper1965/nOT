@@ -9,7 +9,7 @@ export async function GET() {
 
     // Get vulnerabilities by severity
     const { data: vulnerabilities, error: vulnError } = await supabase
-      .from('security.vulnerabilities')
+      .from('vulnerabilities')
       .select('severity, cvss_score, status, asset_id')
       .eq('status', 'open');
 
@@ -17,7 +17,7 @@ export async function GET() {
 
     // Get assets by criticality
     const { data: assets, error: assetsError } = await supabase
-      .from('security.assets')
+      .from('assets')
       .select('criticality, asset_type, status')
       .eq('status', 'active');
 

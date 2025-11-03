@@ -10,7 +10,7 @@ export async function GET() {
     
     // Get assets count by type
     const { data: assetsByType } = await supabase
-      .from('security.assets')
+      .from('assets')
       .select('asset_type');
     
     const devices: Record<string, number> = {};
@@ -21,22 +21,22 @@ export async function GET() {
     
     // Get VLAN count
     const { count: vlanCount } = await supabase
-      .from('topology.vlans')
+      .from('vlans')
       .select('*', { count: 'exact', head: true });
     
     // Get IP count
     const { count: ipCount } = await supabase
-      .from('topology.ip_addresses')
+      .from('ip_addresses')
       .select('*', { count: 'exact', head: true });
     
     // Get subnet count
     const { count: subnetCount } = await supabase
-      .from('topology.ip_subnets')
+      .from('ip_subnets')
       .select('*', { count: 'exact', head: true });
     
     // Get connections count
     const { count: connectionsCount } = await supabase
-      .from('topology.connections')
+      .from('network_connections')
       .select('*', { count: 'exact', head: true });
     
     return NextResponse.json({
