@@ -235,9 +235,34 @@ export async function getOnsControlsFromSupabase() {
     : getSupabaseClient();
   
   try {
+    // Use controls table and filter by ONS framework or control_code containing 'ONS'
+    // First, get ONS framework ID
+    const { data: onsFramework, error: frameworkError } = await supabase
+      .from('frameworks')
+      .select('id')
+      .ilike('framework_name', '%ONS%')
+      .single();
+    
+    if (frameworkError) {
+      // If ONS framework not found, return empty data
+      return {
+        controls: [],
+        stats: {
+          total: 0,
+          implemented: 0,
+          pending: 0,
+          compliant: 0,
+          non_compliant: 0,
+        },
+        total: 0,
+      };
+    }
+    
+    // Get controls for ONS framework or with control_code containing 'ONS'
     const { data, error } = await supabase
-      .from('ons_controls')
+      .from('controls')
       .select('*')
+      .or(`framework_id.eq.${onsFramework?.id},control_code.ilike.%ONS%`)
       .order('control_id', { ascending: true });
     
     if (error) throw error;

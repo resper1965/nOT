@@ -17,10 +17,6 @@ SELECT * FROM compliance.frameworks;
 CREATE OR REPLACE VIEW public.controls AS
 SELECT * FROM compliance.controls;
 
--- ONS Controls view
-CREATE OR REPLACE VIEW public.ons_controls AS
-SELECT * FROM compliance.ons_controls;
-
 -- Document Categories view
 CREATE OR REPLACE VIEW public.document_categories AS
 SELECT * FROM compliance.document_categories;
@@ -128,8 +124,6 @@ GRANT SELECT ON public.frameworks TO authenticated;
 GRANT SELECT ON public.frameworks TO anon;
 GRANT SELECT ON public.controls TO authenticated;
 GRANT SELECT ON public.controls TO anon;
-GRANT SELECT ON public.ons_controls TO authenticated;
-GRANT SELECT ON public.ons_controls TO anon;
 GRANT SELECT ON public.document_categories TO authenticated;
 GRANT SELECT ON public.document_categories TO anon;
 GRANT SELECT ON public.required_documents TO authenticated;

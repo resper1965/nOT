@@ -31,7 +31,7 @@ SELECT table_name
 FROM information_schema.views 
 WHERE table_schema = 'public' 
 AND table_name IN (
-  'documents', 'frameworks', 'controls', 'ons_controls',
+  'documents', 'frameworks', 'controls',
   'ip_subnets', 'ip_addresses', 'vlans', 'network_connections',
   'assets', 'vulnerabilities', 'incidents', 'data_leakage_paths',
   'activity_log'
