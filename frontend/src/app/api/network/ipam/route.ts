@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const supabase = await createServerClient();
+    const supabase = createServerClient();
 
     // 1. Get total subnets
     const { data: subnets, error: subnetsError } = await supabase
