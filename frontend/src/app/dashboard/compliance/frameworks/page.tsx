@@ -185,17 +185,21 @@ export default async function FrameworksPage() {
               >
                 <div className='absolute inset-0 bg-gradient-to-br from-{colorInfo.color}-500/5 to-transparent' />
                 <CardHeader className='relative pb-3'>
-                  <div className='flex items-start justify-between'>
-                    <div className='flex items-center gap-3'>
+                                      <div className='flex items-start justify-between'>
+                    <div className='flex items-center gap-3 flex-1'>
                       <div className={`rounded-lg bg-${colorInfo.color}-500/10 p-2`}>
                         <Icon className={`w-5 h-5 text-${colorInfo.color}-500`} />
                       </div>
-                      <div>
+                      <div className='flex-1'>
                         <CardTitle className='text-lg font-semibold'>{framework.name}</CardTitle>
                         <CardDescription className='mt-1'>{framework.category || 'Internacional'}</CardDescription>
                       </div>
                     </div>
-                    <ExternalLink className='w-4 h-4 text-muted-foreground' />
+                    <Link href={`/dashboard/compliance/frameworks/${framework.id}`}>
+                      <Button variant='ghost' size='icon' className='h-8 w-8'>
+                        <ExternalLink className='w-4 h-4 text-muted-foreground hover:text-brand-cyan transition-colors' />
+                      </Button>
+                    </Link>
                   </div>
                 </CardHeader>
                 <CardContent className='relative space-y-4'>
