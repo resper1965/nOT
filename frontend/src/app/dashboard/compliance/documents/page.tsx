@@ -1,14 +1,44 @@
-import { FileText, CheckCircle2, XCircle, Clock, AlertTriangle, ExternalLink } from 'lucide-react'
-import { getComplianceDocuments } from '@/lib/api'
+'use client'
 
-export default async function DocumentsPage() {
-  const complianceData = await getComplianceDocuments().catch(() => ({ 
-    documents: [], 
-    stats: { total: 0, missing: 0, approved: 0, draft: 0, review: 0, completion_rate: 0 },
-    frameworks: { aneel: 0, ons: 0, iec: 0 }
-  }));
-  
-  const { documents, stats, frameworks } = complianceData;
+import { useState, useEffect } from 'react'
+import { FileText, CheckCircle2, XCircle, Clock, AlertTriangle, ExternalLink, Upload } from 'lucide-react'
+import { getComplianceDocuments } from '@/lib/api'
+import { DocumentUploadDialog } from '@/components/compliance/DocumentUploadDialog'
+
+export default function DocumentsPage() {
+  const [isUploadOpen, setIsUploadOpen] = useState(false)
+  const [documents, setDocuments] = useState<any[]>([])
+  const [stats, setStats] = useState({ total: 0, missing: 0, approved: 0, draft: 0, review: 0, completion_rate: 0 })
+  const [frameworks, setFrameworks] = useState({ aneel: 0, ons: 0, iec: 0 })
+  const [loading, setLoading] = useState(true)
+
+  // Carregar documentos
+  useEffect(() => {
+    setLoading(true)
+    getComplianceDocuments()
+      .then((complianceData) => {
+        setDocuments(complianceData.documents || [])
+        setStats(complianceData.stats || { total: 0, missing: 0, approved: 0, draft: 0, review: 0, completion_rate: 0 })
+        setFrameworks(complianceData.frameworks || { aneel: 0, ons: 0, iec: 0 })
+        setLoading(false)
+      })
+      .catch(() => {
+        setLoading(false)
+      })
+  }, [])
+
+  const handleUploadComplete = (documentId: string) => {
+    // Recarregar documentos após upload
+    getComplianceDocuments()
+      .then((complianceData) => {
+        setDocuments(complianceData.documents || [])
+        setStats(complianceData.stats || stats)
+        setFrameworks(complianceData.frameworks || frameworks)
+      })
+      .catch(() => {
+        // Erro silencioso
+      })
+  }
 
   const statusIcon = {
     approved: <CheckCircle2 className="w-4 h-4 text-green-500" />,
@@ -26,8 +56,12 @@ export default async function DocumentsPage() {
             50 documentos exigidos por ANEEL RN 964/2021 + ONS
           </p>
         </div>
-        <button className='px-4 py-2 bg-brand-cyan text-gray-950 rounded-md hover:bg-brand-cyan/90 transition-all font-medium'>
-          Criar Novo Documento
+        <button 
+          onClick={() => setIsUploadOpen(true)}
+          className='px-4 py-2 bg-brand-cyan text-gray-950 rounded-md hover:bg-brand-cyan/90 transition-all font-medium flex items-center gap-2'
+        >
+          <Upload className='w-4 h-4' />
+          Upload Documento
         </button>
       </div>
 
@@ -142,6 +176,13 @@ export default async function DocumentsPage() {
           </div>
         </div>
       </div>
+
+      {/* Upload Dialog */}
+      <DocumentUploadDialog
+        isOpen={isUploadOpen}
+        onClose={() => setIsUploadOpen(false)}
+        onUploadComplete={handleUploadComplete}
+      />
     </div>
   )
 }
