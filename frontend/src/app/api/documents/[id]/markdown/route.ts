@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSupabaseClient, getAdminSupabaseClient } from '@/lib/supabase-server'
-import crypto from 'crypto'
+import { getServerSupabaseClient } from '@/lib/supabase-server'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const documentId = params.id
+    const { id: documentId } = await params
     
     if (!documentId) {
       return NextResponse.json({ error: 'Document ID required' }, { status: 400 })
@@ -61,10 +60,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const documentId = params.id
+    const { id: documentId } = await params
     
     if (!documentId) {
       return NextResponse.json({ error: 'Document ID required' }, { status: 400 })
@@ -106,14 +105,8 @@ export async function PUT(
     // Validar que é Markdown (básico - verificar frontmatter)
     if (!content.includes('---') || !content.includes('\n')) {
       // Não é Markdown válido, mas permitir salvar mesmo assim
-      console.warn('Content may not be valid Markdown')
+      // console.warn('Content may not be valid Markdown')
     }
-
-    // Calcular hash do novo conteúdo
-    const contentHash = crypto
-      .createHash('sha256')
-      .update(content)
-      .digest('hex')
 
     // Atualizar markdown_path se necessário
     const markdownPath = document.markdown_path || `${document.storage_path.replace('/original/', '/markdown/')}.md`

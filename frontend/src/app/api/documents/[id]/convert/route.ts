@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSupabaseClient, getAdminSupabaseClient } from '@/lib/supabase-server'
+import { getAdminSupabaseClient } from '@/lib/supabase-server'
 import { convertDocumentToMarkdown, formatMarkdownWithFrontmatter } from '@/lib/document-converter'
 import crypto from 'crypto'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const documentId = params.id
+    const { id: documentId } = await params
     
     if (!documentId) {
       return NextResponse.json({ error: 'Document ID required' }, { status: 400 })
@@ -93,12 +93,6 @@ export async function POST(
 
       // Formatar Markdown com frontmatter
       const markdownContent = await formatMarkdownWithFrontmatter(result)
-
-      // Calcular hash do Markdown
-      const markdownHash = crypto
-        .createHash('sha256')
-        .update(markdownContent)
-        .digest('hex')
 
       // Upload do Markdown para Storage
       const markdownPath = `${document.storage_path.replace('/original/', '/markdown/')}.md`

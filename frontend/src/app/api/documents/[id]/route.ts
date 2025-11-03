@@ -3,10 +3,10 @@ import { getServerSupabaseClient } from '@/lib/supabase-server'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const documentId = params.id
+    const { id: documentId } = await params
     
     if (!documentId) {
       return NextResponse.json({ error: 'Document ID required' }, { status: 400 })
