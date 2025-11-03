@@ -1,48 +1,48 @@
 import { Shield, Globe, CheckCircle2, AlertTriangle, ExternalLink } from 'lucide-react'
 
-export default function FrameworksPage() {
-  const frameworks = [
-    {
-      name: 'IEC 62443',
-      description: 'Série de padrões internacionais para segurança de sistemas industriais',
-      status: 'partial',
-      compliance: 15,
-      requirements: 45,
-      category: 'Internacional',
-      color: 'purple',
-      icon: Globe
-    },
-    {
-      name: 'NIST Cybersecurity Framework',
-      description: 'Framework de segurança cibernética do NIST',
-      status: 'missing',
-      compliance: 0,
-      requirements: 23,
-      category: 'Internacional',
-      color: 'blue',
-      icon: Shield
-    },
-    {
-      name: 'ISO 27001',
-      description: 'Sistema de Gestão de Segurança da Informação',
-      status: 'missing',
-      compliance: 0,
-      requirements: 114,
-      category: 'Internacional',
-      color: 'green',
-      icon: CheckCircle2
-    },
-    {
-      name: 'CIS Controls',
-      description: 'Controles de Segurança Críticos do CIS',
-      status: 'missing',
-      compliance: 0,
-      requirements: 18,
-      category: 'Internacional',
-      color: 'orange',
-      icon: AlertTriangle
-    }
-  ];
+async function getFrameworksData() {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const res = await fetch(`${baseUrl}/api/compliance/frameworks`, {
+      cache: 'no-store',
+    });
+    if (!res.ok) throw new Error('Failed to fetch frameworks');
+    return res.json();
+  } catch (error) {
+    console.error('Error fetching frameworks:', error);
+    return {
+      frameworks: [],
+      stats: {
+        total: 0,
+        implemented: 0,
+        partial: 0,
+        missing: 0,
+      },
+    };
+  }
+}
+
+// Map framework names to icons
+const getFrameworkIcon = (name: string) => {
+  if (name.includes('IEC')) return Globe;
+  if (name.includes('NIST')) return Shield;
+  if (name.includes('ISO')) return CheckCircle2;
+  if (name.includes('CIS')) return AlertTriangle;
+  return Shield;
+};
+
+// Map framework names to colors
+const getFrameworkColor = (name: string) => {
+  if (name.includes('IEC')) return 'purple';
+  if (name.includes('NIST')) return 'blue';
+  if (name.includes('ISO')) return 'green';
+  if (name.includes('CIS')) return 'orange';
+  return 'gray';
+};
+
+export default async function FrameworksPage() {
+  const data = await getFrameworksData();
+  const { frameworks, stats } = data;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -93,8 +93,8 @@ export default function FrameworksPage() {
             <div className='text-sm font-medium text-muted-foreground'>Implementados</div>
             <CheckCircle2 className='h-4 w-4 text-green-500' />
           </div>
-          <div className='mt-2 text-2xl font-bold text-green-500'>0</div>
-          <div className='text-xs text-muted-foreground'>0% completo</div>
+          <div className='mt-2 text-2xl font-bold text-green-500'>{stats.implemented}</div>
+          <div className='text-xs text-muted-foreground'>{frameworks.length > 0 ? Math.round((stats.implemented / frameworks.length) * 100) : 0}% completo</div>
         </div>
 
         <div className='rounded-lg border bg-card p-4'>
@@ -102,8 +102,10 @@ export default function FrameworksPage() {
             <div className='text-sm font-medium text-muted-foreground'>Parciais</div>
             <AlertTriangle className='h-4 w-4 text-yellow-500' />
           </div>
-          <div className='mt-2 text-2xl font-bold text-yellow-500'>1</div>
-          <div className='text-xs text-muted-foreground'>IEC 62443</div>
+          <div className='mt-2 text-2xl font-bold text-yellow-500'>{stats.partial}</div>
+          <div className='text-xs text-muted-foreground'>
+            {frameworks.filter((f: any) => f.status === 'partial').map((f: any) => f.name).join(', ') || 'Nenhum'}
+          </div>
         </div>
 
         <div className='rounded-lg border bg-card p-4'>
@@ -111,29 +113,39 @@ export default function FrameworksPage() {
             <div className='text-sm font-medium text-muted-foreground'>Não implementados</div>
             <AlertTriangle className='h-4 w-4 text-red-500' />
           </div>
-          <div className='mt-2 text-2xl font-bold text-red-500'>3</div>
-          <div className='text-xs text-muted-foreground'>NIST, ISO, CIS</div>
+          <div className='mt-2 text-2xl font-bold text-red-500'>{stats.missing}</div>
+          <div className='text-xs text-muted-foreground'>
+            {frameworks.filter((f: any) => f.status === 'missing').map((f: any) => f.name).join(', ') || 'Nenhum'}
+          </div>
         </div>
       </div>
 
       {/* Frameworks List */}
-      <div className='grid gap-4 md:grid-cols-2'>
-        {frameworks.map((framework) => {
-          const Icon = framework.icon;
-          return (
-            <div key={framework.name} className='rounded-lg border bg-card p-6'>
-              <div className='flex items-start justify-between mb-4'>
-                <div className='flex items-center gap-3'>
-                  <div className={`p-2 rounded-lg bg-${framework.color}-500/10`}>
-                    <Icon className={`w-5 h-5 text-${framework.color}-500`} />
+      {frameworks.length === 0 ? (
+        <div className='rounded-lg border bg-card p-12 text-center'>
+          <AlertTriangle className='w-12 h-12 mx-auto mb-4 text-orange-500' />
+          <p className='text-lg font-medium text-muted-foreground mb-2'>Nenhum framework cadastrado</p>
+          <p className='text-sm text-muted-foreground'>Cadastre frameworks no Supabase para visualizá-los aqui.</p>
+        </div>
+      ) : (
+        <div className='grid gap-4 md:grid-cols-2'>
+          {frameworks.map((framework: any) => {
+            const Icon = getFrameworkIcon(framework.name);
+            const color = getFrameworkColor(framework.name);
+            return (
+              <div key={framework.id || framework.name} className='rounded-lg border bg-card p-6'>
+                <div className='flex items-start justify-between mb-4'>
+                  <div className='flex items-center gap-3'>
+                    <div className={`p-2 rounded-lg bg-${color}-500/10`}>
+                      <Icon className={`w-5 h-5 text-${color}-500`} />
+                    </div>
+                    <div>
+                      <h3 className='font-semibold'>{framework.name}</h3>
+                      <p className='text-sm text-muted-foreground'>{framework.category || 'Internacional'}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className='font-semibold'>{framework.name}</h3>
-                    <p className='text-sm text-muted-foreground'>{framework.category}</p>
-                  </div>
+                  <ExternalLink className='w-4 h-4 text-muted-foreground' />
                 </div>
-                <ExternalLink className='w-4 h-4 text-muted-foreground' />
-              </div>
               
               <p className='text-sm text-muted-foreground mb-4'>{framework.description}</p>
               
@@ -147,19 +159,19 @@ export default function FrameworksPage() {
                 
                 <div className='flex items-center justify-between'>
                   <span className='text-sm text-muted-foreground'>Compliance</span>
-                  <span className='text-sm font-medium'>{framework.compliance}%</span>
+                  <span className='text-sm font-medium'>{framework.compliance || 0}%</span>
                 </div>
                 
                 <div className='w-full bg-gray-200 rounded-full h-2'>
                   <div 
-                    className={`bg-${framework.color}-500 h-2 rounded-full transition-all`}
-                    style={{ width: `${framework.compliance}%` }}
+                    className={`bg-${color}-500 h-2 rounded-full transition-all`}
+                    style={{ width: `${framework.compliance || 0}%` }}
                   ></div>
                 </div>
                 
                 <div className='flex items-center justify-between text-xs text-muted-foreground'>
-                  <span>{framework.compliance} de {framework.requirements} requisitos</span>
-                  <span>{framework.requirements - framework.compliance} pendentes</span>
+                  <span>{framework.compliance || 0} de {framework.requirements || 0} requisitos</span>
+                  <span>{(framework.requirements || 0) - (framework.compliance || 0)} pendentes</span>
                 </div>
               </div>
               
@@ -180,6 +192,7 @@ export default function FrameworksPage() {
           );
         })}
       </div>
+      )}
 
       {/* Implementation Priority */}
       <div className='rounded-lg border border-orange-500/20 bg-orange-500/5 p-6'>
@@ -188,27 +201,27 @@ export default function FrameworksPage() {
           <div>
             <h3 className='font-semibold mb-2 text-orange-500'>Prioridade de Implementação</h3>
             <p className='text-sm text-muted-foreground mb-3'>
-              <strong>Recomendação:</strong> Focar primeiro no IEC 62443 (já parcialmente implementado) 
-              e depois expandir para NIST Cybersecurity Framework.
+              <strong>Recomendação:</strong> {frameworks.length > 0 
+                ? `Focar primeiro nos frameworks parcialmente implementados e depois expandir para frameworks não implementados.`
+                : 'Cadastre frameworks no Supabase para visualizar recomendações de implementação.'}
             </p>
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 text-sm'>
-              <div>
-                <div className='font-medium mb-2'>1. IEC 62443 (Prioridade Alta)</div>
-                <ul className='text-muted-foreground space-y-1 text-xs'>
-                  <li>• Já 15% implementado</li>
-                  <li>• Específico para OT/ICS</li>
-                  <li>• Alinhado com ANEEL RN 964</li>
-                </ul>
+            {frameworks.length > 0 && (
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-4 text-sm'>
+                {frameworks
+                  .filter((f: any) => f.status === 'partial')
+                  .slice(0, 2)
+                  .map((framework: any, idx: number) => (
+                    <div key={framework.id || idx}>
+                      <div className='font-medium mb-2'>{idx + 1}. {framework.name} (Prioridade Alta)</div>
+                      <ul className='text-muted-foreground space-y-1 text-xs'>
+                        <li>• {framework.compliance}% implementado</li>
+                        <li>• {framework.requirements - framework.compliance} requisitos pendentes</li>
+                        <li>• Alinhado com requisitos regulatórios</li>
+                      </ul>
+                    </div>
+                  ))}
               </div>
-              <div>
-                <div className='font-medium mb-2'>2. NIST Cybersecurity Framework</div>
-                <ul className='text-muted-foreground space-y-1 text-xs'>
-                  <li>• Framework mais abrangente</li>
-                  <li>• Complementa IEC 62443</li>
-                  <li>• Reconhecido internacionalmente</li>
-                </ul>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

@@ -27,7 +27,7 @@ const navItems = [
     isActive: true,
   },
   {
-    title: "1. Normativa",
+    title: "Normativa",
     url: "/dashboard/compliance",
     icon: FileText,
     badge: "0/50",
@@ -40,7 +40,7 @@ const navItems = [
     ],
   },
   {
-    title: "2. Análise de Rede",
+    title: "Análise de Rede",
     url: "/dashboard/network",
     icon: Activity,
     badge: "14.6k",
@@ -55,7 +55,7 @@ const navItems = [
     ],
   },
   {
-    title: "3. Adequação",
+    title: "Adequação",
     url: "/dashboard/remediation",
     icon: AlertTriangle,
     badge: "6 gaps",

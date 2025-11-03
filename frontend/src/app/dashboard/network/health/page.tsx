@@ -50,15 +50,15 @@ export default async function NetworkHealthPage() {
           </div>
           <div className='space-y-2'>
             <div className='flex items-baseline gap-2'>
-              <div className='text-3xl font-bold'>106</div>
+              <div className='text-3xl font-bold'>{topology.ips || 0}</div>
               <div className='text-sm text-muted-foreground'>IPs alocados</div>
             </div>
             <div className='text-xs text-muted-foreground'>
-              Utilização: ~9% (109 subnets)
+              {topology.subnets ? `Subnets: ${topology.subnets}` : 'Subnets: 0'}
             </div>
-            <div className='flex items-center gap-1 text-xs text-green-500'>
-              <CheckCircle2 className='w-3 h-3' />
-              0 conflitos detectados
+            <div className='flex items-center gap-1 text-xs text-orange-500'>
+              <AlertTriangle className='w-3 h-3' />
+              Monitoramento não implementado
             </div>
           </div>
         </div>
@@ -70,11 +70,11 @@ export default async function NetworkHealthPage() {
           </div>
           <div className='space-y-2'>
             <div className='flex items-baseline gap-2'>
-              <div className='text-3xl font-bold'>59</div>
+              <div className='text-3xl font-bold'>{topology.vlans || 0}</div>
               <div className='text-sm text-muted-foreground'>VLANs ativas</div>
             </div>
             <div className='text-xs text-muted-foreground'>
-              Faixa 1-10: 2 | 11-99: 6 | 100+: 51
+              Classificação por zona não implementada
             </div>
             <div className='flex items-center gap-1 text-xs text-orange-500'>
               <AlertTriangle className='w-3 h-3' />
@@ -91,10 +91,10 @@ export default async function NetworkHealthPage() {
           <div className='space-y-2'>
             <div className='flex items-baseline gap-2'>
               <div className='text-3xl font-bold text-gray-500'>?</div>
-              <div className='text-sm text-muted-foreground'>/ 544</div>
+              <div className='text-sm text-muted-foreground'>/{topology.devices?.router || 0}</div>
             </div>
             <div className='text-xs text-muted-foreground'>
-              544 routers identificados
+              {topology.devices?.router || 0} routers identificados
             </div>
             <div className='flex items-center gap-1 text-xs text-orange-500'>
               <AlertTriangle className='w-3 h-3' />
@@ -138,15 +138,15 @@ export default async function NetworkHealthPage() {
             <div className='space-y-4'>
               <div className='flex justify-between items-center p-3 rounded-lg bg-gray-900'>
                 <span className='text-sm'>IPs Alocados</span>
-                <span className='font-semibold'>106</span>
+                <span className='font-semibold'>{topology.ips || 0}</span>
               </div>
               <div className='flex justify-between items-center p-3 rounded-lg bg-gray-900'>
                 <span className='text-sm'>Subnets Identificados</span>
-                <span className='font-semibold'>109</span>
+                <span className='font-semibold'>{topology.subnets || 0}</span>
               </div>
               <div className='flex justify-between items-center p-3 rounded-lg bg-gray-900'>
                 <span className='text-sm'>Utilização Média</span>
-                <span className='font-semibold text-green-500'>~9%</span>
+                <span className='font-semibold text-gray-500'>? (não monitorado)</span>
               </div>
               <div className='flex justify-between items-center p-3 rounded-lg bg-gray-900'>
                 <span className='text-sm'>Conflitos de IP</span>
@@ -172,7 +172,7 @@ export default async function NetworkHealthPage() {
             <div className='space-y-4'>
               <div className='flex justify-between items-center p-3 rounded-lg bg-gray-900'>
                 <span className='text-sm'>VLANs Ativas</span>
-                <span className='font-semibold'>59</span>
+                <span className='font-semibold'>{topology.vlans || 0}</span>
               </div>
               <div className='flex justify-between items-center p-3 rounded-lg bg-gray-900'>
                 <span className='text-sm'>VLANs Sem Uso</span>
@@ -206,7 +206,7 @@ export default async function NetworkHealthPage() {
             <div className='space-y-4'>
               <div className='flex justify-between items-center p-3 rounded-lg bg-gray-900'>
                 <span className='text-sm'>Routers Identificados</span>
-                <span className='font-semibold'>544</span>
+                <span className='font-semibold'>{topology.devices?.router || 0}</span>
               </div>
               <div className='flex justify-between items-center p-3 rounded-lg bg-gray-900'>
                 <span className='text-sm'>Routers Up/Down</span>
@@ -248,7 +248,7 @@ export default async function NetworkHealthPage() {
               </div>
               <div className='flex justify-between items-center p-3 rounded-lg bg-gray-900'>
                 <span className='text-sm'>Firewalls Identificados</span>
-                <span className='font-semibold'>36</span>
+                <span className='font-semibold'>{topology.devices?.firewall || 0}</span>
               </div>
               <div className='flex justify-between items-center p-3 rounded-lg bg-gray-900'>
                 <span className='text-sm'>Firewall Coverage</span>
@@ -368,17 +368,17 @@ export default async function NetworkHealthPage() {
           <div className='text-center p-3 rounded-lg bg-green-500/10'>
             <CheckCircle2 className='w-5 h-5 text-green-500 mx-auto mb-1' />
             <div className='text-sm font-medium'>Assets Inventariados</div>
-            <div className='text-2xl font-bold text-green-500'>14.606</div>
+            <div className='text-2xl font-bold text-green-500'>{stats.total_assets?.toLocaleString('pt-BR') || 0}</div>
           </div>
           <div className='text-center p-3 rounded-lg bg-green-500/10'>
             <CheckCircle2 className='w-5 h-5 text-green-500 mx-auto mb-1' />
             <div className='text-sm font-medium'>VLANs Identificadas</div>
-            <div className='text-2xl font-bold text-green-500'>59</div>
+            <div className='text-2xl font-bold text-green-500'>{topology.vlans || 0}</div>
           </div>
           <div className='text-center p-3 rounded-lg bg-green-500/10'>
             <CheckCircle2 className='w-5 h-5 text-green-500 mx-auto mb-1' />
             <div className='text-sm font-medium'>IPs Alocados</div>
-            <div className='text-2xl font-bold text-green-500'>106</div>
+            <div className='text-2xl font-bold text-green-500'>{topology.ips || 0}</div>
           </div>
           <div className='text-center p-3 rounded-lg bg-orange-500/10'>
             <AlertTriangle className='w-5 h-5 text-orange-500 mx-auto mb-1' />
