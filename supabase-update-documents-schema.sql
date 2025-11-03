@@ -27,7 +27,10 @@ CREATE INDEX IF NOT EXISTS idx_documents_file_type
   ON compliance.documents(file_type);
 
 -- Criar tabela de versionamento de documentos
-CREATE TABLE IF NOT EXISTS compliance.document_versions (
+-- Primeiro, verificar se a tabela existe e remover se necessário para recriar
+DROP TABLE IF EXISTS compliance.document_versions CASCADE;
+
+CREATE TABLE compliance.document_versions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   document_id UUID REFERENCES compliance.documents(id) ON DELETE CASCADE,
   version_number INTEGER NOT NULL,
