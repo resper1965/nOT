@@ -1,65 +1,137 @@
-# ✅ Variáveis de Ambiente Configuradas - ness. OT GRC
+# ✅ Variáveis de Ambiente Configuradas - Vercel
 
-**Data**: 2025-11-01  
-**Status**: ✅ **VARIÁVEIS CONFIGURADAS NO VERCEL VIA CLI**
+**Data:** 2025-11-02  
+**Status:** ✅ **CONFIGURADAS COM SUCESSO**
 
 ---
 
 ## ✅ Variáveis Configuradas
 
-### ✅ Via Vercel CLI
+**Todas as variáveis foram adicionadas para Production, Preview e Development:**
 
-**Variáveis configuradas para Production, Preview e Development:**
+```bash
+✅ NEXT_PUBLIC_SUPABASE_URL
+   - Production: ✅
+   - Preview: ✅
+   - Development: ✅
+   - Valor: https://bingfdowmvyfeffieujk.supabase.co
 
-1. **✅ NEXT_PUBLIC_SUPABASE_URL**
-   - Valor: `https://bingfdowmvyfeffieujk.supabase.co`
-   - Ambientes: production, preview, development
+✅ NEXT_PUBLIC_SUPABASE_ANON_KEY
+   - Production: ✅
+   - Preview: ✅
+   - Development: ✅
+   - Valor: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
-2. **✅ NEXT_PUBLIC_SUPABASE_ANON_KEY**
-   - Valor: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
-   - Ambientes: production, preview, development
-
-3. **✅ NEXT_PUBLIC_USE_SUPABASE**
-   - Valor: `true`
-   - Ambientes: production, preview, development
+✅ NEXT_PUBLIC_USE_SUPABASE
+   - Production: ✅
+   - Preview: ✅
+   - Development: ✅
+   - Valor: true
+```
 
 ---
 
-## 📋 Verificar Variáveis
+## 🔍 Verificação
 
-### Via CLI:
+**Listar variáveis:**
 ```bash
-cd frontend
+cd /home/resper/TBE-OT/frontend
 vercel env ls
 ```
 
-### Via Dashboard:
-**🔗 URL**: https://vercel.com/nessbr-projects/frontend/settings/environment-variables
-
----
-
-## 🚀 Próximo Passo: Deploy
-
-Agora que as variáveis estão configuradas, faça push para GitHub:
-
-```bash
-cd /home/resper/TBE-OT
-git add .
-git commit -m "feat: Environment variables configured in Vercel"
-git push origin main
+**Resultado esperado:**
+```
+NEXT_PUBLIC_SUPABASE_URL          Production, Preview, Development
+NEXT_PUBLIC_SUPABASE_ANON_KEY     Production, Preview, Development
+NEXT_PUBLIC_USE_SUPABASE         Production, Preview, Development
 ```
 
-**O Vercel fará deploy automaticamente!** 🚀
+---
+
+## 🚀 Próximo: Fazer Deploy
+
+### Opção 1: Deploy Automático
+
+As variáveis estão configuradas. O próximo push ou redeploy usará essas variáveis.
+
+**Fazer redeploy:**
+1. Acesse: https://vercel.com/nessbr-projects/frontend/deployments
+2. Clique no deployment mais recente
+3. Clique em **"Redeploy"**
+4. Aguarde build (2-5 minutos)
+
+### Opção 2: Novo Push (Deploy Automático)
+
+Se fizer novo push, o Vercel detecta automaticamente e faz deploy:
+
+```bash
+git add .
+git commit -m "chore: variáveis de ambiente configuradas"
+git push
+```
 
 ---
 
-## 🔗 Links
+## 🔐 Service Role Key (Opcional)
 
-- **Vercel Dashboard**: https://vercel.com/nessbr-projects/frontend
-- **Environment Variables**: https://vercel.com/nessbr-projects/frontend/settings/environment-variables
-- **Deployments**: https://vercel.com/nessbr-projects/frontend/deployments
+**Se precisar de operações server-side com privilégios elevados:**
+
+1. **Obter Service Role Key:**
+   - Dashboard: https://supabase.com/dashboard/project/bingfdowmvyfeffieujk/settings/api
+   - Copiar **service_role** key (secret)
+
+2. **Adicionar no Vercel:**
+   ```bash
+   cd /home/resper/TBE-OT/frontend
+   echo "[service_role_key]" | vercel env add SUPABASE_SERVICE_ROLE_KEY production
+   echo "[service_role_key]" | vercel env add SUPABASE_SERVICE_ROLE_KEY preview
+   echo "[service_role_key]" | vercel env add SUPABASE_SERVICE_ROLE_KEY development
+   ```
+
+   **⚠️ NUNCA expor no frontend!**
 
 ---
 
-**✅ Variáveis configuradas! Pronto para deploy!** 🚀
+## ✅ Checklist
 
+- [x] Variável `NEXT_PUBLIC_SUPABASE_URL` configurada (todos ambientes)
+- [x] Variável `NEXT_PUBLIC_SUPABASE_ANON_KEY` configurada (todos ambientes)
+- [x] Variável `NEXT_PUBLIC_USE_SUPABASE` configurada (todos ambientes)
+- [ ] Variável `SUPABASE_SERVICE_ROLE_KEY` configurada (opcional)
+- [ ] Schema migrado no Supabase (verificar)
+- [ ] Deploy realizado/testado
+
+---
+
+## 📋 Verificar Schema no Supabase
+
+**Antes do deploy, verifique se o schema foi migrado:**
+
+1. **Acesse:** https://supabase.com/dashboard/project/bingfdowmvyfeffieujk/sql/new
+
+2. **Verificar schemas:**
+   ```sql
+   SELECT schema_name 
+   FROM information_schema.schemata 
+   WHERE schema_name IN ('security', 'topology', 'compliance', 'audit');
+   ```
+
+3. **Se não existirem, migrar:**
+   - Arquivo: `supabase-migration.sql` (raiz do projeto)
+   - Copiar todo o conteúdo
+   - Colar no SQL Editor do Supabase
+   - Executar
+
+---
+
+## 🎯 Status Atual
+
+✅ **Variáveis configuradas**  
+✅ **Pronto para deploy**  
+⏳ **Aguardando:**
+   - Verificar schema no Supabase
+   - Fazer redeploy ou novo deploy
+
+---
+
+**Próximo:** Verificar schema no Supabase e fazer deploy! 🚀
