@@ -121,12 +121,29 @@ export default function SignInPage() {
         
         console.log('🚀 [DEBUG] Redirecionando para:', redirectPath);
         
-        // Usar window.location.href para forçar reload completo e garantir que middleware veja a sessão
-        // Isso também garante que cookies sejam enviados na requisição
-        // Adicionar um pequeno delay extra para garantir que tudo esteja salvo
-        setTimeout(() => {
-          window.location.href = redirectPath;
-        }, 300);
+        // Forçar refresh da sessão antes de redirecionar
+        await supabase.auth.refreshSession();
+        
+        // Aguardar um pouco mais para garantir que cookies sejam salvos e sessão seja atualizada
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Verificar sessão novamente antes de redirecionar
+        const { data: finalSession } = await supabase.auth.getSession();
+        console.log('🔍 [DEBUG] Sessão final antes de redirecionar:', {
+          hasSession: !!finalSession?.session,
+          hasAccessToken: !!finalSession?.session?.access_token,
+        });
+        
+        if (!finalSession?.session) {
+          console.error('❌ [DEBUG] Sessão não disponível antes de redirecionar');
+          setError('Erro ao atualizar sessão. Tente novamente.');
+          setLoading(false);
+          return;
+        }
+        
+        // Usar window.location.replace em vez de href para evitar que o navegador armazene o estado anterior
+        // Isso força um reload completo e garante que o middleware veja a sessão
+        window.location.replace(redirectPath);
       } else if (data.user && !data.session) {
         console.warn('⚠️ [DEBUG] Usuário existe mas sessão não foi criada:', {
           userId: data.user.id,
