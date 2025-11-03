@@ -21,33 +21,11 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development' && (
 }
 
 // Create Supabase client for browser/client-side usage
-// Usa createBrowserClient do @supabase/ssr para garantir cookies HTTP
-// Isso permite que o middleware leia a sessão corretamente
-export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey, {
-  cookies: {
-    getAll() {
-      return document.cookie.split(';').map((cookie) => {
-        const [name, value] = cookie.trim().split('=');
-        return { name, value };
-      });
-    },
-    set(name: string, value: string, options?: { path?: string; domain?: string; maxAge?: number; sameSite?: string; secure?: boolean }) {
-      let cookieString = `${name}=${value}`;
-      if (options?.path) cookieString += `; path=${options.path}`;
-      if (options?.domain) cookieString += `; domain=${options.domain}`;
-      if (options?.maxAge !== undefined) cookieString += `; max-age=${options.maxAge}`;
-      if (options?.sameSite) cookieString += `; samesite=${options.sameSite}`;
-      if (options?.secure) cookieString += `; secure`;
-      document.cookie = cookieString;
-    },
-    remove(name: string, options?: { path?: string; domain?: string }) {
-      let cookieString = `${name}=; max-age=0`;
-      if (options?.path) cookieString += `; path=${options.path}`;
-      if (options?.domain) cookieString += `; domain=${options.domain}`;
-      document.cookie = cookieString;
-    },
-  },
-});
+// IMPORTANTE: createBrowserClient já gerencia cookies automaticamente via document.cookie
+// Não precisa passar configuração de cookies - o Supabase SSR faz isso automaticamente
+export const supabase = typeof window !== 'undefined' 
+  ? createBrowserClient(supabaseUrl, supabaseAnonKey)
+  : createClient(supabaseUrl, supabaseAnonKey); // Fallback server-side (nunca usado, mas TypeScript precisa)
 
 // Server-side Supabase client (for use in API routes and Server Components)
 // Optimized for server-side rendering
