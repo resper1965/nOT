@@ -1,6 +1,6 @@
 // API Route for IP Address Management (IPAM) data
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase-server';
+import { createServerClient } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
