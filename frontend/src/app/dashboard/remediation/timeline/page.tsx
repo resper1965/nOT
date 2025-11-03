@@ -1,6 +1,9 @@
 import { Calendar, Clock, CheckCircle2, AlertTriangle, ArrowLeft, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 
+// Force dynamic rendering (no static generation)
+export const dynamic = 'force-dynamic'
+
 async function getTimelineData() {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';

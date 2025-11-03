@@ -1,6 +1,9 @@
 import { AlertTriangle, TrendingUp, ArrowLeft, Shield } from 'lucide-react';
 import Link from 'next/link';
 
+// Force dynamic rendering (no static generation)
+export const dynamic = 'force-dynamic'
+
 async function getRisksData() {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';

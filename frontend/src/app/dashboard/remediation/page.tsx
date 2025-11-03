@@ -1,6 +1,9 @@
 import Link from 'next/link'
 import { Shield, AlertTriangle, Clock, ArrowLeft, TrendingUp } from 'lucide-react'
 
+// Force dynamic rendering (no static generation)
+export const dynamic = 'force-dynamic'
+
 async function getRemediationData() {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';

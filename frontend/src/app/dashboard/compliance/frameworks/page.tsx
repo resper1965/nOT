@@ -1,5 +1,8 @@
 import { Shield, Globe, CheckCircle2, AlertTriangle, ExternalLink } from 'lucide-react'
 
+// Force dynamic rendering (no static generation)
+export const dynamic = 'force-dynamic'
+
 async function getFrameworksData() {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
