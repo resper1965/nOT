@@ -497,13 +497,21 @@ SELECT
 -- ============================================================================
 
 -- Compliance Frameworks
-INSERT INTO compliance.frameworks (framework_name, version, description) VALUES
-    ('ANEEL RN 964/2021', '2021', 'Resolução Normativa ANEEL 964/2021 - Segurança Cibernética'),
-    ('ONS Rotina Operacional', '2023', 'Controles Mínimos ONS para Sistemas Críticos'),
-    ('IEC 62443', '3-3', 'IEC 62443 - Security for Industrial Automation and Control Systems'),
-    ('NIST CSF', '2.0', 'NIST Cybersecurity Framework 2.0'),
-    ('ISO 27001', '2022', 'ISO/IEC 27001:2022 - Information Security Management')
-ON CONFLICT (framework_name) DO NOTHING;
+INSERT INTO compliance.frameworks (framework_name, version, description, metadata) VALUES
+    ('ANEEL RN 964/2021', '2021', 'Resolução Normativa ANEEL 964/2021 - Segurança Cibernética', jsonb_build_object('category', 'Nacional', 'regulatory_body', 'ANEEL', 'applicable_sectors', ARRAY['Energia', 'Elétrica'])),
+    ('ONS Rotina Operacional', '2023', 'Controles Mínimos ONS para Sistemas Críticos', jsonb_build_object('category', 'Nacional', 'regulatory_body', 'ONS', 'applicable_sectors', ARRAY['Energia', 'Elétrica'])),
+    ('IEC 62443', '3-3', 'IEC 62443 - Security for Industrial Automation and Control Systems', jsonb_build_object('category', 'Internacional', 'regulatory_body', 'IEC', 'applicable_sectors', ARRAY['Energia', 'OT/ICS', 'SCADA'])),
+    ('NIST Cybersecurity Framework', '2.0', 'Framework de cibersegurança do NIST (National Institute of Standards and Technology) - Versão 2.0. Fornece diretrizes para gerenciar e reduzir riscos cibernéticos através de 5 funções: Identify, Protect, Detect, Respond, Recover.', jsonb_build_object('category', 'Internacional', 'regulatory_body', 'NIST', 'applicable_sectors', ARRAY['Energia', 'Infraestrutura Crítica', 'OT/ICS'], 'functions', ARRAY['Identify', 'Protect', 'Detect', 'Respond', 'Recover'])),
+    ('ISO/IEC 27001', '2022', 'Sistema de Gestão de Segurança da Informação (SGSI). Norma internacional que estabelece requisitos para estabelecer, implementar, manter e melhorar continuamente um sistema de gestão de segurança da informação.', jsonb_build_object('category', 'Internacional', 'regulatory_body', 'ISO/IEC', 'applicable_sectors', ARRAY['Energia', 'Infraestrutura Crítica', 'Todas as indústrias'], 'annex_a_controls', 93, 'related_standards', ARRAY['ISO/IEC 27002', 'ISO/IEC 27019'])),
+    ('ISO/IEC 27002', '2022', 'Controles de Segurança da Informação - Guia de implementação para controles de segurança da informação baseado no ISO/IEC 27001. Fornece diretrizes para seleção e implementação de controles de segurança.', jsonb_build_object('category', 'Internacional', 'regulatory_body', 'ISO/IEC', 'applicable_sectors', ARRAY['Energia', 'Infraestrutura Crítica', 'Todas as indústrias'], 'controls_count', 93, 'related_standards', ARRAY['ISO/IEC 27001', 'ISO/IEC 27019'])),
+    ('ISO/IEC 27019', '2017', 'Sistema de Gestão de Segurança da Informação para processos, sistemas de controle e sistemas de apoio em setores de energia. Extensão do ISO/IEC 27001/27002 especificamente para processos de controle e automação no setor de energia.', jsonb_build_object('category', 'Internacional', 'regulatory_body', 'ISO/IEC', 'applicable_sectors', ARRAY['Energia', 'Elétrica', 'OT/ICS Energia'], 'extension_of', 'ISO/IEC 27001/27002', 'specific_for_energy', true, 'related_standards', ARRAY['ISO/IEC 27001', 'ISO/IEC 27002', 'IEC 62443'])),
+    ('NIST SP 800-82', 'Rev. 2', 'Guia de Segurança para Sistemas de Controle Industrial (ICS) - Práticas recomendadas de segurança cibernética para Sistemas de Controle Industrial (ICS), incluindo SCADA, DCS e outros sistemas de controle. Inclui práticas, architecture patterns e mapeamento para NIST SP 800-53 e NIST CSF.', jsonb_build_object('category', 'Internacional', 'regulatory_body', 'NIST', 'applicable_sectors', ARRAY['Energia', 'OT/ICS', 'SCADA', 'DCS', 'PLC'], 'ics_focus', true, 'architecture_patterns', true, 'maps_to_800_53', true, 'maps_to_csf', true)),
+    ('NIST SP 800-53', 'Rev. 5', 'Controles de Segurança e Privacidade para Sistemas de Informação e Organizações. Catálogo de controles de segurança e privacidade que podem ser implementados para proteger sistemas de informação.', jsonb_build_object('category', 'Internacional', 'regulatory_body', 'NIST', 'applicable_sectors', ARRAY['Energia', 'Infraestrutura Crítica', 'Governo Federal'], 'control_families', 20, 'controls_count', '1000+', 'related_documents', ARRAY['NIST SP 800-82', 'NIST CSF']))
+ON CONFLICT (framework_name) DO UPDATE
+SET version = EXCLUDED.version,
+    description = EXCLUDED.description,
+    metadata = EXCLUDED.metadata,
+    updated_at = CURRENT_TIMESTAMP;
 
 -- Document Categories (ANEEL RN 964/2021)
 INSERT INTO compliance.document_categories (category_code, category_name, description, regulatory_source, mandatory) VALUES
