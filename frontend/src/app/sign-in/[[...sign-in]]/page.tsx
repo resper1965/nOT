@@ -57,6 +57,7 @@ export default function SignInPage() {
         
         console.error('❌ [DEBUG] Erro no login:', errorMessage);
         setError(errorMessage);
+        setLoading(false);
         return;
       }
 
@@ -74,28 +75,53 @@ export default function SignInPage() {
           allCookies: document.cookie.split(';').map(c => c.trim().split('=')[0]),
         });
 
-        // Aguardar um pouco para garantir que cookies sejam salvos
-        console.log('⏳ [DEBUG] Aguardando cookies serem salvos...');
-        await new Promise(resolve => setTimeout(resolve, 200));
+        // Aguardar um pouco para garantir que cookies sejam salvos pelo Supabase
+        console.log('⏳ [DEBUG] Aguardando cookies serem salvos pelo Supabase...');
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
-        // Verificar cookies após aguardar
+        // Verificar sessão atual do Supabase após aguardar
+        const { data: currentUser, error: getUserError } = await supabase.auth.getUser();
+        console.log('🔍 [DEBUG] Usuário atual após login (após aguardar):', {
+          hasUser: !!currentUser?.user,
+          userId: currentUser?.user?.id,
+          error: getUserError ? getUserError.message : null,
+        });
+
+        if (getUserError || !currentUser?.user) {
+          console.error('❌ [DEBUG] Erro ao verificar usuário após login:', getUserError);
+          setError('Erro ao verificar sessão. Tente novamente.');
+          setLoading(false);
+          return;
+        }
+
+        // Verificar cookies após aguardar e confirmar usuário
         console.log('🔍 [DEBUG] Cookies após aguardar:', {
           sbAccessToken: document.cookie.includes('sb-') ? 'present' : 'missing',
           supabaseCookies: document.cookie.split(';').filter(c => c.includes('sb-')),
         });
 
-        // Verificar sessão atual do Supabase
-        const { data: currentUser } = await supabase.auth.getUser();
-        console.log('🔍 [DEBUG] Usuário atual após login:', {
-          hasUser: !!currentUser?.user,
-          userId: currentUser?.user?.id,
+        // Verificar se a sessão está realmente persistida
+        const { data: sessionData } = await supabase.auth.getSession();
+        console.log('🔍 [DEBUG] Sessão persistida:', {
+          hasSession: !!sessionData?.session,
+          sessionToken: sessionData?.session?.access_token ? 'present' : 'missing',
         });
+
+        if (!sessionData?.session) {
+          console.error('❌ [DEBUG] Sessão não persistida corretamente');
+          setError('Erro ao salvar sessão. Tente novamente.');
+          setLoading(false);
+          return;
+        }
 
         console.log('🚀 [DEBUG] Redirecionando para /dashboard...');
         
-        // Forçar reload completo da página para garantir que middleware veja a sessão
-        // Usar window.location.href em vez de router.push para garantir que cookies sejam lidos
-        window.location.href = '/dashboard';
+        // Usar window.location.href para forçar reload completo e garantir que middleware veja a sessão
+        // Isso também garante que cookies sejam enviados na requisição
+        // Adicionar um pequeno delay extra para garantir que tudo esteja salvo
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 300);
       } else if (data.user && !data.session) {
         console.warn('⚠️ [DEBUG] Usuário existe mas sessão não foi criada:', {
           userId: data.user.id,
@@ -104,6 +130,7 @@ export default function SignInPage() {
         });
         // Usuário existe mas sessão não foi criada (pode precisar confirmar email)
         setError('Por favor, confirme seu email antes de fazer login. Verifique sua caixa de entrada.');
+        setLoading(false);
       } else {
         console.error('❌ [DEBUG] Caso inesperado:', {
           hasUser: !!data?.user,
@@ -111,13 +138,12 @@ export default function SignInPage() {
         });
         // Caso inesperado
         setError('Erro ao criar sessão. Tente novamente.');
+        setLoading(false);
       }
     } catch (err: any) {
       console.error('❌ [DEBUG] Erro capturado:', err);
       setError(err.message || 'Erro ao fazer login');
-    } finally {
       setLoading(false);
-      console.log('🏁 [DEBUG] Login finalizado');
     }
   };
 
