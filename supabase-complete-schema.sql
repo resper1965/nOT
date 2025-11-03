@@ -389,13 +389,18 @@ CREATE INDEX IF NOT EXISTS idx_changes_changed ON audit.changes(changed_at DESC)
 -- ============================================================================
 
 -- Function to update updated_at timestamp
+-- Security: SET search_path = '' to prevent search_path injection attacks
 CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER 
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
 BEGIN
     NEW.updated_at = CURRENT_TIMESTAMP;
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- ============================================================================
 -- TRIGGERS

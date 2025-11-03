@@ -52,10 +52,15 @@ CREATE INDEX IF NOT EXISTS idx_document_versions_version_number
   ON compliance.document_versions(version_number);
 
 -- Criar função para obter próxima versão
+-- Security: SET search_path = compliance, pg_catalog to prevent search_path injection attacks
 CREATE OR REPLACE FUNCTION compliance.get_next_version(
   p_document_id UUID,
   p_content_type VARCHAR
-) RETURNS INTEGER AS $$
+) RETURNS INTEGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = compliance, pg_catalog
+AS $$
 DECLARE
   v_next_version INTEGER;
 BEGIN
@@ -67,7 +72,7 @@ BEGIN
   
   RETURN v_next_version;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- Comentários nas colunas
 COMMENT ON COLUMN compliance.documents.original_filename IS 'Nome original do arquivo enviado pelo usuário';
