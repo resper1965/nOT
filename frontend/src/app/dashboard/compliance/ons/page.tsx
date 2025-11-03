@@ -1,5 +1,10 @@
 import { CheckCircle2, XCircle, Clock, AlertTriangle, Shield, Activity } from 'lucide-react'
 import { getOnsControls } from '@/lib/api'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
 
 export default async function OnsControlsPage() {
   const controlsData = await getOnsControls().catch(() => ({ 
@@ -17,71 +22,121 @@ export default async function OnsControlsPage() {
   }
 
   return (
-    <div className='flex flex-1 flex-col gap-4 p-4 pt-0'>
-      <div className='flex items-center justify-between'>
-        <div>
-          <h1 className='text-3xl font-bold'>Controles ONS</h1>
-          <p className='text-muted-foreground'>
-            10 controles de segurança baseados na análise real da rede
-          </p>
-        </div>
-        <div className='flex items-center gap-2 text-sm text-muted-foreground'>
-          <Shield className='w-4 h-4' />
-          <span>Baseado em dados reais</span>
-        </div>
+    <div className='flex flex-1 flex-col space-y-6 p-6'>
+      {/* Header Section */}
+      <div className='space-y-2'>
+        <h1 className='text-3xl font-bold tracking-tight'>Controles ONS</h1>
+        <p className='text-muted-foreground'>
+          5 controles mínimos de segurança baseados na análise real da rede
+        </p>
       </div>
 
-      {/* Stats */}
-      <div className='grid gap-4 md:grid-cols-4'>
-        <div className='rounded-lg border bg-card p-4'>
-          <div className='flex items-center justify-between'>
-            <div className='text-sm font-medium text-muted-foreground'>Total</div>
-            <Shield className='h-4 w-4 text-muted-foreground' />
-          </div>
-          <div className='mt-2 text-2xl font-bold'>{stats.total}</div>
-          <div className='text-xs text-muted-foreground'>Controles ONS</div>
-        </div>
+      {/* Stats Cards - Design Moderno */}
+      <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
+        <Card className='relative overflow-hidden border-border/50 bg-gradient-to-br from-background to-muted/20 transition-all hover:shadow-lg hover:scale-[1.02]'>
+          <div className='absolute inset-0 bg-gradient-to-br from-[#00ade8]/5 to-transparent' />
+          <CardHeader className='relative pb-3'>
+            <div className='flex items-center justify-between'>
+              <CardDescription className='flex items-center gap-2 text-xs font-medium'>
+                <div className='rounded-lg bg-[#00ade8]/10 p-1.5'>
+                  <Shield className='h-4 w-4 text-[#00ade8]' />
+                </div>
+                Total
+              </CardDescription>
+            </div>
+            <CardTitle className='mt-3 text-3xl font-bold tabular-nums'>
+              {stats.total}
+            </CardTitle>
+          </CardHeader>
+          <CardFooter className='relative pt-0'>
+            <span className='text-xs text-muted-foreground'>Controles ONS</span>
+          </CardFooter>
+        </Card>
         
-        <div className='rounded-lg border bg-card p-4'>
-          <div className='flex items-center justify-between'>
-            <div className='text-sm font-medium text-muted-foreground'>Aprovados</div>
-            <CheckCircle2 className='h-4 w-4 text-green-500' />
-          </div>
-          <div className='mt-2 text-2xl font-bold text-green-500'>{stats.approved}</div>
-          <div className='text-xs text-muted-foreground'>{stats.compliance_rate}% compliance</div>
-        </div>
+        <Card className='relative overflow-hidden border-green-500/30 bg-gradient-to-br from-green-500/5 to-background transition-all hover:shadow-lg hover:scale-[1.02]'>
+          <div className='absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent' />
+          <CardHeader className='relative pb-3'>
+            <div className='flex items-center justify-between'>
+              <CardDescription className='flex items-center gap-2 text-xs font-medium'>
+                <div className='rounded-lg bg-green-500/10 p-1.5'>
+                  <CheckCircle2 className='h-4 w-4 text-green-500' />
+                </div>
+                Aprovados
+              </CardDescription>
+              <Badge variant='outline' className='border-green-500/50 text-green-500 bg-green-500/10 text-xs'>
+                {stats.compliance_rate}%
+              </Badge>
+            </div>
+            <CardTitle className='mt-3 text-3xl font-bold tabular-nums text-green-500'>
+              {stats.approved}
+            </CardTitle>
+          </CardHeader>
+          <CardFooter className='relative pt-0'>
+            <span className='text-xs text-green-500 font-medium'>Compliance</span>
+          </CardFooter>
+        </Card>
 
-        <div className='rounded-lg border bg-card p-4'>
-          <div className='flex items-center justify-between'>
-            <div className='text-sm font-medium text-muted-foreground'>Críticos</div>
-            <AlertTriangle className='h-4 w-4 text-red-500' />
-          </div>
-          <div className='mt-2 text-2xl font-bold text-red-500'>{stats.critical}</div>
-          <div className='text-xs text-muted-foreground'>Requer ação imediata</div>
-        </div>
+        <Card className='relative overflow-hidden border-red-500/30 bg-gradient-to-br from-red-500/5 to-background transition-all hover:shadow-lg hover:scale-[1.02]'>
+          <div className='absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent' />
+          <CardHeader className='relative pb-3'>
+            <div className='flex items-center justify-between'>
+              <CardDescription className='flex items-center gap-2 text-xs font-medium'>
+                <div className='rounded-lg bg-red-500/10 p-1.5'>
+                  <AlertTriangle className='h-4 w-4 text-red-500' />
+                </div>
+                Críticos
+              </CardDescription>
+            </div>
+            <CardTitle className='mt-3 text-3xl font-bold tabular-nums text-red-500'>
+              {stats.critical}
+            </CardTitle>
+          </CardHeader>
+          <CardFooter className='relative pt-0'>
+            <span className='text-xs text-red-500 font-medium'>Requer ação imediata</span>
+          </CardFooter>
+        </Card>
 
-        <div className='rounded-lg border bg-card p-4'>
-          <div className='flex items-center justify-between'>
-            <div className='text-sm font-medium text-muted-foreground'>Em Progresso</div>
-            <Clock className='h-4 w-4 text-yellow-500' />
-          </div>
-          <div className='mt-2 text-2xl font-bold text-yellow-500'>{stats.in_progress}</div>
-          <div className='text-xs text-muted-foreground'>Implementação em andamento</div>
-        </div>
+        <Card className='relative overflow-hidden border-yellow-500/30 bg-gradient-to-br from-yellow-500/5 to-background transition-all hover:shadow-lg hover:scale-[1.02]'>
+          <div className='absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-transparent' />
+          <CardHeader className='relative pb-3'>
+            <div className='flex items-center justify-between'>
+              <CardDescription className='flex items-center gap-2 text-xs font-medium'>
+                <div className='rounded-lg bg-yellow-500/10 p-1.5'>
+                  <Clock className='h-4 w-4 text-yellow-500' />
+                </div>
+                Em Progresso
+              </CardDescription>
+            </div>
+            <CardTitle className='mt-3 text-3xl font-bold tabular-nums text-yellow-500'>
+              {stats.in_progress}
+            </CardTitle>
+          </CardHeader>
+          <CardFooter className='relative pt-0'>
+            <span className='text-xs text-yellow-500 font-medium'>Implementação em andamento</span>
+          </CardFooter>
+        </Card>
       </div>
 
-      {/* Controls List */}
-      <div className='rounded-lg border bg-card'>
-        <div className='p-4 border-b'>
-          <h2 className='text-lg font-semibold'>Status dos Controles ONS</h2>
-          <p className='text-sm text-muted-foreground mt-1'>
+      {/* Controls List - Design Moderno */}
+      <Card className='border-border/50 bg-gradient-to-br from-background to-muted/20'>
+        <CardHeader className='border-b border-border/50'>
+          <CardTitle className='flex items-center gap-2'>
+            <div className='rounded-lg bg-[#00ade8]/10 p-1.5'>
+              <Shield className='h-4 w-4 text-[#00ade8]' />
+            </div>
+            Status dos Controles ONS
+          </CardTitle>
+          <CardDescription className='mt-1.5'>
             Baseado na análise real da infraestrutura
-          </p>
-        </div>
-        <div className='p-4'>
+          </CardDescription>
+        </CardHeader>
+        <CardContent className='p-6'>
           <div className='space-y-3'>
             {controls.map((control: any) => (
-              <div key={control.id} className='flex items-center justify-between p-4 rounded-lg border hover:border-brand-cyan/50 transition-all'>
+              <div 
+                key={control.id} 
+                className='group flex items-center justify-between rounded-lg border border-border/50 bg-muted/30 p-4 transition-all hover:border-[#00ade8]/50 hover:bg-muted/50'
+              >
                 <div className='flex items-center gap-4 flex-1'>
                   {statusIcon[control.status as keyof typeof statusIcon]}
                   <div className='flex-1'>
@@ -94,32 +149,36 @@ export default async function OnsControlsPage() {
                 </div>
                 <div className='flex items-center gap-4'>
                   <div className='text-right'>
-                    <div className='text-sm font-medium'>{control.completion}%</div>
-                    <div className='w-20 bg-gray-200 rounded-full h-2'>
+                    <div className='text-sm font-semibold'>{control.completion}%</div>
+                    <div className='relative h-2 w-20 overflow-hidden rounded-full bg-muted'>
                       <div 
-                        className={`h-2 rounded-full ${
-                          control.completion === 100 ? 'bg-green-500' :
-                          control.completion >= 50 ? 'bg-yellow-500' :
-                          'bg-red-500'
-                        }`}
+                        className={`absolute inset-y-0 left-0 rounded-full bg-gradient-to-r ${
+                          control.completion >= 100 ? 'from-green-500 to-emerald-500' :
+                          control.completion >= 50 ? 'from-yellow-500 to-orange-500' :
+                          'from-red-500 to-orange-500'
+                        } transition-all duration-500 shadow-sm`}
                         style={{ width: `${control.completion}%` }}
-                      ></div>
+                      >
+                        <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer' />
+                      </div>
                     </div>
                   </div>
-                  <span className={`text-xs px-2 py-1 rounded uppercase font-medium ${
-                    control.status === 'approved' ? 'bg-green-500/10 text-green-500' :
-                    control.status === 'critical' ? 'bg-red-500/10 text-red-500' :
-                    control.status === 'in_progress' ? 'bg-yellow-500/10 text-yellow-500' :
-                    'bg-red-500/10 text-red-500'
-                  }`}>
+                  <Badge 
+                    variant='outline' 
+                    className={`text-xs uppercase font-medium ${
+                      control.status === 'approved' ? 'border-green-500/50 text-green-500 bg-green-500/10' :
+                      control.status === 'missing' || control.status === 'critical' ? 'border-red-500/50 text-red-500 bg-red-500/10' :
+                      'border-yellow-500/50 text-yellow-500 bg-yellow-500/10'
+                    }`}
+                  >
                     {control.status}
-                  </span>
+                  </Badge>
                 </div>
               </div>
             ))}
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
