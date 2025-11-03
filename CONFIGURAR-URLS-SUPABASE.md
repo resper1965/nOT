@@ -1,12 +1,6 @@
-# 🔧 Configurar URLs do Supabase para Produção
+# 🔧 Configurar URLs do Supabase para Produção na Vercel
 
-**IMPORTANTE: Configurar URLs corretas no Supabase para funcionar na Vercel**
-
----
-
-## ⚠️ Problema Atual
-
-O `http://localhost:3000` está configurado no Supabase, mas isso é apenas para desenvolvimento local. Para produção na Vercel, você precisa configurar as URLs corretas.
+**Configuração de URLs do Supabase apenas para produção na Vercel**
 
 ---
 
@@ -20,10 +14,7 @@ O `http://localhost:3000` está configurado no Supabase, mas isso é apenas para
 ```
 https://ngrcot-*.vercel.app
 ```
-ou
-```
-https://ngrcot-gp7yrm50l-nessbr-projects.vercel.app
-```
+ou sua URL específica da Vercel
 
 **Como encontrar sua URL:**
 ```bash
@@ -39,16 +30,14 @@ vercel ls
 
 **URLs para adicionar:**
 
-#### Produção Vercel:
+#### Produção Vercel (Recomendado - cobre todas as URLs):
 ```
-https://ngrcot-*.vercel.app/**
 https://*.vercel.app/**
 ```
 
-#### Desenvolvimento Local (opcional, mas recomendado):
+#### Produção específica do projeto (opcional):
 ```
-http://localhost:3000/**
-http://127.0.0.1:3000/**
+https://ngrcot-*.vercel.app/**
 ```
 
 **Importante:** Use wildcards (`*`) para aceitar qualquer subdomínio da Vercel:
@@ -67,14 +56,14 @@ http://127.0.0.1:3000/**
 ### 2. Configurar Site URL
 
 1. Na seção **"Site URL"**
-2. Remova ou altere: `http://localhost:3000`
-3. Adicione sua URL de produção da Vercel:
-   ```
-   https://ngrcot-gp7yrm50l-nessbr-projects.vercel.app
-   ```
-   ou use wildcard:
+2. Remova qualquer referência a `http://localhost:3000` se existir
+3. Configure com sua URL de produção da Vercel:
    ```
    https://ngrcot-*.vercel.app
+   ```
+   ou use sua URL específica:
+   ```
+   https://ngrcot-gp7yrm50l-nessbr-projects.vercel.app
    ```
 4. Clique em **"Save changes"**
 
@@ -84,19 +73,14 @@ http://127.0.0.1:3000/**
 2. Clique em **"Add URL"**
 3. Adicione cada URL uma por uma:
 
-   **URL 1 (Produção - todas as URLs Vercel):**
+   **URL 1 (Produção - todas as URLs Vercel - RECOMENDADO):**
    ```
    https://*.vercel.app/**
    ```
    
-   **URL 2 (Produção - específica do projeto):**
+   **URL 2 (Produção - específica do projeto - OPCIONAL):**
    ```
    https://ngrcot-*.vercel.app/**
-   ```
-   
-   **URL 3 (Desenvolvimento local - opcional):**
-   ```
-   http://localhost:3000/**
    ```
 
 4. Clique em **"Save changes"** após cada URL
@@ -107,7 +91,7 @@ http://127.0.0.1:3000/**
 
 Após configurar, teste:
 
-1. Acesse sua URL de produção: `https://ngrcot-*.vercel.app`
+1. Acesse sua URL de produção na Vercel
 2. Tente fazer login
 3. Verifique se o redirecionamento funciona corretamente
 
@@ -125,12 +109,6 @@ Se houver erro de redirecionamento, verifique:
 - `https://*.vercel.app/**` permite qualquer subdomínio `.vercel.app`
 - O `**` no final permite qualquer caminho após o domínio
 - Útil para aceitar diferentes URLs de deploy da Vercel
-
-### Desenvolvimento vs Produção
-
-- **Desenvolvimento:** Use `http://localhost:3000/**`
-- **Produção:** Use `https://*.vercel.app/**`
-- Você pode ter ambos configurados simultaneamente
 
 ### Domínio Personalizado
 
@@ -159,8 +137,20 @@ Se você tiver um domínio personalizado na Vercel (ex: `ness.ot.grc.com`):
 1. Verifique Site URL no Supabase
 2. Verifique se Redirect URLs incluem a URL correta
 3. Limpe cookies do navegador e tente novamente
+4. Verifique se a URL da Vercel está nas Redirect URLs permitidas
 
 ---
 
-**Configuração necessária para funcionar em produção!** ✅
+## 📋 Resumo da Configuração
 
+**Site URL:**
+```
+https://ngrcot-*.vercel.app
+```
+
+**Redirect URLs (mínimo necessário):**
+```
+https://*.vercel.app/**
+```
+
+**Isso é suficiente para funcionar em produção na Vercel!** ✅
