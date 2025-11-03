@@ -69,7 +69,7 @@ export default async function FrameworksPage() {
   };
 
   return (
-    <div className='flex flex-1 flex-col space-y-6 p-6'>
+    <div className='flex flex-1 flex-col space-y-6 p-6 pt-0'>
       {/* Header Section */}
       <div className='space-y-2'>
         <h1 className='text-3xl font-bold tracking-tight'>Frameworks de Segurança</h1>

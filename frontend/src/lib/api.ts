@@ -190,3 +190,59 @@ export async function getRoutingGraph() {
   return res.json();
 }
 
+// Dashboard Stats API functions
+export async function getComplianceStats() {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const documentsRes = await fetch(`${baseUrl}/api/compliance/documents`, { cache: 'no-store' });
+    const documentsData = documentsRes.ok ? await documentsRes.json() : { statistics: { total: 0, approved: 0, pending: 0 } };
+    
+    const onsRes = await fetch(`${baseUrl}/api/compliance/ons-controls`, { cache: 'no-store' }).catch(() => null);
+    const onsData = onsRes?.ok ? await onsRes.json() : { stats: { compliance_rate: 0 } };
+    
+    return {
+      total_documents: documentsData.statistics?.total || 0,
+      approved_documents: documentsData.statistics?.approved || 0,
+      missing_documents: (documentsData.statistics?.total || 0) - (documentsData.statistics?.approved || 0),
+      completion_rate: documentsData.statistics?.total > 0 
+        ? Math.round((documentsData.statistics?.approved / documentsData.statistics?.total) * 100)
+        : 0,
+      ons_compliance: onsData.stats?.compliance_rate || 0,
+    };
+  } catch (error) {
+    console.error('Error fetching compliance stats:', error);
+    return {
+      total_documents: 0,
+      approved_documents: 0,
+      missing_documents: 0,
+      completion_rate: 0,
+      ons_compliance: 0,
+    };
+  }
+}
+
+export async function getGapsStats() {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const res = await fetch(`${baseUrl}/api/remediation/gaps`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('Failed to fetch gaps stats');
+    const data = await res.json();
+    return {
+      total_gaps: data.stats?.total_gaps || 0,
+      critical_gaps: data.stats?.critical_gaps || 0,
+      high_gaps: data.stats?.high_gaps || 0,
+      total_effort_hours: data.stats?.total_effort_hours || 0,
+      avg_cvss: data.stats?.avg_cvss || 0,
+    };
+  } catch (error) {
+    console.error('Error fetching gaps stats:', error);
+    return {
+      total_gaps: 0,
+      critical_gaps: 0,
+      high_gaps: 0,
+      total_effort_hours: 0,
+      avg_cvss: 0,
+    };
+  }
+}
+

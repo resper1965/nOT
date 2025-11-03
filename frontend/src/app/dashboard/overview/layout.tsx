@@ -9,7 +9,7 @@ import {
   CardFooter
 } from '@/components/ui/card';
 import { Shield, Network, FileText, AlertTriangle, TrendingUp, CheckCircle2 } from 'lucide-react';
-import { getAssetsStats, getNetworkTopology } from '@/lib/api';
+import { getAssetsStats, getNetworkTopology, getComplianceStats, getGapsStats } from '@/lib/api';
 import React from 'react';
 
 // Force dynamic rendering
@@ -41,12 +41,27 @@ export default async function OverViewLayout({
     connections: 0 
   }));
   
-  // Calculate compliance percentage (mock for now, will be replaced with real API)
-  const compliancePercent = 0;
-  const documentsCount = 0;
-  const documentsTotal = 50;
-  const gapsCount = 6;
-  const criticalGaps = 2;
+  // Fetch real compliance and gaps stats
+  const complianceStats = await getComplianceStats().catch(() => ({ 
+    total_documents: 0, 
+    missing_documents: 0, 
+    approved_documents: 0, 
+    completion_rate: 0, 
+    ons_compliance: 0 
+  }));
+  
+  const gapsStats = await getGapsStats().catch(() => ({ 
+    total_gaps: 0, 
+    critical_gaps: 0, 
+    total_effort_hours: 0, 
+    avg_cvss: 0 
+  }));
+  
+  const compliancePercent = complianceStats.ons_compliance || 0;
+  const documentsCount = complianceStats.approved_documents || 0;
+  const documentsTotal = complianceStats.total_documents || 0;
+  const gapsCount = gapsStats.total_gaps || 0;
+  const criticalGaps = gapsStats.critical_gaps || 0;
 
   // Get asset type breakdown
   const routerCount = stats.by_type?.find((t: any) => t.type?.toLowerCase().includes('router'))?.count || 0;
@@ -122,7 +137,9 @@ export default async function OverViewLayout({
             <CardFooter className='relative pt-0'>
               <div className='flex items-center gap-2 text-xs'>
                 <AlertTriangle className='h-3.5 w-3.5 text-red-500' />
-                <span className='text-red-500 font-medium'>5 controles mínimos pendentes</span>
+                <span className='text-red-500 font-medium'>
+                  {compliancePercent < 100 ? `${Math.max(0, 5 - Math.round(compliancePercent / 20))} controles mínimos pendentes` : 'Conforme'}
+                </span>
               </div>
             </CardFooter>
           </Card>
@@ -139,7 +156,7 @@ export default async function OverViewLayout({
                   Documentos
                 </CardDescription>
                 <Badge variant='outline' className='border-orange-500/50 text-orange-500 bg-orange-500/10 text-xs'>
-                  {Math.round((documentsCount / documentsTotal) * 100)}% completo
+                  {documentsTotal > 0 ? Math.round((documentsCount / documentsTotal) * 100) : 0}% completo
                 </Badge>
               </div>
               <CardTitle className='mt-3 text-3xl font-bold tabular-nums'>
@@ -166,7 +183,7 @@ export default async function OverViewLayout({
                   Gaps Críticos
                 </CardDescription>
                 <Badge variant='outline' className='border-orange-500/50 text-orange-500 bg-orange-500/10 text-xs'>
-                  CVSS 9.1
+                  CVSS {gapsStats.avg_cvss?.toFixed(1) || '0.0'}
                 </Badge>
               </div>
               <CardTitle className='mt-3 text-3xl font-bold tabular-nums text-orange-500'>
@@ -176,7 +193,7 @@ export default async function OverViewLayout({
             <CardFooter className='relative pt-0'>
               <div className='flex items-center gap-2 text-xs'>
                 <TrendingUp className='h-3.5 w-3.5 text-orange-500' />
-                <span className='text-orange-500 font-medium'>{criticalGaps} críticos • 560h estimadas</span>
+                <span className='text-orange-500 font-medium'>{criticalGaps} críticos • {gapsStats.total_effort_hours || 0}h estimadas</span>
               </div>
             </CardFooter>
           </Card>

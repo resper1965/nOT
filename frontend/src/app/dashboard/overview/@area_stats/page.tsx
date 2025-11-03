@@ -11,32 +11,38 @@ export default async function NetworkSegmentation() {
   
   const firewallCount = stats.by_type?.find((t: any) => t.type?.toLowerCase().includes('firewall'))?.count || 0;
   
+  // Calculate actual targets from data (use max of current or a reasonable minimum)
+  const subnetsTarget = Math.max(topology.subnets || 0, 1);
+  const vlansTarget = Math.max(stats.total_vlans || 0, 1);
+  const connectionsTarget = Math.max(topology.connections || 0, 1);
+  const firewallsTarget = Math.max(firewallCount, 6); // Minimum 6 for Purdue model
+
   const segmentData = [
     { 
       label: 'Subnets mapeados', 
       current: topology.subnets || 0, 
-      target: 109,
+      target: subnetsTarget,
       icon: Target,
       color: 'from-blue-500 to-cyan-500'
     },
     { 
       label: 'VLANs classificadas', 
       current: 0, 
-      target: stats.total_vlans || 59,
+      target: vlansTarget,
       icon: Target,
       color: 'from-green-500 to-emerald-500'
     },
     { 
       label: 'Conexões analisadas', 
       current: 0, 
-      target: topology.connections || 1345,
+      target: connectionsTarget,
       icon: TrendingUp,
       color: 'from-purple-500 to-pink-500'
     },
     { 
       label: 'Firewalls implementados', 
       current: firewallCount, 
-      target: 15,
+      target: firewallsTarget,
       icon: Target,
       color: 'from-red-500 to-orange-500'
     },

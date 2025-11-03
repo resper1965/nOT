@@ -10,8 +10,8 @@ export default async function CriticalGaps() {
   const topology = await getNetworkTopology().catch(() => ({ devices: {}, subnets: 0, connections: 0 }));
   
   const firewallCount = stats.by_type?.find((t: any) => t.type?.toLowerCase().includes('firewall'))?.count || 0;
-  const subnetsTarget = topology.subnets || 109;
-  const connectionsTarget = topology.connections || 1345;
+  const subnetsTarget = topology.subnets || 0;
+  const connectionsTarget = topology.connections || 0;
   
   const gaps = [
     { 
@@ -30,7 +30,7 @@ export default async function CriticalGaps() {
     },
     { 
       id: 'GAP-SEG-003', 
-      description: `${stats.total_vlans || 59} VLANs não classificadas`, 
+      description: `${stats.total_vlans || 0} VLANs não classificadas`, 
       cvss: 7.8, 
       status: 'high',
       effort: '40h'
