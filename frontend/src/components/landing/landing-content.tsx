@@ -1,6 +1,6 @@
 'use client';
 
-import { Shield, Network, FileText, TrendingUp, CheckCircle, Lock } from 'lucide-react';
+import { Shield, Network, FileText, TrendingUp, Lock } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LandingContent() {
