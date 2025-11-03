@@ -125,7 +125,7 @@ export default async function FrameworksPage() {
         <div className='rounded-lg border bg-card p-12 text-center'>
           <AlertTriangle className='w-12 h-12 mx-auto mb-4 text-orange-500' />
           <p className='text-lg font-medium text-muted-foreground mb-2'>Nenhum framework cadastrado</p>
-          <p className='text-sm text-muted-foreground'>Cadastre frameworks no Supabase para visualizá-los aqui.</p>
+          <p className='text-sm text-muted-foreground'>Nenhum framework disponível no momento.</p>
         </div>
       ) : (
         <div className='grid gap-4 md:grid-cols-2'>
@@ -194,37 +194,6 @@ export default async function FrameworksPage() {
       </div>
       )}
 
-      {/* Implementation Priority */}
-      <div className='rounded-lg border border-orange-500/20 bg-orange-500/5 p-6'>
-        <div className='flex items-start gap-4'>
-          <AlertTriangle className='w-6 h-6 text-orange-500 flex-shrink-0 mt-1' />
-          <div>
-            <h3 className='font-semibold mb-2 text-orange-500'>Prioridade de Implementação</h3>
-            <p className='text-sm text-muted-foreground mb-3'>
-              <strong>Recomendação:</strong> {frameworks.length > 0 
-                ? `Focar primeiro nos frameworks parcialmente implementados e depois expandir para frameworks não implementados.`
-                : 'Cadastre frameworks no Supabase para visualizar recomendações de implementação.'}
-            </p>
-            {frameworks.length > 0 && (
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4 text-sm'>
-                {frameworks
-                  .filter((f: any) => f.status === 'partial')
-                  .slice(0, 2)
-                  .map((framework: any, idx: number) => (
-                    <div key={framework.id || idx}>
-                      <div className='font-medium mb-2'>{idx + 1}. {framework.name} (Prioridade Alta)</div>
-                      <ul className='text-muted-foreground space-y-1 text-xs'>
-                        <li>• {framework.compliance}% implementado</li>
-                        <li>• {framework.requirements - framework.compliance} requisitos pendentes</li>
-                        <li>• Alinhado com requisitos regulatórios</li>
-                      </ul>
-                    </div>
-                  ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
     </div>
   )
 }
