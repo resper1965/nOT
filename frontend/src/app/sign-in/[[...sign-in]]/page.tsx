@@ -114,13 +114,18 @@ export default function SignInPage() {
           return;
         }
 
-        console.log('🚀 [DEBUG] Redirecionando para /dashboard...');
+        // Verificar se há parâmetro redirectedFrom na URL para redirecionar corretamente
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectedFrom = urlParams.get('redirectedFrom');
+        const redirectPath = redirectedFrom || '/dashboard';
+        
+        console.log('🚀 [DEBUG] Redirecionando para:', redirectPath);
         
         // Usar window.location.href para forçar reload completo e garantir que middleware veja a sessão
         // Isso também garante que cookies sejam enviados na requisição
         // Adicionar um pequeno delay extra para garantir que tudo esteja salvo
         setTimeout(() => {
-          window.location.href = '/dashboard';
+          window.location.href = redirectPath;
         }, 300);
       } else if (data.user && !data.session) {
         console.warn('⚠️ [DEBUG] Usuário existe mas sessão não foi criada:', {
