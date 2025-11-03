@@ -193,10 +193,11 @@ export async function getComplianceDocumentsFromSupabase() {
     const total = documents.length;
     
     // Calculate stats for compatibility
+    const approved = documents.filter((d: any) => d.status === 'approved').length;
     const stats = {
       total,
       missing: documents.filter((d: any) => d.status === 'missing' || !d.status).length,
-      approved: documents.filter((d: any) => d.status === 'approved').length,
+      approved,
       draft: documents.filter((d: any) => d.status === 'draft').length,
       review: documents.filter((d: any) => d.status === 'review' || d.status === 'pending').length,
       completion_rate: total > 0 ? Math.round((approved / total) * 100) : 0,
