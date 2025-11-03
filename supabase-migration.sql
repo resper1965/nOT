@@ -132,10 +132,9 @@ CREATE TABLE IF NOT EXISTS topology.ip_subnets (
 CREATE INDEX IF NOT EXISTS idx_subnets_network ON topology.ip_subnets(network_address);
 
 -- Add purdue_level column if table exists without it
--- Drop view if exists (prevent conflict)
-DROP VIEW IF EXISTS topology.ip_subnets CASCADE;
 DO $$ 
 BEGIN
+    -- Only proceed if it's a table, not a view
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'topology' AND table_name = 'ip_subnets' AND table_type = 'BASE TABLE')
        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'topology' AND table_name = 'ip_subnets' AND column_name = 'purdue_level')
     THEN
@@ -181,10 +180,9 @@ CREATE TABLE IF NOT EXISTS topology.vlans (
 CREATE INDEX IF NOT EXISTS idx_vlans_id ON topology.vlans(vlan_id);
 
 -- Add purdue_level column if table exists without it
--- Drop view if exists (prevent conflict)
-DROP VIEW IF EXISTS topology.vlans CASCADE;
 DO $$ 
 BEGIN
+    -- Only proceed if it's a table, not a view
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'topology' AND table_name = 'vlans' AND table_type = 'BASE TABLE')
        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'topology' AND table_name = 'vlans' AND column_name = 'purdue_level')
     THEN
@@ -243,10 +241,9 @@ CREATE TABLE IF NOT EXISTS compliance.controls (
 CREATE INDEX IF NOT EXISTS idx_controls_framework ON compliance.controls(framework_id);
 
 -- Add control_code column if table exists without it
--- Drop view if exists (prevent conflict)
-DROP VIEW IF EXISTS compliance.controls CASCADE;
 DO $$ 
 BEGIN
+    -- Only proceed if it's a table, not a view
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'compliance' AND table_name = 'controls' AND table_type = 'BASE TABLE')
        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'compliance' AND table_name = 'controls' AND column_name = 'control_code')
     THEN
@@ -277,10 +274,9 @@ CREATE TABLE IF NOT EXISTS compliance.documents (
 );
 
 -- Add columns if table exists without them (for indexes)
--- Drop view if exists (prevent conflict)
-DROP VIEW IF EXISTS compliance.documents CASCADE;
 DO $$ 
 BEGIN
+    -- Only proceed if it's a table, not a view
     -- Add category column if missing
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'compliance' AND table_name = 'documents' AND table_type = 'BASE TABLE')
        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'compliance' AND table_name = 'documents' AND column_name = 'category')
