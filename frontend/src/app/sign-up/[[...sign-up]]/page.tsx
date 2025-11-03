@@ -72,9 +72,6 @@ export default function SignUpPage() {
           <p className="mt-2 text-sm text-muted-foreground">
             OT GRC - Governance, Risk & Compliance
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Cliente: TBE - Setor Elétrico
-          </p>
         </div>
 
         {/* Sign Up Form */}

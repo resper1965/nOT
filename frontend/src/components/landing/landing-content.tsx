@@ -149,9 +149,6 @@ export default function LandingContent() {
             <div className="text-sm text-gray-500">
               © 2025 <span className="text-white font-medium">ness.</span> - OT GRC Platform
             </div>
-            <div className="flex items-center gap-6 text-sm text-gray-500">
-              <span>Powered by Supabase Authentication</span>
-            </div>
           </div>
         </div>
       </footer>
