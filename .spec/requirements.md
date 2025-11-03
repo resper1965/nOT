@@ -2,7 +2,7 @@
 
 ## ✅ Requisitos Funcionais
 
-### RF01: Gestão de Documentação ✅ **IMPLEMENTADO**
+### RF01: Gestão de Documentação ✅ **PARCIALMENTE IMPLEMENTADO**
 - ✅ Sistema permite rastreamento de documentos de compliance
 - ✅ Sistema versiona documentos automaticamente (via `document_status`)
 - ✅ Sistema alerta sobre documentos próximos ao vencimento (via `next_review_date`)
@@ -10,6 +10,11 @@
 - ✅ **50+ documentos obrigatórios** mapeados em `required_documents`
 - ✅ **9 categorias** de documentos configuradas
 - ✅ Status tracking: missing, draft, under_review, approved, published, expired
+- ⏳ **Upload de Documentos** - Implementação em andamento (ver `.spec/document-upload-conversion.md`)
+  - Upload de documentos em múltiplos formatos (PDF, DOC, DOCX, TXT, MD)
+  - Preservação do documento original no Supabase Storage
+  - Conversão automática para Markdown (formato editável)
+  - Edição de documentos Markdown na plataforma
 
 ### RF02: Análise de Rede OT ✅ **IMPLEMENTADO**
 - ✅ Sistema mapeia topologia de rede OT (`network_zones`, `network_connections`)
