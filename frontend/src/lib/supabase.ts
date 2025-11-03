@@ -1,7 +1,9 @@
 // Supabase client configuration for ness. OT GRC
 // Optimized based on ness-theme framework
 // Supports both client-side and server-side rendering
+// IMPORTANTE: Usa @supabase/ssr para garantir cookies HTTP (compatível com middleware)
 
+import { createBrowserClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient as SupabaseClientType } from '@supabase/supabase-js';
 
@@ -19,25 +21,30 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development' && (
 }
 
 // Create Supabase client for browser/client-side usage
-// Optimized configuration with better defaults
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-    flowType: 'pkce', // Enhanced security with PKCE flow
-  },
-  db: {
-    schema: 'public', // Default schema, can be overridden per query
-  },
-  global: {
-    headers: {
-      'x-client-info': 'ness-ot-grc@1.0.0',
+// Usa createBrowserClient do @supabase/ssr para garantir cookies HTTP
+// Isso permite que o middleware leia a sessão corretamente
+export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey, {
+  cookies: {
+    getAll() {
+      return document.cookie.split(';').map((cookie) => {
+        const [name, value] = cookie.trim().split('=');
+        return { name, value };
+      });
     },
-  },
-  realtime: {
-    params: {
-      eventsPerSecond: 10,
+    set(name: string, value: string, options?: { path?: string; domain?: string; maxAge?: number; sameSite?: string; secure?: boolean }) {
+      let cookieString = `${name}=${value}`;
+      if (options?.path) cookieString += `; path=${options.path}`;
+      if (options?.domain) cookieString += `; domain=${options.domain}`;
+      if (options?.maxAge !== undefined) cookieString += `; max-age=${options.maxAge}`;
+      if (options?.sameSite) cookieString += `; samesite=${options.sameSite}`;
+      if (options?.secure) cookieString += `; secure`;
+      document.cookie = cookieString;
+    },
+    remove(name: string, options?: { path?: string; domain?: string }) {
+      let cookieString = `${name}=; max-age=0`;
+      if (options?.path) cookieString += `; path=${options.path}`;
+      if (options?.domain) cookieString += `; domain=${options.domain}`;
+      document.cookie = cookieString;
     },
   },
 });
@@ -118,4 +125,3 @@ export const supabaseHelpers = {
     return !!user;
   },
 };
-
