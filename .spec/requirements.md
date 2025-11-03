@@ -40,7 +40,7 @@
   - Plan (plano de adequação)
   - Timeline (timeline de remediação)
 
-### RF04: Conformidade Regulatória ✅ **IMPLEMENTADO**
+### RF04: Conformidade Regulatória ✅ **PARCIALMENTE IMPLEMENTADO**
 - ✅ Sistema verifica conformidade ANEEL RN 964/2021 (`compliance.frameworks`, `compliance.documents`)
 - ✅ Sistema verifica 5 controles mínimos ONS (`compliance.ons_controls`)
 - ✅ Sistema gera evidências de conformidade (`compliance.documents`, `compliance.assessments`)
@@ -52,6 +52,11 @@
   - Documents (gestão documental)
 - ✅ **7 pilares ANEEL** mapeados
 - ✅ **50+ documentos obrigatórios** rastreáveis
+- ⏳ **Gestão de Frameworks** - Em refinamento (ver `.spec/frameworks-management.md`)
+  - Cadastro de frameworks regulatórios e internacionais
+  - Mapeamento de controles por framework
+  - Avaliação de conformidade por framework
+  - Visualização consolidada de todos os frameworks
 
 ### RF05: Dashboards e Relatórios ✅ **PARCIALMENTE IMPLEMENTADO**
 - ✅ Sistema exibe dashboards executivos (24 páginas implementadas)
