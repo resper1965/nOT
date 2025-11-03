@@ -125,6 +125,17 @@ CREATE TABLE IF NOT EXISTS topology.ip_subnets (
 -- GIST index requires inet_ops operator class or btree_gist extension
 -- Using B-tree index instead for compatibility
 CREATE INDEX IF NOT EXISTS idx_subnets_network ON topology.ip_subnets(network_address);
+
+-- Add purdue_level column if table exists without it
+DO $$ 
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'topology' AND table_name = 'ip_subnets')
+       AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'topology' AND table_name = 'ip_subnets' AND column_name = 'purdue_level')
+    THEN
+        ALTER TABLE topology.ip_subnets ADD COLUMN purdue_level INTEGER CHECK (purdue_level BETWEEN 0 AND 5);
+    END IF;
+END $$;
+
 CREATE INDEX IF NOT EXISTS idx_subnets_purdue ON topology.ip_subnets(purdue_level);
 
 -- IP Addresses
@@ -161,6 +172,17 @@ CREATE TABLE IF NOT EXISTS topology.vlans (
 );
 
 CREATE INDEX IF NOT EXISTS idx_vlans_id ON topology.vlans(vlan_id);
+
+-- Add purdue_level column if table exists without it
+DO $$ 
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'topology' AND table_name = 'vlans')
+       AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'topology' AND table_name = 'vlans' AND column_name = 'purdue_level')
+    THEN
+        ALTER TABLE topology.vlans ADD COLUMN purdue_level INTEGER CHECK (purdue_level BETWEEN 0 AND 5);
+    END IF;
+END $$;
+
 CREATE INDEX IF NOT EXISTS idx_vlans_purdue ON topology.vlans(purdue_level);
 
 -- Network Connections
