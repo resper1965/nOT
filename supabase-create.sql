@@ -1,6 +1,16 @@
 -- ness. OT GRC - Script de Criação Limpo
 -- Execute este script no SQL Editor do Supabase Dashboard
--- IMPORTANTE: Se objetos já existirem, drope-os primeiro ou use IF NOT EXISTS
+-- Este script DROP todos os objetos existentes e recria tudo do zero
+
+-- ============================================================================
+-- LIMPAR OBJETOS EXISTENTES
+-- ============================================================================
+
+-- Drop schemas (isso remove todas as tabelas, views, triggers, etc.)
+DROP SCHEMA IF EXISTS security CASCADE;
+DROP SCHEMA IF EXISTS topology CASCADE;
+DROP SCHEMA IF EXISTS compliance CASCADE;
+DROP SCHEMA IF EXISTS audit CASCADE;
 
 -- ============================================================================
 -- EXTENSIONS
@@ -11,10 +21,10 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 -- ============================================================================
 -- SCHEMAS
 -- ============================================================================
-CREATE SCHEMA IF NOT EXISTS security;
-CREATE SCHEMA IF NOT EXISTS topology;
-CREATE SCHEMA IF NOT EXISTS compliance;
-CREATE SCHEMA IF NOT EXISTS audit;
+CREATE SCHEMA security;
+CREATE SCHEMA topology;
+CREATE SCHEMA compliance;
+CREATE SCHEMA audit;
 
 -- ============================================================================
 -- MULTI-TENANCY (Public Schema)
