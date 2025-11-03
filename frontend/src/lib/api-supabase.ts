@@ -262,7 +262,9 @@ export async function getOnsControlsFromSupabase() {
     const { data, error } = await supabase
       .from('controls')
       .select('*')
-      .or(`framework_id.eq.${onsFramework?.id},control_code.ilike.%ONS%`)
+      .or(onsFramework?.id 
+        ? `framework_id.eq.${onsFramework.id},control_code.ilike.%ONS%`
+        : 'control_code.ilike.%ONS%')
       .order('control_id', { ascending: true });
     
     if (error) throw error;
