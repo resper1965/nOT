@@ -1,0 +1,8 @@
+node_modules
+.git
+.env*
+*.md
+!frontend/README.md
+database/
+docker/
+*.sql
