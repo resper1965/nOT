@@ -1,16 +1,49 @@
 import { Globe, TrendingUp, AlertCircle, Activity } from 'lucide-react'
 import { getIPSummary, getNetworkTopology } from '@/lib/api'
 
+export const dynamic = 'force-dynamic';
+
+async function getIPAMData() {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const res = await fetch(`${baseUrl}/api/network/ipam`, {
+      cache: 'no-store',
+    });
+    if (!res.ok) throw new Error('Failed to fetch IPAM data');
+    return res.json();
+  } catch (error) {
+    console.error('Error fetching IPAM data:', error);
+    return {
+      statistics: {
+        total_subnets: 0,
+        total_ips: 0,
+        total_usable_ips: 0,
+        total_allocated_ips: 0,
+        average_utilization_percent: 0,
+        total_conflicts: 0,
+        subnets_without_purdue: 0,
+      },
+      subnets: [],
+      by_vlan: [],
+      conflicts: [],
+      subnets_without_purdue: [],
+    };
+  }
+}
+
 export default async function IPAMPage() {
   const ipSummary = await getIPSummary().catch(() => ({ total_ips: 0, by_vlan: [] }));
   const topology = await getNetworkTopology().catch(() => ({ subnets: 0, ips: 0 }));
+  const ipamData = await getIPAMData();
+  
+  const stats = ipamData.statistics || {};
 
   return (
     <div className='flex flex-1 flex-col gap-4 p-4 pt-0'>
       <div>
         <h1 className='text-3xl font-bold'>Análise IPAM - IP Address Management</h1>
         <p className='text-muted-foreground'>
-          {topology.subnets || 0} subnets identificados | {topology.ips || 0} IPs ativos
+          {stats.total_subnets || 0} subnets identificados | {stats.total_ips || 0} IPs ativos
         </p>
       </div>
 
@@ -21,8 +54,8 @@ export default async function IPAMPage() {
             <div className='text-sm font-medium text-muted-foreground'>Subnets</div>
             <Globe className='h-5 w-5 text-brand-cyan' />
           </div>
-          <div className='text-3xl font-bold'>{topology.subnets || 0}</div>
-          <div className='text-xs text-muted-foreground mt-1'>Identificados na análise</div>
+          <div className='text-3xl font-bold'>{stats.total_subnets || 0}</div>
+          <div className='text-xs text-muted-foreground mt-1'>Identificados no banco</div>
         </div>
 
         <div className='rounded-lg border bg-card p-4'>
@@ -30,22 +63,26 @@ export default async function IPAMPage() {
             <div className='text-sm font-medium text-muted-foreground'>IPs Ativos</div>
             <Activity className='h-5 w-5 text-green-500' />
           </div>
-          <div className='text-3xl font-bold'>{topology.ips || 0}</div>
+          <div className='text-3xl font-bold'>{stats.total_ips || 0}</div>
           <div className='text-xs text-muted-foreground mt-1'>Endereços IP únicos</div>
         </div>
 
         <div className='rounded-lg border bg-card p-4'>
           <div className='text-sm font-medium text-muted-foreground mb-2'>Utilização Média</div>
-          <div className='text-3xl font-bold'>~9%</div>
+          <div className='text-3xl font-bold'>{stats.average_utilization_percent || 0}%</div>
           <div className='text-xs text-muted-foreground mt-1'>
-            {topology.ips || 0} / ~{Math.floor((topology.subnets || 0) * 100)} IPs
+            {stats.total_allocated_ips || 0} / {stats.total_usable_ips || 0} IPs utilizáveis
           </div>
         </div>
 
         <div className='rounded-lg border bg-card p-4'>
           <div className='text-sm font-medium text-muted-foreground mb-2'>Conflitos</div>
-          <div className='text-3xl font-bold text-green-500'>0</div>
-          <div className='text-xs text-green-500 mt-1'>Nenhum detectado</div>
+          <div className={`text-3xl font-bold ${stats.total_conflicts > 0 ? 'text-red-500' : 'text-green-500'}`}>
+            {stats.total_conflicts || 0}
+          </div>
+          <div className={`text-xs mt-1 ${stats.total_conflicts > 0 ? 'text-red-500' : 'text-green-500'}`}>
+            {stats.total_conflicts > 0 ? 'Conflitos detectados' : 'Nenhum detectado'}
+          </div>
         </div>
       </div>
 
@@ -55,7 +92,7 @@ export default async function IPAMPage() {
           <AlertCircle className='w-6 h-6 text-orange-500 flex-shrink-0 mt-1' />
           <div>
             <h3 className='font-semibold mb-2 text-orange-500'>
-              GAP-SEG-002: {topology.subnets || 0} Subnets Não Mapeados para Níveis Purdue (CVSS 8.5)
+              GAP-SEG-002: {stats.subnets_without_purdue || 0} Subnets Não Mapeados para Níveis Purdue (CVSS 8.5)
             </h3>
             <p className='text-sm text-muted-foreground mb-3'>
               <strong>Requisito ONS</strong>: Cada subnet deve ser mapeado para um nível do Modelo Purdue (0 a 5) 
@@ -93,44 +130,65 @@ export default async function IPAMPage() {
           <p className='text-sm text-muted-foreground'>Dados da análise preliminar - Total: {topology.subnets || 0} subnets</p>
         </div>
         <div className='p-4'>
-          <div className='space-y-2 text-sm'>
-            {[
-              { subnet: '10.0.0.0/24', network: '10.0.0.0', usable: 254, class: 'A' },
-              { subnet: '10.1.2.0/24', network: '10.1.2.0', usable: 254, class: 'A' },
-              { subnet: '10.1.3.0/24', network: '10.1.3.0', usable: 254, class: 'A' },
-              { subnet: '172.19.0.0/24', network: '172.19.0.0', usable: 254, class: 'B' },
-              { subnet: '172.22.119.0/24', network: '172.22.119.0', usable: 254, class: 'B' },
-              { subnet: '192.168.1.0/24', network: '192.168.1.0', usable: 254, class: 'C' },
-              { subnet: '10.2.1.28/30', network: '10.2.1.28', usable: 2, class: 'P2P' },
-              { subnet: '192.0.2.100/30', network: '192.0.2.100', usable: 2, class: 'P2P' },
-            ].map((subnet) => (
-              <div key={subnet.subnet} className='flex items-center justify-between p-3 rounded-lg border hover:border-brand-cyan/50 transition-all'>
-                <div className='flex items-center gap-4'>
-                  <div className='font-mono font-bold text-brand-cyan'>{subnet.subnet}</div>
-                  <div className='text-muted-foreground text-xs'>Network: {subnet.network}</div>
-                </div>
-                <div className='flex items-center gap-6'>
-                  <div className='text-xs'>
-                    <span className='text-muted-foreground'>IPs:</span>{' '}
-                    <span className='font-medium'>{subnet.usable}</span>
-                  </div>
-                  <div className='text-xs'>
-                    <span className='text-muted-foreground'>Classe:</span>{' '}
-                    <span className='font-medium'>{subnet.class}</span>
-                  </div>
-                  <div>
-                    <span className='text-xs px-2 py-1 rounded bg-orange-500/10 text-orange-500'>
-                      Não mapeado
-                    </span>
-                  </div>
-                </div>
+          {ipamData.subnets && ipamData.subnets.length > 0 ? (
+            <>
+              <div className='space-y-2 text-sm'>
+                {ipamData.subnets.map((subnet: any) => {
+                  // Determine IP class from CIDR
+                  const getIPClass = (cidr: string) => {
+                    if (cidr.startsWith('10.') || cidr.startsWith('172.') || cidr.startsWith('192.168.')) {
+                      if (cidr.includes('/30') || cidr.includes('/31')) return 'P2P';
+                      if (cidr.startsWith('10.')) return 'A';
+                      if (cidr.startsWith('172.')) return 'B';
+                      if (cidr.startsWith('192.168.')) return 'C';
+                    }
+                    return 'Outros';
+                  };
+
+                  const ipClass = getIPClass(subnet.subnet_cidr);
+                  const networkAddr = subnet.network_address || subnet.subnet_cidr.split('/')[0];
+                  
+                  return (
+                    <div key={subnet.subnet_cidr} className='flex items-center justify-between p-3 rounded-lg border hover:border-brand-cyan/50 transition-all'>
+                      <div className='flex items-center gap-4'>
+                        <div className='font-mono font-bold text-brand-cyan'>{subnet.subnet_cidr}</div>
+                        <div className='text-muted-foreground text-xs'>Network: {networkAddr}</div>
+                      </div>
+                      <div className='flex items-center gap-6'>
+                        <div className='text-xs'>
+                          <span className='text-muted-foreground'>IPs:</span>{' '}
+                          <span className='font-medium'>{subnet.allocated_ips || 0}/{subnet.usable_ips || 0}</span>
+                          {subnet.utilization_percent !== undefined && (
+                            <span className='text-muted-foreground ml-1'>({subnet.utilization_percent}%)</span>
+                          )}
+                        </div>
+                        <div className='text-xs'>
+                          <span className='text-muted-foreground'>Classe:</span>{' '}
+                          <span className='font-medium'>{ipClass}</span>
+                        </div>
+                        <div>
+                          <span className={`text-xs px-2 py-1 rounded ${
+                            subnet.purdue_level ? 'bg-green-500/10 text-green-500' : 'bg-orange-500/10 text-orange-500'
+                          }`}>
+                            {subnet.purdue_level ? 'Mapeado' : 'Não mapeado'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            ))}
-          </div>
-          <div className='mt-4 text-center text-xs text-muted-foreground'>
-            Mostrando 8 de {topology.subnets || 0} subnets • 
-            <button className='ml-2 text-brand-cyan hover:underline'>Ver todos os {topology.subnets || 0} subnets</button>
-          </div>
+              <div className='mt-4 text-center text-xs text-muted-foreground'>
+                Mostrando {Math.min(ipamData.subnets.length, 10)} de {stats.total_subnets || 0} subnets • 
+                <button className='ml-2 text-brand-cyan hover:underline'>Ver todos os {stats.total_subnets || 0} subnets</button>
+              </div>
+            </>
+          ) : (
+            <div className='text-center py-8 text-muted-foreground'>
+              <p>Nenhum subnet encontrado no banco de dados.</p>
+              <p className='text-xs mt-2'>Execute o script de importação de dados para popular a base.</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -140,22 +198,28 @@ export default async function IPAMPage() {
           <h2 className='text-lg font-semibold'>IPs por VLAN (Top 10)</h2>
         </div>
         <div className='p-4'>
-          <div className='space-y-2'>
-            {ipSummary.by_vlan?.slice(0, 10).map((item: any, idx: number) => (
-              <div key={idx} className='flex items-center justify-between p-3 rounded-lg border'>
-                <div className='font-medium'>{item.vlan}</div>
-                <div className='flex items-center gap-4'>
-                  <span className='text-sm text-muted-foreground'>{item.count} IPs</span>
-                  <div className='w-32 bg-gray-800 rounded-full h-2'>
-                    <div 
-                      className='bg-brand-cyan h-2 rounded-full transition-all'
-                      style={{ width: `${(item.count / (ipSummary.total_ips || 1)) * 100}%` }}
-                    ></div>
+          {ipamData.by_vlan && ipamData.by_vlan.length > 0 ? (
+            <div className='space-y-2'>
+              {ipamData.by_vlan.map((item: any, idx: number) => (
+                <div key={idx} className='flex items-center justify-between p-3 rounded-lg border'>
+                  <div className='font-medium'>{item.vlan_name || `VLAN ${item.vlan_id}`}</div>
+                  <div className='flex items-center gap-4'>
+                    <span className='text-sm text-muted-foreground'>{item.count} IPs</span>
+                    <div className='w-32 bg-gray-800 rounded-full h-2'>
+                      <div 
+                        className='bg-brand-cyan h-2 rounded-full transition-all'
+                        style={{ width: `${(item.count / (stats.total_ips || 1)) * 100}%` }}
+                      ></div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className='text-center py-8 text-muted-foreground'>
+              <p>Nenhum IP mapeado por VLAN encontrado.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
