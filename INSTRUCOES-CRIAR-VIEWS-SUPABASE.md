@@ -32,9 +32,11 @@ FROM information_schema.views
 WHERE table_schema = 'public' 
 AND table_name IN (
   'documents', 'frameworks', 'controls',
+  'document_categories', 'required_documents', 'document_versions',
+  'document_status', 'document_approvals', 'document_review_schedule',
   'ip_subnets', 'ip_addresses', 'vlans', 'network_connections',
-  'assets', 'vulnerabilities', 'incidents', 'data_leakage_paths',
-  'activity_log'
+  'assets', 'vulnerabilities', 'incidents',
+  'audit_logs', 'audit_changes'
 );
 ```
 
