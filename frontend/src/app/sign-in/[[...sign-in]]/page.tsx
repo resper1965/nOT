@@ -176,6 +176,7 @@ export default function SignInPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={loading}
+              autoComplete="email"
               className="bg-background"
             />
           </div>
@@ -190,6 +191,7 @@ export default function SignInPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               disabled={loading}
+              autoComplete="current-password"
               className="bg-background"
             />
           </div>
