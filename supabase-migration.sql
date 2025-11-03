@@ -134,7 +134,7 @@ CREATE INDEX IF NOT EXISTS idx_subnets_network ON topology.ip_subnets(network_ad
 -- Add purdue_level column if table exists without it
 DO $$ 
 BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'topology' AND table_name = 'ip_subnets')
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'topology' AND table_name = 'ip_subnets' AND table_type = 'BASE TABLE')
        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'topology' AND table_name = 'ip_subnets' AND column_name = 'purdue_level')
     THEN
         ALTER TABLE topology.ip_subnets ADD COLUMN purdue_level INTEGER CHECK (purdue_level BETWEEN 0 AND 5);
@@ -181,7 +181,7 @@ CREATE INDEX IF NOT EXISTS idx_vlans_id ON topology.vlans(vlan_id);
 -- Add purdue_level column if table exists without it
 DO $$ 
 BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'topology' AND table_name = 'vlans')
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'topology' AND table_name = 'vlans' AND table_type = 'BASE TABLE')
        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'topology' AND table_name = 'vlans' AND column_name = 'purdue_level')
     THEN
         ALTER TABLE topology.vlans ADD COLUMN purdue_level INTEGER CHECK (purdue_level BETWEEN 0 AND 5);
@@ -241,7 +241,7 @@ CREATE INDEX IF NOT EXISTS idx_controls_framework ON compliance.controls(framewo
 -- Add control_code column if table exists without it
 DO $$ 
 BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'compliance' AND table_name = 'controls')
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'compliance' AND table_name = 'controls' AND table_type = 'BASE TABLE')
        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'compliance' AND table_name = 'controls' AND column_name = 'control_code')
     THEN
         ALTER TABLE compliance.controls ADD COLUMN control_code VARCHAR(100);
@@ -274,19 +274,19 @@ CREATE TABLE IF NOT EXISTS compliance.documents (
 DO $$ 
 BEGIN
     -- Add category column if missing
-    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'compliance' AND table_name = 'documents')
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'compliance' AND table_name = 'documents' AND table_type = 'BASE TABLE')
        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'compliance' AND table_name = 'documents' AND column_name = 'category')
     THEN
         ALTER TABLE compliance.documents ADD COLUMN category VARCHAR(100);
     END IF;
     -- Add status column if missing
-    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'compliance' AND table_name = 'documents')
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'compliance' AND table_name = 'documents' AND table_type = 'BASE TABLE')
        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'compliance' AND table_name = 'documents' AND column_name = 'status')
     THEN
         ALTER TABLE compliance.documents ADD COLUMN status VARCHAR(50) DEFAULT 'pending';
     END IF;
     -- Add framework_id column if missing
-    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'compliance' AND table_name = 'documents')
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'compliance' AND table_name = 'documents' AND table_type = 'BASE TABLE')
        AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'compliance' AND table_name = 'documents' AND column_name = 'framework_id')
     THEN
         ALTER TABLE compliance.documents ADD COLUMN framework_id UUID REFERENCES compliance.frameworks(id) ON DELETE SET NULL;
