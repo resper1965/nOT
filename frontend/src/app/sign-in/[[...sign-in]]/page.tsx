@@ -17,33 +17,60 @@ export default function SignInPage() {
 
   // Verificar autenticação ao carregar a página
   useEffect(() => {
-    console.log('🔍 [DEBUG] Página sign-in carregada, verificando autenticação...');
+    console.log('🔍 [DEBUG] ========== PÁGINA SIGN-IN CARREGADA ==========');
+    console.log('🔍 [DEBUG] URL atual:', window.location.href);
+    console.log('🔍 [DEBUG] Cookies disponíveis:', {
+      allCookies: document.cookie.split(';').map(c => c.trim().split('=')[0]),
+      hasSbCookies: document.cookie.includes('sb-'),
+      sbCookies: document.cookie.split(';').filter(c => c.includes('sb-')).map(c => c.trim().split('=')[0]),
+    });
+    
+    let isChecking = true;
     
     const checkAuth = async () => {
       try {
+        console.log('🔍 [DEBUG] Iniciando verificação de autenticação...');
+        
         // Verificar sessão atual
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        console.log('🔍 [DEBUG] Verificação de sessão:', {
+        console.log('🔍 [DEBUG] Resultado getSession():', {
           hasSession: !!session,
           hasAccessToken: !!session?.access_token,
+          sessionExpiresAt: session?.expires_at ? new Date(session.expires_at * 1000).toISOString() : null,
           userId: session?.user?.id,
-          error: sessionError ? sessionError.message : null,
+          userEmail: session?.user?.email,
+          error: sessionError ? {
+            message: sessionError.message,
+            name: sessionError.name,
+          } : null,
+          cookiesAgora: document.cookie.split(';').filter(c => c.includes('sb-')).map(c => c.trim().split('=')[0]),
         });
 
         // Verificar usuário atual
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
-        console.log('🔍 [DEBUG] Verificação de usuário:', {
+        console.log('🔍 [DEBUG] Resultado getUser():', {
           hasUser: !!user,
           userId: user?.id,
           userEmail: user?.email,
-          error: userError ? userError.message : null,
+          emailConfirmed: !!user?.email_confirmed_at,
+          error: userError ? {
+            message: userError.message,
+            name: userError.name,
+            status: userError.status,
+          } : null,
         });
 
         // Se há sessão e usuário, redirecionar para dashboard
         if (session && user) {
-          console.log('✅ [DEBUG] Usuário já autenticado, redirecionando para /dashboard');
+          console.log('✅ [DEBUG] ========== USUÁRIO JÁ AUTENTICADO ==========');
+          console.log('✅ [DEBUG] Sessão válida:', {
+            userId: user.id,
+            email: user.email,
+            accessToken: session.access_token.substring(0, 20) + '...',
+          });
+          
           setAuthStatus('authenticated');
           
           // Verificar parâmetro redirectedFrom na URL
@@ -51,50 +78,70 @@ export default function SignInPage() {
           const redirectedFrom = urlParams.get('redirectedFrom');
           const redirectPath = redirectedFrom || '/dashboard';
           
-          console.log('🚀 [DEBUG] Redirecionando para:', redirectPath);
+          console.log('🚀 [DEBUG] Preparando redirecionamento para:', redirectPath);
+          console.log('🚀 [DEBUG] Usando window.location.href para garantir redirecionamento');
           
+          // Usar window.location.href para garantir redirecionamento completo
           // Aguardar um pouco para garantir que logs apareçam
           setTimeout(() => {
-            router.push(redirectPath);
-          }, 500);
+            console.log('🚀 [DEBUG] Executando redirecionamento AGORA...');
+            window.location.href = redirectPath;
+          }, 1000);
         } else {
-          console.log('❌ [DEBUG] Usuário não autenticado, mostrando formulário de login');
+          console.log('❌ [DEBUG] ========== USUÁRIO NÃO AUTENTICADO ==========');
+          console.log('❌ [DEBUG] Motivo:', {
+            hasSession: !!session,
+            hasUser: !!user,
+            sessionError: sessionError?.message,
+            userError: userError?.message,
+          });
           setAuthStatus('not-authenticated');
         }
       } catch (err: any) {
         console.error('❌ [DEBUG] Erro ao verificar autenticação:', err);
+        console.error('❌ [DEBUG] Stack:', err.stack);
         setAuthStatus('not-authenticated');
+      } finally {
+        isChecking = false;
       }
     };
 
     checkAuth();
 
     // Listener para mudanças de autenticação
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('🔄 [DEBUG] Mudança de estado de autenticação:', {
-        event,
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔄 [DEBUG] ========== MUDANÇA DE ESTADO DE AUTENTICAÇÃO ==========');
+      console.log('🔄 [DEBUG] Evento:', event);
+      console.log('🔄 [DEBUG] Sessão:', {
         hasSession: !!session,
         userId: session?.user?.id,
+        userEmail: session?.user?.email,
       });
 
       if (event === 'SIGNED_IN' && session) {
-        console.log('✅ [DEBUG] Usuário autenticado via listener, redirecionando...');
+        console.log('✅ [DEBUG] ========== USUÁRIO AUTENTICADO VIA LISTENER ==========');
         setAuthStatus('authenticated');
         
         const urlParams = new URLSearchParams(window.location.search);
         const redirectedFrom = urlParams.get('redirectedFrom');
         const redirectPath = redirectedFrom || '/dashboard';
         
+        console.log('🚀 [DEBUG] Redirecionando via listener para:', redirectPath);
+        
         setTimeout(() => {
-          router.push(redirectPath);
-        }, 500);
+          console.log('🚀 [DEBUG] Executando redirecionamento via listener AGORA...');
+          window.location.href = redirectPath;
+        }, 1000);
       } else if (event === 'SIGNED_OUT') {
-        console.log('❌ [DEBUG] Usuário desautenticado');
+        console.log('❌ [DEBUG] Usuário desautenticado via listener');
         setAuthStatus('not-authenticated');
+      } else if (event === 'TOKEN_REFRESHED') {
+        console.log('🔄 [DEBUG] Token atualizado via listener');
       }
     });
 
     return () => {
+      console.log('🔍 [DEBUG] Limpando listeners...');
       subscription.unsubscribe();
     };
   }, [router]);
@@ -174,6 +221,7 @@ export default function SignInPage() {
         return;
       }
 
+      console.log('✅ [DEBUG] ========== LOGIN BEM-SUCEDIDO ==========');
       console.log('✅ [DEBUG] Sessão confirmada, preparando redirecionamento');
 
       // Verificar parâmetro redirectedFrom na URL
@@ -185,27 +233,33 @@ export default function SignInPage() {
       console.log('🔍 [DEBUG] Cookies antes do redirecionamento:', {
         cookies: document.cookie.split(';').map(c => c.trim().split('=')[0]),
         hasSbCookies: document.cookie.includes('sb-'),
+        sbCookies: document.cookie.split(';').filter(c => c.includes('sb-')).map(c => c.trim()),
       });
 
       // Aguardar um pouco para garantir que cookies sejam salvos
-      await new Promise(resolve => setTimeout(resolve, 200));
+      console.log('⏳ [DEBUG] Aguardando cookies serem salvos...');
+      await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Redirecionar usando window.location.replace para forçar reload completo
-      // Isso garante que o middleware veja a sessão
-      // IMPORTANTE: Não usar await ou return após isso
-      console.log('🔄 [DEBUG] Executando redirecionamento agora...');
+      // Verificar cookies novamente
+      console.log('🔍 [DEBUG] Cookies após aguardar:', {
+        cookies: document.cookie.split(';').map(c => c.trim().split('=')[0]),
+        hasSbCookies: document.cookie.includes('sb-'),
+        sbCookies: document.cookie.split(';').filter(c => c.includes('sb-')).map(c => c.trim()),
+      });
+
+      // Verificar sessão uma última vez
+      const { data: finalSession } = await supabase.auth.getSession();
+      console.log('🔍 [DEBUG] Sessão final antes de redirecionar:', {
+        hasSession: !!finalSession?.session,
+        hasAccessToken: !!finalSession?.session?.access_token,
+      });
+
+      // Usar window.location.href para garantir redirecionamento completo
+      // Isso força um reload completo e garante que o middleware veja a sessão
+      console.log('🚀 [DEBUG] Executando redirecionamento AGORA com window.location.href...');
       
-      // Usar window.location.href como fallback se replace não funcionar
-      try {
-        window.location.replace(redirectPath);
-        // Se chegou aqui, replace não funcionou
-        console.warn('⚠️ [DEBUG] window.location.replace não redirecionou, tentando href...');
-        window.location.href = redirectPath;
-      } catch (err) {
-        console.error('❌ [DEBUG] Erro ao redirecionar:', err);
-        // Última tentativa: usar router
-        router.push(redirectPath);
-      }
+      // Não usar try/catch aqui, apenas redirecionar
+      window.location.href = redirectPath;
       
     } catch (err: any) {
       console.error('❌ [DEBUG] Erro capturado:', err);
