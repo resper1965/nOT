@@ -258,7 +258,7 @@ SELECT
     c.control_code,
     c.control_title AS control_name,
     a.id AS assessment_id,
-    a.assessment_name,
+    f.framework_name || ' - ' || TO_CHAR(a.assessment_date, 'DD/MM/YYYY') AS assessment_name,
     a.assessment_date,
     COUNT(DISTINCT ea.id) AS artifact_count,
     COALESCE(SUM(ea.file_size), 0) AS total_size_bytes,
@@ -283,6 +283,7 @@ SELECT
 FROM compliance.evidence_packages ep
 LEFT JOIN compliance.controls c ON ep.control_id = c.id
 LEFT JOIN compliance.assessments a ON ep.assessment_id = a.id
+LEFT JOIN compliance.frameworks f ON a.framework_id = f.id
 LEFT JOIN compliance.evidence_artifacts ea ON ep.id = ea.package_id
 LEFT JOIN compliance.evidence_package_attestations epa ON ep.id = epa.package_id
 LEFT JOIN auth.users su ON ep.submitted_by = su.id
@@ -309,7 +310,7 @@ GROUP BY
     c.control_code,
     c.control_title,
     a.id,
-    a.assessment_name,
+    f.framework_name,
     a.assessment_date,
     su.email,
     su.raw_user_meta_data,
