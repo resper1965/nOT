@@ -22,7 +22,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id: exceptionId } = params;
+    const { id: exceptionId } = await context.params;
     const body = await request.json();
     const { action, rejection_reason } = body;
 

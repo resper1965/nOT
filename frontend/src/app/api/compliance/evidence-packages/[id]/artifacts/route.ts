@@ -23,7 +23,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id: packageId } = params;
+    const { id: packageId } = await context.params;
 
     // Verificar se o pacote existe
     const { data: evidencePackage, error: packageError } = await supabase
@@ -81,7 +81,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id: packageId } = params;
+    const { id: packageId } = await context.params;
 
     // Verificar se o pacote existe e está em draft
     const { data: evidencePackage, error: packageError } = await supabase
