@@ -5,6 +5,8 @@
 **Status**: 📋 Planejado  
 **Objetivo**: Tornar o sistema "redondo" para OT + regulatório (ANEEL/ONS) e escalável comercialmente
 
+> **Nota**: Para o plano de integração IA e operação total Supabase, veja `.spec/ai-integration-plan.md`
+
 ---
 
 ## 📊 Visão Geral
