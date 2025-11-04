@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { TrendingUp, TrendingDown, Activity, Shield, FileCheck, AlertTriangle, Clock, CheckCircle2 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
+import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from 'recharts'
 
 interface KPIData {
   summary: any
@@ -245,52 +247,135 @@ export function KPIDashboard() {
         </CardContent>
       </Card>
 
-      {/* Conformidade por Framework */}
+      {/* Conformidade por Framework - Gráfico de Barras */}
       {kpis.framework_compliance && kpis.framework_compliance.length > 0 && (
-        <Card className='md:col-span-2 lg:col-span-4'>
-          <CardHeader>
-            <CardTitle>Conformidade por Framework</CardTitle>
-            <CardDescription>
-              Percentual de conformidade por framework regulatório
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className='space-y-4'>
-              {kpis.framework_compliance.map((framework: any) => (
-                <div key={framework.framework_id} className='space-y-2'>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex items-center gap-2'>
-                      <span className='font-medium'>{framework.framework_name}</span>
-                      <Badge variant='outline'>{framework.framework_code}</Badge>
+        <>
+          <Card className='md:col-span-2 lg:col-span-4'>
+            <CardHeader>
+              <CardTitle>Conformidade por Framework</CardTitle>
+              <CardDescription>
+                Percentual de conformidade por framework regulatório
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer
+                config={{
+                  compliance: {
+                    label: 'Conformidade',
+                    color: '#00ade8',
+                  },
+                }}
+                className='h-[300px] w-full'
+              >
+                <BarChart data={kpis.framework_compliance.map((f: any) => ({
+                  name: f.framework_name?.substring(0, 20) || 'N/A',
+                  compliance: parseFloat(f.compliance_percentage || 0),
+                  conforme: f.compliant_controls || 0,
+                  parcial: f.partially_compliant_controls || 0,
+                  naoConforme: f.non_compliant_controls || 0,
+                }))}>
+                  <CartesianGrid strokeDasharray='3 3' className='stroke-muted' />
+                  <XAxis 
+                    dataKey='name' 
+                    angle={-45}
+                    textAnchor='end'
+                    height={80}
+                    className='text-xs'
+                  />
+                  <YAxis 
+                    domain={[0, 100]}
+                    className='text-xs'
+                    label={{ value: 'Conformidade (%)', angle: -90, position: 'insideLeft' }}
+                  />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Legend />
+                  <Bar 
+                    dataKey='compliance' 
+                    fill='#00ade8'
+                    radius={[4, 4, 0, 0]}
+                    name='Conformidade (%)'
+                  />
+                </BarChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+
+          {/* Distribuição de Status - Gráfico de Pizza */}
+          <Card className='md:col-span-2 lg:col-span-4'>
+            <CardHeader>
+              <CardTitle>Distribuição de Status de Controles</CardTitle>
+              <CardDescription>
+                Visão geral dos status de conformidade dos controles
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                {kpis.framework_compliance.map((framework: any) => {
+                  const pieData = [
+                    { name: 'Conforme', value: framework.compliant_controls || 0, color: '#10b981' },
+                    { name: 'Parcial', value: framework.partially_compliant_controls || 0, color: '#f59e0b' },
+                    { name: 'Não Conforme', value: framework.non_compliant_controls || 0, color: '#ef4444' },
+                    { name: 'N/A', value: framework.not_applicable_controls || 0, color: '#6b7280' },
+                  ].filter(item => item.value > 0);
+
+                  return (
+                    <div key={framework.framework_id} className='space-y-4'>
+                      <div className='flex items-center justify-between'>
+                        <h3 className='font-semibold text-sm'>{framework.framework_name}</h3>
+                        <Badge variant='outline'>{framework.framework_code}</Badge>
+                      </div>
+                      <ChartContainer
+                        config={{
+                          conforme: { label: 'Conforme', color: '#10b981' },
+                          parcial: { label: 'Parcial', color: '#f59e0b' },
+                          naoConforme: { label: 'Não Conforme', color: '#ef4444' },
+                          na: { label: 'N/A', color: '#6b7280' },
+                        }}
+                        className='h-[250px] w-full'
+                      >
+                        <PieChart>
+                          <Pie
+                            data={pieData}
+                            cx='50%'
+                            cy='50%'
+                            labelLine={false}
+                            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                            outerRadius={80}
+                            fill='#8884d8'
+                            dataKey='value'
+                          >
+                            {pieData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                          </Pie>
+                          <ChartTooltip content={<ChartTooltipContent />} />
+                        </PieChart>
+                      </ChartContainer>
+                      <div className='grid grid-cols-2 gap-2 text-xs'>
+                        <div className='flex items-center gap-2'>
+                          <div className='w-3 h-3 rounded-full bg-green-500' />
+                          <span>Conforme: {framework.compliant_controls || 0}</span>
+                        </div>
+                        <div className='flex items-center gap-2'>
+                          <div className='w-3 h-3 rounded-full bg-yellow-500' />
+                          <span>Parcial: {framework.partially_compliant_controls || 0}</span>
+                        </div>
+                        <div className='flex items-center gap-2'>
+                          <div className='w-3 h-3 rounded-full bg-red-500' />
+                          <span>Não Conforme: {framework.non_compliant_controls || 0}</span>
+                        </div>
+                        <div className='flex items-center gap-2'>
+                          <div className='w-3 h-3 rounded-full bg-gray-500' />
+                          <span>N/A: {framework.not_applicable_controls || 0}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className='flex items-center gap-2'>
-                      <span className={`text-2xl font-bold ${getComplianceColor(framework.compliance_percentage || 0)}`}>
-                        {framework.compliance_percentage?.toFixed(1) || '0'}%
-                      </span>
-                      {getComplianceBadge(framework.compliance_percentage || 0)}
-                    </div>
-                  </div>
-                  <div className='h-2 bg-muted rounded-full overflow-hidden'>
-                    <div 
-                      className={`h-full transition-all ${
-                        (framework.compliance_percentage || 0) >= 90 ? 'bg-green-500' :
-                        (framework.compliance_percentage || 0) >= 70 ? 'bg-yellow-500' :
-                        'bg-red-500'
-                      }`}
-                      style={{ width: `${Math.min(framework.compliance_percentage || 0, 100)}%` }}
-                    />
-                  </div>
-                  <div className='flex gap-4 text-xs text-muted-foreground'>
-                    <span>Controles avaliados: {framework.assessed_controls || 0}/{framework.total_controls || 0}</span>
-                    <span>Conformes: {framework.compliant_controls || 0}</span>
-                    <span>Parcialmente conformes: {framework.partially_compliant_controls || 0}</span>
-                    <span>Não conformes: {framework.non_compliant_controls || 0}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </>
       )}
     </div>
   )

@@ -398,6 +398,42 @@ export function generatePDFHTML(report: any, frameworkName: string): string {
         <div class="value">${notApplicableCount}</div>
       </div>
     </div>
+    
+    <!-- Gráfico de Barras de Conformidade -->
+    <div class="chart-container" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
+      <div style="font-size: 10px; color: #6b7280; text-transform: uppercase; font-weight: 600; margin-bottom: 12px; letter-spacing: 0.5px;">
+        Distribuição de Conformidade
+      </div>
+      <div style="display: flex; align-items: flex-end; gap: 8px; height: 120px;">
+        ${(function() {
+          const maxValue = Math.max(compliantCount, partiallyCompliantCount, nonCompliantCount, notApplicableCount, 1);
+          const barHeight = function(value: number) { return (value / maxValue) * 100; };
+          
+          return `
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+              <div style="width: 100%; background: linear-gradient(to top, #10b981 0%, #34d399 100%); height: ${barHeight(compliantCount)}%; border-radius: 4px 4px 0 0; margin-bottom: 8px; min-height: ${compliantCount > 0 ? '4px' : '0'};"></div>
+              <div style="font-size: 9px; font-weight: 600; color: #0B0C0E;">${compliantCount}</div>
+              <div style="font-size: 8px; color: #6b7280; margin-top: 4px; text-align: center;">Conforme</div>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+              <div style="width: 100%; background: linear-gradient(to top, #f59e0b 0%, #fbbf24 100%); height: ${barHeight(partiallyCompliantCount)}%; border-radius: 4px 4px 0 0; margin-bottom: 8px; min-height: ${partiallyCompliantCount > 0 ? '4px' : '0'};"></div>
+              <div style="font-size: 9px; font-weight: 600; color: #0B0C0E;">${partiallyCompliantCount}</div>
+              <div style="font-size: 8px; color: #6b7280; margin-top: 4px; text-align: center;">Parcial</div>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+              <div style="width: 100%; background: linear-gradient(to top, #ef4444 0%, #f87171 100%); height: ${barHeight(nonCompliantCount)}%; border-radius: 4px 4px 0 0; margin-bottom: 8px; min-height: ${nonCompliantCount > 0 ? '4px' : '0'};"></div>
+              <div style="font-size: 9px; font-weight: 600; color: #0B0C0E;">${nonCompliantCount}</div>
+              <div style="font-size: 8px; color: #6b7280; margin-top: 4px; text-align: center;">Não Conforme</div>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+              <div style="width: 100%; background: linear-gradient(to top, #6b7280 0%, #9ca3af 100%); height: ${barHeight(notApplicableCount)}%; border-radius: 4px 4px 0 0; margin-bottom: 8px; min-height: ${notApplicableCount > 0 ? '4px' : '0'};"></div>
+              <div style="font-size: 9px; font-weight: 600; color: #0B0C0E;">${notApplicableCount}</div>
+              <div style="font-size: 8px; color: #6b7280; margin-top: 4px; text-align: center;">N/A</div>
+            </div>
+          `;
+        })()}
+      </div>
+    </div>
   </div>
   
   <table>
