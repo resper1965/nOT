@@ -1,14 +1,15 @@
 // API Route for Framework Details
 // Returns framework details with all its controls
 import { NextResponse } from 'next/server';
-import { getAdminSupabaseClient } from '@/lib/supabase-admin';
+import { createServerClient } from '@/lib/supabase';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = getAdminSupabaseClient();
+    const supabase = createServerClient();
+    const params = await context.params;
     const frameworkId = params.id;
 
     // Get framework details
