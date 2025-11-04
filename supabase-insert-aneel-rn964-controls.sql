@@ -33,7 +33,29 @@ SET version = EXCLUDED.version,
     updated_at = CURRENT_TIMESTAMP;
 
 -- ============================================================================
--- 2. Inserir Controles da RN ANEEL 964/2021
+-- 2. Criar Constraint UNIQUE se não existir
+-- ============================================================================
+
+-- Criar constraint UNIQUE para (framework_id, control_code) se não existir
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint 
+        WHERE conname = 'controls_framework_control_code_unique'
+        AND conrelid = 'compliance.controls'::regclass
+    ) THEN
+        ALTER TABLE compliance.controls
+        ADD CONSTRAINT controls_framework_control_code_unique
+        UNIQUE (framework_id, control_code);
+        
+        RAISE NOTICE 'Constraint UNIQUE criada em (framework_id, control_code)';
+    ELSE
+        RAISE NOTICE 'Constraint UNIQUE já existe em (framework_id, control_code)';
+    END IF;
+END $$;
+
+-- ============================================================================
+-- 3. Inserir Controles da RN ANEEL 964/2021
 -- ============================================================================
 
 DO $$
