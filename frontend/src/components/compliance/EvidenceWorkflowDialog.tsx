@@ -183,15 +183,6 @@ export function EvidenceWorkflowDialog({
           </div>
         )}
 
-        {/* Warning for lock */}
-        {action === 'lock' && (
-          <div className='flex items-start gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20'>
-            <Lock className='w-4 h-4 text-red-500 mt-0.5' />
-            <div className='text-sm text-red-700 dark:text-red-400'>
-              <strong>Atenção:</strong> Após bloquear, o pacote se tornará imutável e não poderá mais ser modificado.
-            </div>
-          </div>
-        )}
 
         <DialogFooter>
           <Button type='button' variant='outline' onClick={onClose} disabled={loading}>
