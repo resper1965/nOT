@@ -1,4 +1,5 @@
 import { Shield, Globe, CheckCircle2, AlertTriangle, ExternalLink } from 'lucide-react'
+import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
