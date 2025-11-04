@@ -355,6 +355,7 @@ FROM compliance.attestations a
 LEFT JOIN auth.users u ON a.owner_id = u.id
 LEFT JOIN compliance.controls c ON a.scope = 'control' AND a.scope_id = c.id
 LEFT JOIN compliance.assessments a2 ON a.scope = 'assessment' AND a.scope_id = a2.id
+LEFT JOIN compliance.frameworks f2 ON a2.framework_id = f2.id
 LEFT JOIN compliance.frameworks f ON a.scope = 'framework' AND a.scope_id = f.id;
 
 -- View: Evidence Packages por Status
