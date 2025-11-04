@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAdminSupabaseClient } from '@/lib/supabase-admin'
+import { createServerClient } from '@/lib/supabase'
 import { convertDocumentToMarkdown, formatMarkdownWithFrontmatter } from '@/lib/document-converter'
 
 export async function POST(
@@ -13,8 +13,8 @@ export async function POST(
       return NextResponse.json({ error: 'Document ID required' }, { status: 400 })
     }
 
-    // Usar admin client para bypass RLS (processamento server-side)
-    const supabase = getAdminSupabaseClient()
+    // Usar server client para processamento server-side
+    const supabase = createServerClient()
 
     // Buscar informações do documento
     const { data: document, error: docError } = await supabase

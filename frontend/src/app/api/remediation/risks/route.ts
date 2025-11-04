@@ -1,11 +1,11 @@
 // API Route for Risk Matrix
 // Computes risk matrix based on vulnerabilities, assets, and network topology
 import { NextResponse } from 'next/server';
-import { getAdminSupabaseClient } from '@/lib/supabase-admin';
+import { createServerClient } from '@/lib/supabase';
 
 export async function GET() {
   try {
-    const supabase = getAdminSupabaseClient();
+    const supabase = createServerClient();
 
     // Get vulnerabilities by severity
     const { data: vulnerabilities, error: vulnError } = await supabase

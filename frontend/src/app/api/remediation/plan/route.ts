@@ -1,11 +1,11 @@
 // API Route for Remediation Plan
 // Computes remediation plan based on gaps and risks
 import { NextResponse } from 'next/server';
-import { getAdminSupabaseClient } from '@/lib/supabase-admin';
+import { createServerClient } from '@/lib/supabase';
 
 export async function GET() {
   try {
-    const supabase = getAdminSupabaseClient();
+    const supabase = createServerClient();
 
     // Compute gaps inline (reuse gaps logic)
     const { count: subnetCount } = await supabase

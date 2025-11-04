@@ -1,11 +1,11 @@
 // API Route for Gap Analysis ONS
 // Computes gaps by comparing ONS requirements with actual network data
 import { NextResponse } from 'next/server';
-import { getAdminSupabaseClient } from '@/lib/supabase-admin';
+import { createServerClient } from '@/lib/supabase';
 
 export async function GET() {
   try {
-    const supabase = getAdminSupabaseClient();
+    const supabase = createServerClient();
 
     // Get ONS controls (Controle 5: Segmentação)
     const { data: onsControls, error: controlsError } = await supabase
