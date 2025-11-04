@@ -110,12 +110,13 @@ export function generatePDFHTML(report: any, frameworkName: string): string {
   const controlsHTML = report.controls?.map((control: any) => {
     const status = control.assessment_result?.status || 'Não avaliado';
     const statusLabel = statusLabels[status] || status;
-    const statusClass = {
+    const statusClasses: Record<string, string> = {
       compliant: 'status-compliant',
       partially_compliant: 'status-partial',
       non_compliant: 'status-non-compliant',
       not_applicable: 'status-not-applicable',
-    }[status] || 'status-not-applicable';
+    };
+    const statusClass = statusClasses[status] || 'status-not-applicable';
     
     const evidenceCount = control.evidence_count || 0;
     const hasException = control.has_exception ? 'Sim' : 'Não';
