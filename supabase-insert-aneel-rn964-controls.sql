@@ -33,8 +33,47 @@ SET version = EXCLUDED.version,
     updated_at = CURRENT_TIMESTAMP;
 
 -- ============================================================================
--- 2. Criar Constraint UNIQUE se não existir
+-- 2. Limpar Duplicados e Criar Constraint UNIQUE
 -- ============================================================================
+
+-- Primeiro, remover registros duplicados mantendo apenas o mais recente
+DO $$
+DECLARE
+    v_duplicates_count INTEGER;
+BEGIN
+    -- Contar duplicados
+    SELECT COUNT(*) INTO v_duplicates_count
+    FROM (
+        SELECT framework_id, control_code, COUNT(*) as cnt
+        FROM compliance.controls
+        GROUP BY framework_id, control_code
+        HAVING COUNT(*) > 1
+    ) duplicates;
+    
+    IF v_duplicates_count > 0 THEN
+        RAISE NOTICE 'Encontrados % grupos de duplicados. Removendo duplicados...', v_duplicates_count;
+        
+        -- Remover duplicados mantendo apenas o registro mais recente (maior updated_at ou created_at)
+        DELETE FROM compliance.controls
+        WHERE id IN (
+            SELECT id
+            FROM (
+                SELECT 
+                    id,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY framework_id, control_code 
+                        ORDER BY updated_at DESC NULLS LAST, created_at DESC NULLS LAST
+                    ) as rn
+                FROM compliance.controls
+            ) ranked
+            WHERE rn > 1
+        );
+        
+        RAISE NOTICE 'Duplicados removidos com sucesso!';
+    ELSE
+        RAISE NOTICE 'Nenhum duplicado encontrado.';
+    END IF;
+END $$;
 
 -- Criar constraint UNIQUE para (framework_id, control_code) se não existir
 DO $$
