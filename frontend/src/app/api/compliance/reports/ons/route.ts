@@ -4,6 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSupabaseClient } from '@/lib/supabase-server';
+import { generateCSV, generatePDFHTML } from '@/lib/report-export';
 
 /**
  * GET /api/compliance/reports/ons
@@ -25,11 +26,17 @@ export async function GET(request: NextRequest) {
     const installationId = searchParams.get('installation_id');
 
     // Buscar framework ONS
-    const { data: onsFramework, error: frameworkError } = await supabase
+    const { data: frameworks, error: frameworkError } = await supabase
       .from('frameworks')
-      .select('id, framework_name, framework_code')
-      .eq('framework_code', 'ONS')
-      .single();
+      .select('id, framework_name, metadata')
+      .order('created_at', { ascending: false });
+    
+    // Filtrar framework ONS por nome ou metadata
+    const onsFramework = frameworks?.find(f => 
+      f.framework_name?.toLowerCase().includes('ons') || 
+      f.metadata?.code === 'ONS' ||
+      f.metadata?.framework_code === 'ONS'
+    );
 
     if (frameworkError || !onsFramework) {
       return NextResponse.json(
@@ -116,13 +123,22 @@ export async function GET(request: NextRequest) {
 
     // Retornar no formato solicitado
     if (format === 'csv') {
-      // TODO: Converter para CSV
-      return NextResponse.json({ error: 'CSV export not yet implemented' }, { status: 501 });
+      const csv = generateCSV(report);
+      return new NextResponse(csv, {
+        headers: {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'Content-Disposition': `attachment; filename="ons-report-${new Date().toISOString().split('T')[0]}.csv"`,
+        },
+      });
     }
 
     if (format === 'pdf') {
-      // TODO: Gerar PDF
-      return NextResponse.json({ error: 'PDF export not yet implemented' }, { status: 501 });
+      const html = generatePDFHTML(report, 'ONS RO-CB.BR.01');
+      return new NextResponse(html, {
+        headers: {
+          'Content-Type': 'text/html; charset=utf-8',
+        },
+      });
     }
 
     // JSON (padrão)

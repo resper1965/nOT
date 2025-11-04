@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { EvidencePackageDialog } from '@/components/compliance/EvidencePackageDialog'
 import { EvidenceArtifactUploadDialog } from '@/components/compliance/EvidenceArtifactUploadDialog'
+import { EvidenceWorkflowDialog } from '@/components/compliance/EvidenceWorkflowDialog'
 
 interface EvidencePackage {
   id: string
@@ -35,7 +36,10 @@ interface EvidencePackage {
 export default function EvidencePackagesPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [isUploadOpen, setIsUploadOpen] = useState(false)
+  const [isWorkflowDialogOpen, setIsWorkflowDialogOpen] = useState(false)
   const [selectedPackageId, setSelectedPackageId] = useState<string | null>(null)
+  const [selectedPackageStatus, setSelectedPackageStatus] = useState<'draft' | 'submitted' | 'reviewed' | 'approved' | 'locked'>('draft')
+  const [workflowAction, setWorkflowAction] = useState<'submit' | 'review' | 'approve' | 'reject'>('submit')
   const [packages, setPackages] = useState<EvidencePackage[]>([])
   const [stats, setStats] = useState({ total: 0, draft: 0, submitted: 0, approved: 0 })
   const [loading, setLoading] = useState(true)
@@ -77,9 +81,18 @@ export default function EvidencePackagesPage() {
     loadPackages()
   }
 
-  const handleWorkflowAction = async (packageId: string, action: string, rejectionReason?: string) => {
+  const handleWorkflowClick = (packageId: string, status: 'draft' | 'submitted' | 'reviewed' | 'approved' | 'locked', action: 'submit' | 'review' | 'approve' | 'reject') => {
+    setSelectedPackageId(packageId)
+    setSelectedPackageStatus(status)
+    setWorkflowAction(action)
+    setIsWorkflowDialogOpen(true)
+  }
+
+  const handleWorkflowAction = async (action: string, rejectionReason?: string) => {
+    if (!selectedPackageId) return
+    
     try {
-      const response = await fetch(`/api/compliance/evidence-packages/${packageId}/workflow`, {
+      const response = await fetch(`/api/compliance/evidence-packages/${selectedPackageId}/workflow`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action, rejection_reason: rejectionReason }),
@@ -88,9 +101,12 @@ export default function EvidencePackagesPage() {
       if (!response.ok) throw new Error('Failed to execute workflow action')
       
       await loadPackages()
-    } catch (error) {
+      setIsWorkflowDialogOpen(false)
+      setSelectedPackageId(null)
+    } catch (error: any) {
       console.error('Error executing workflow action:', error)
       alert('Erro ao executar ação do workflow')
+      throw error
     }
   }
 
@@ -285,7 +301,7 @@ export default function EvidencePackagesPage() {
                               <Button
                                 variant='outline'
                                 size='sm'
-                                onClick={() => handleWorkflowAction(pkg.id, 'submit')}
+                                onClick={() => handleWorkflowClick(pkg.id, pkg.status, 'submit')}
                               >
                                 Submeter
                               </Button>
@@ -296,14 +312,14 @@ export default function EvidencePackagesPage() {
                               <Button
                                 variant='outline'
                                 size='sm'
-                                onClick={() => handleWorkflowAction(pkg.id, 'review')}
+                                onClick={() => handleWorkflowClick(pkg.id, pkg.status, 'review')}
                               >
                                 Revisar
                               </Button>
                               <Button
                                 variant='outline'
                                 size='sm'
-                                onClick={() => handleWorkflowAction(pkg.id, 'reject', 'Ajustes necessários')}
+                                onClick={() => handleWorkflowClick(pkg.id, pkg.status, 'reject')}
                               >
                                 Rejeitar
                               </Button>
@@ -314,14 +330,14 @@ export default function EvidencePackagesPage() {
                               <Button
                                 variant='outline'
                                 size='sm'
-                                onClick={() => handleWorkflowAction(pkg.id, 'approve')}
+                                onClick={() => handleWorkflowClick(pkg.id, pkg.status, 'approve')}
                               >
                                 Aprovar
                               </Button>
                               <Button
                                 variant='outline'
                                 size='sm'
-                                onClick={() => handleWorkflowAction(pkg.id, 'reject', 'Ajustes necessários')}
+                                onClick={() => handleWorkflowClick(pkg.id, pkg.status, 'reject')}
                               >
                                 Rejeitar
                               </Button>
@@ -368,6 +384,20 @@ export default function EvidencePackagesPage() {
           }}
           onComplete={handleUploadComplete}
           packageId={selectedPackageId}
+        />
+      )}
+
+      {/* Workflow Dialog */}
+      {selectedPackageId && (
+        <EvidenceWorkflowDialog
+          isOpen={isWorkflowDialogOpen}
+          onClose={() => {
+            setIsWorkflowDialogOpen(false)
+            setSelectedPackageId(null)
+          }}
+          onAction={handleWorkflowAction}
+          currentStatus={selectedPackageStatus}
+          action={workflowAction}
         />
       )}
     </div>

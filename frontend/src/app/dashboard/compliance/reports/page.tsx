@@ -16,9 +16,8 @@ export default function ReportsPage() {
       const response = await fetch(`/api/compliance/reports/aneel?format=${format}`)
       if (!response.ok) throw new Error('Failed to generate report')
       
-      const data = await response.json()
-      
       if (format === 'json') {
+        const data = await response.json()
         // Download JSON
         const blob = new Blob([JSON.stringify(data.report, null, 2)], { type: 'application/json' })
         const url = URL.createObjectURL(blob)
@@ -27,8 +26,31 @@ export default function ReportsPage() {
         a.download = `aneel-report-${new Date().toISOString().split('T')[0]}.json`
         a.click()
         URL.revokeObjectURL(url)
-      } else {
-        alert(`${format.toUpperCase()} export ainda não implementado`)
+      } else if (format === 'csv') {
+        const csv = await response.text()
+        // Download CSV
+        const blob = new Blob([csv], { type: 'text/csv; charset=utf-8' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `aneel-report-${new Date().toISOString().split('T')[0]}.csv`
+        a.click()
+        URL.revokeObjectURL(url)
+      } else if (format === 'pdf') {
+        // Para PDF, vamos abrir em nova aba e usar print-to-PDF do navegador
+        const html = await response.text()
+        const blob = new Blob([html], { type: 'text/html' })
+        const url = URL.createObjectURL(blob)
+        const newWindow = window.open(url, '_blank')
+        if (newWindow) {
+          newWindow.onload = () => {
+            setTimeout(() => {
+              newWindow.print()
+            }, 500)
+          }
+        }
+        // Alternativa: usar window.print() direto
+        // window.open(url, '_blank')?.print()
       }
     } catch (error) {
       console.error('Error generating ANEEL report:', error)
@@ -44,9 +66,8 @@ export default function ReportsPage() {
       const response = await fetch(`/api/compliance/reports/ons?format=${format}`)
       if (!response.ok) throw new Error('Failed to generate report')
       
-      const data = await response.json()
-      
       if (format === 'json') {
+        const data = await response.json()
         // Download JSON
         const blob = new Blob([JSON.stringify(data.report, null, 2)], { type: 'application/json' })
         const url = URL.createObjectURL(blob)
@@ -55,8 +76,29 @@ export default function ReportsPage() {
         a.download = `ons-report-${new Date().toISOString().split('T')[0]}.json`
         a.click()
         URL.revokeObjectURL(url)
-      } else {
-        alert(`${format.toUpperCase()} export ainda não implementado`)
+      } else if (format === 'csv') {
+        const csv = await response.text()
+        // Download CSV
+        const blob = new Blob([csv], { type: 'text/csv; charset=utf-8' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `ons-report-${new Date().toISOString().split('T')[0]}.csv`
+        a.click()
+        URL.revokeObjectURL(url)
+      } else if (format === 'pdf') {
+        // Para PDF, vamos abrir em nova aba e usar print-to-PDF do navegador
+        const html = await response.text()
+        const blob = new Blob([html], { type: 'text/html' })
+        const url = URL.createObjectURL(blob)
+        const newWindow = window.open(url, '_blank')
+        if (newWindow) {
+          newWindow.onload = () => {
+            setTimeout(() => {
+              newWindow.print()
+            }, 500)
+          }
+        }
       }
     } catch (error) {
       console.error('Error generating ONS report:', error)
@@ -200,10 +242,10 @@ export default function ReportsPage() {
               <strong>JSON:</strong> Exportação completa em formato JSON para análise e processamento.
             </p>
             <p>
-              <strong>PDF:</strong> Relatório formatado pronto para impressão e apresentação (em desenvolvimento).
+              <strong>PDF:</strong> Relatório formatado pronto para impressão. Use a função de impressão do navegador para salvar como PDF.
             </p>
             <p>
-              <strong>CSV:</strong> Dados tabulares para análise em planilhas (em desenvolvimento).
+              <strong>CSV:</strong> Dados tabulares para análise em planilhas (Excel, Google Sheets).
             </p>
           </div>
         </CardContent>

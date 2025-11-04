@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { EvidenceArtifactUploadDialog } from '@/components/compliance/EvidenceArtifactUploadDialog'
+import { EvidenceWorkflowDialog } from '@/components/compliance/EvidenceWorkflowDialog'
 
 interface EvidencePackage {
   id: string
@@ -50,6 +51,8 @@ export default function EvidencePackageDetailPage() {
   const packageId = params.id as string
 
   const [isUploadOpen, setIsUploadOpen] = useState(false)
+  const [isWorkflowDialogOpen, setIsWorkflowDialogOpen] = useState(false)
+  const [workflowAction, setWorkflowAction] = useState<'submit' | 'review' | 'approve' | 'reject'>('submit')
   const [evidencePackage, setEvidencePackage] = useState<EvidencePackage | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -82,6 +85,11 @@ export default function EvidencePackageDetailPage() {
     loadPackage()
   }
 
+  const handleWorkflowClick = (action: 'submit' | 'review' | 'approve' | 'reject') => {
+    setWorkflowAction(action)
+    setIsWorkflowDialogOpen(true)
+  }
+
   const handleWorkflowAction = async (action: string, rejectionReason?: string) => {
     try {
       const response = await fetch(`/api/compliance/evidence-packages/${packageId}/workflow`, {
@@ -96,6 +104,7 @@ export default function EvidencePackageDetailPage() {
     } catch (error: any) {
       console.error('Error executing workflow action:', error)
       alert('Erro ao executar ação do workflow')
+      throw error
     }
   }
 
@@ -330,7 +339,7 @@ export default function EvidencePackageDetailPage() {
           <div className='flex flex-wrap gap-2'>
             {evidencePackage.status === 'draft' && (
               <Button
-                onClick={() => handleWorkflowAction('submit')}
+                onClick={() => handleWorkflowClick('submit')}
                 className='bg-[#00ade8] text-gray-950 hover:bg-[#00ade8]/90'
               >
                 <Send className='w-4 h-4 mr-2' />
@@ -341,14 +350,14 @@ export default function EvidencePackageDetailPage() {
               <>
                 <Button
                   variant='outline'
-                  onClick={() => handleWorkflowAction('review')}
+                  onClick={() => handleWorkflowClick('review')}
                 >
                   <CheckCircle className='w-4 h-4 mr-2' />
                   Marcar como Revisado
                 </Button>
                 <Button
                   variant='destructive'
-                  onClick={() => handleWorkflowAction('reject', 'Ajustes necessários')}
+                  onClick={() => handleWorkflowClick('reject')}
                 >
                   <X className='w-4 h-4 mr-2' />
                   Rejeitar
@@ -358,7 +367,7 @@ export default function EvidencePackageDetailPage() {
             {evidencePackage.status === 'reviewed' && (
               <>
                 <Button
-                  onClick={() => handleWorkflowAction('approve')}
+                  onClick={() => handleWorkflowClick('approve')}
                   className='bg-green-600 hover:bg-green-700'
                 >
                   <CheckCircle className='w-4 h-4 mr-2' />
@@ -366,7 +375,7 @@ export default function EvidencePackageDetailPage() {
                 </Button>
                 <Button
                   variant='destructive'
-                  onClick={() => handleWorkflowAction('reject', 'Ajustes necessários')}
+                  onClick={() => handleWorkflowClick('reject')}
                 >
                   <X className='w-4 h-4 mr-2' />
                   Rejeitar
@@ -383,7 +392,8 @@ export default function EvidencePackageDetailPage() {
               </Button>
             )}
             {evidencePackage.status === 'locked' && (
-              <div className='text-sm text-muted-foreground'>
+              <div className='flex items-center gap-2 text-sm text-muted-foreground'>
+                <Lock className='w-4 h-4' />
                 Pacote bloqueado - não pode ser modificado
               </div>
             )}
@@ -398,6 +408,17 @@ export default function EvidencePackageDetailPage() {
         onComplete={handleUploadComplete}
         packageId={packageId}
       />
+
+      {/* Workflow Dialog */}
+      {evidencePackage && (
+        <EvidenceWorkflowDialog
+          isOpen={isWorkflowDialogOpen}
+          onClose={() => setIsWorkflowDialogOpen(false)}
+          onAction={handleWorkflowAction}
+          currentStatus={evidencePackage.status}
+          action={workflowAction}
+        />
+      )}
     </div>
   )
 }

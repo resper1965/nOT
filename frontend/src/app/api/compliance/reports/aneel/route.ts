@@ -4,6 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSupabaseClient } from '@/lib/supabase-server';
+import { generateCSV, generatePDFHTML } from '@/lib/report-export';
 
 /**
  * GET /api/compliance/reports/aneel
@@ -24,11 +25,17 @@ export async function GET(request: NextRequest) {
     const format = searchParams.get('format') || 'json'; // json, pdf, csv
 
     // Buscar framework ANEEL
-    const { data: aneelFramework, error: frameworkError } = await supabase
+    const { data: frameworks, error: frameworkError } = await supabase
       .from('frameworks')
-      .select('id, framework_name, framework_code')
-      .eq('framework_code', 'ANEEL')
-      .single();
+      .select('id, framework_name, metadata')
+      .order('created_at', { ascending: false });
+    
+    // Filtrar framework ANEEL por nome ou metadata
+    const aneelFramework = frameworks?.find(f => 
+      f.framework_name?.toLowerCase().includes('aneel') || 
+      f.metadata?.code === 'ANEEL' ||
+      f.metadata?.framework_code === 'ANEEL'
+    );
 
     if (frameworkError || !aneelFramework) {
       return NextResponse.json(
@@ -114,13 +121,22 @@ export async function GET(request: NextRequest) {
 
     // Retornar no formato solicitado
     if (format === 'csv') {
-      // TODO: Converter para CSV
-      return NextResponse.json({ error: 'CSV export not yet implemented' }, { status: 501 });
+      const csv = generateCSV(report);
+      return new NextResponse(csv, {
+        headers: {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'Content-Disposition': `attachment; filename="aneel-report-${new Date().toISOString().split('T')[0]}.csv"`,
+        },
+      });
     }
 
     if (format === 'pdf') {
-      // TODO: Gerar PDF
-      return NextResponse.json({ error: 'PDF export not yet implemented' }, { status: 501 });
+      const html = generatePDFHTML(report, 'ANEEL RN 964/2021');
+      return new NextResponse(html, {
+        headers: {
+          'Content-Type': 'text/html; charset=utf-8',
+        },
+      });
     }
 
     // JSON (padrão)

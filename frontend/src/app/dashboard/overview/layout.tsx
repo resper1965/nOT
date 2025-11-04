@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/card';
 import { Shield, Network, FileText, AlertTriangle, TrendingUp, CheckCircle2 } from 'lucide-react';
 import { getAssetsStats, getNetworkTopology, getComplianceStats, getGapsStats } from '@/lib/api';
+import { KPIDashboard } from '@/components/dashboard/KPIDashboard';
 import React from 'react';
 
 // Force dynamic rendering
@@ -197,6 +198,17 @@ export default async function OverViewLayout({
               </div>
             </CardFooter>
           </Card>
+        </div>
+
+        {/* KPIs Dashboard */}
+        <div className='space-y-4'>
+          <div className='space-y-2'>
+            <h2 className='text-2xl font-bold tracking-tight'>KPIs de Conformidade</h2>
+            <p className='text-muted-foreground'>
+              Métricas principais de conformidade regulatória e operacional
+            </p>
+          </div>
+          <KPIDashboard />
         </div>
 
         {/* Charts Grid - Layout Moderno */}
