@@ -246,7 +246,9 @@ export default async function FrameworkDetailsPage({
             </CardContent>
           </Card>
         ) : (
-          Object.entries(controls_by_category).map(([category, categoryControls]: [string, any[]]) => (
+          Object.entries(controls_by_category).map(([category, categoryControls]) => {
+            const controls = Array.isArray(categoryControls) ? categoryControls : [];
+            return (
             <Card key={category} className='border-border/50 bg-gradient-to-br from-background to-muted/20'>
               <CardHeader>
                 <CardTitle className='flex items-center gap-2'>
@@ -254,12 +256,12 @@ export default async function FrameworkDetailsPage({
                   {category}
                 </CardTitle>
                 <CardDescription>
-                  {categoryControls.length} controle{categoryControls.length !== 1 ? 's' : ''}
+                  {controls.length} controle{controls.length !== 1 ? 's' : ''}
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+                <CardContent>
                 <div className='space-y-4'>
-                  {categoryControls.map((control: any) => (
+                  {controls.map((control: any) => (
                     <div
                       key={control.id}
                       className='p-4 rounded-lg border bg-background hover:border-brand-cyan/50 transition-all'
@@ -303,9 +305,10 @@ export default async function FrameworkDetailsPage({
                     </div>
                   ))}
                 </div>
-              </CardContent>
+                </CardContent>
             </Card>
-          ))
+            );
+          })
         )}
       </div>
     </div>
