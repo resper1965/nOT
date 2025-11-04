@@ -3,18 +3,37 @@ import { getRoutingAnalysis, getRoutingVulnerabilities } from '@/lib/api'
 
 export default async function RoutingPage() {
   const analysis = await getRoutingAnalysis().catch(() => ({ 
-    devices_analyzed: 40, 
-    routes_analyzed: 170,
+    devices_analyzed: 0, 
+    routes_analyzed: 0,
     total_vulnerabilities: 0,
     high_risk: 0,
     medium_risk: 0,
-    low_risk: 0
+    low_risk: 0,
+    routes_by_type: {
+      connected: 0,
+      static: 0,
+      dynamic: 0,
+      total: 0,
+    },
+    graph: {
+      nodes: 0,
+      edges: 0,
+      components: 'None',
+    },
+    routers: [],
   }));
   
   const vulnData = await getRoutingVulnerabilities().catch(() => ({ 
     vulnerabilities: [], 
     total: 0 
   }));
+
+  const routesByType = analysis.routes_by_type || {
+    connected: 0,
+    static: 0,
+    dynamic: 0,
+    total: 0,
+  };
 
   const securityStatus = analysis.total_vulnerabilities === 0 ? 'secure' : 'at_risk';
 
@@ -44,7 +63,9 @@ export default async function RoutingPage() {
             <GitBranch className='h-5 w-5 text-green-500' />
           </div>
           <div className='text-3xl font-bold'>{analysis.routes_analyzed}</div>
-          <div className='text-xs text-muted-foreground mt-1'>155 conectadas + 15 estáticas</div>
+          <div className='text-xs text-muted-foreground mt-1'>
+            {routesByType.connected} conectadas + {routesByType.static} estáticas{routesByType.dynamic > 0 ? ` + ${routesByType.dynamic} dinâmicas` : ''}
+          </div>
         </div>
 
         <div className='rounded-lg border bg-card p-4'>
@@ -135,8 +156,10 @@ export default async function RoutingPage() {
                   <div className='text-xs text-muted-foreground'>Redes diretamente conectadas</div>
                 </div>
                 <div className='text-right'>
-                  <div className='text-2xl font-bold text-green-500'>155</div>
-                  <div className='text-xs text-muted-foreground'>91%</div>
+                  <div className='text-2xl font-bold text-green-500'>{routesByType.connected || 0}</div>
+                  <div className='text-xs text-muted-foreground'>
+                    {analysis.routes_analyzed > 0 ? Math.round((routesByType.connected / analysis.routes_analyzed) * 100) : 0}%
+                  </div>
                 </div>
               </div>
 
@@ -146,8 +169,10 @@ export default async function RoutingPage() {
                   <div className='text-xs text-muted-foreground'>Configuradas manualmente</div>
                 </div>
                 <div className='text-right'>
-                  <div className='text-2xl font-bold text-orange-500'>15</div>
-                  <div className='text-xs text-muted-foreground'>9%</div>
+                  <div className='text-2xl font-bold text-orange-500'>{routesByType.static || 0}</div>
+                  <div className='text-xs text-muted-foreground'>
+                    {analysis.routes_analyzed > 0 ? Math.round((routesByType.static / analysis.routes_analyzed) * 100) : 0}%
+                  </div>
                 </div>
               </div>
 
@@ -157,8 +182,10 @@ export default async function RoutingPage() {
                   <div className='text-xs text-muted-foreground'>Aprendidas via protocolo</div>
                 </div>
                 <div className='text-right'>
-                  <div className='text-2xl font-bold text-gray-500'>0</div>
-                  <div className='text-xs text-muted-foreground'>0%</div>
+                  <div className='text-2xl font-bold text-gray-500'>{routesByType.dynamic || 0}</div>
+                  <div className='text-xs text-muted-foreground'>
+                    {analysis.routes_analyzed > 0 ? Math.round((routesByType.dynamic / analysis.routes_analyzed) * 100) : 0}%
+                  </div>
                 </div>
               </div>
             </div>
@@ -176,17 +203,17 @@ export default async function RoutingPage() {
             <div className='space-y-3'>
               <div className='flex items-center justify-between p-3 rounded-lg border'>
                 <div className='text-sm font-medium text-muted-foreground'>Nós (Roteadores)</div>
-                <div className='text-2xl font-bold'>51</div>
+                <div className='text-2xl font-bold'>{analysis.graph?.nodes || analysis.devices_analyzed || 0}</div>
               </div>
 
               <div className='flex items-center justify-between p-3 rounded-lg border'>
-                <div className='text-sm font-medium text-muted-foreground'>Arestas (Rotas)</div>
-                <div className='text-2xl font-bold'>15</div>
+                <div className='text-sm font-medium text-muted-foreground'>Arestas (Conexões)</div>
+                <div className='text-2xl font-bold'>{analysis.graph?.edges || 0}</div>
               </div>
 
               <div className='flex items-center justify-between p-3 rounded-lg border'>
                 <div className='text-sm font-medium text-muted-foreground'>Componentes Conectados</div>
-                <div className='text-2xl font-bold text-brand-cyan'>Multiple</div>
+                <div className='text-2xl font-bold text-brand-cyan'>{analysis.graph?.components || 'None'}</div>
               </div>
 
               <div className='flex items-center justify-between p-3 rounded-lg border'>
@@ -248,19 +275,30 @@ export default async function RoutingPage() {
             <div className='text-brand-cyan mb-3'>📊 ANÁLISE DE ROTEAMENTO OT</div>
             <div className='space-y-2 text-gray-300'>
               <div>
-                <span className='text-green-500'>✓</span> Parsing de configurações: 40 dispositivos processados
+                <span className='text-green-500'>✓</span> Parsing de configurações: {analysis.devices_analyzed} dispositivos processados
               </div>
               <div>
-                <span className='text-green-500'>✓</span> Tabelas de roteamento: 170 rotas extraídas
+                <span className='text-green-500'>✓</span> Tabelas de roteamento: {analysis.routes_analyzed} rotas extraídas
               </div>
-              <div className='ml-4 text-gray-400'>
-                • 155 rotas conectadas (directly connected)
-              </div>
-              <div className='ml-4 text-gray-400'>
-                • 15 rotas estáticas (ip route-static)
-              </div>
+              {analysis.routes_analyzed > 0 && (
+                <>
+                  <div className='ml-4 text-gray-400'>
+                    • {routesByType.connected} rotas conectadas (directly connected)
+                  </div>
+                  {routesByType.static > 0 && (
+                    <div className='ml-4 text-gray-400'>
+                      • {routesByType.static} rotas estáticas (ip route-static)
+                    </div>
+                  )}
+                  {routesByType.dynamic > 0 && (
+                    <div className='ml-4 text-gray-400'>
+                      • {routesByType.dynamic} rotas dinâmicas (OSPF/BGP)
+                    </div>
+                  )}
+                </>
+              )}
               <div>
-                <span className='text-green-500'>✓</span> Grafo NetworkX: 51 nós + 15 arestas
+                <span className='text-green-500'>✓</span> Grafo NetworkX: {analysis.graph?.nodes || 0} nós + {analysis.graph?.edges || 0} arestas
               </div>
               <div>
                 <span className='text-green-500'>✓</span> Longest Prefix Match (LPM): Implementado
@@ -287,25 +325,33 @@ export default async function RoutingPage() {
         <div className='p-4 border-b'>
           <h2 className='text-lg font-semibold'>Dispositivos Layer 3 Analisados</h2>
           <p className='text-sm text-muted-foreground mt-1'>
-            40 roteadores e switches com configurações parseadas
+            {analysis.devices_analyzed} roteador{analysis.devices_analyzed !== 1 ? 'es' : ''} e switch{analysis.devices_analyzed !== 1 ? 'es' : ''} com configurações parseadas
           </p>
         </div>
         <div className='p-4'>
-          <div className='grid grid-cols-2 md:grid-cols-4 gap-2'>
-            {[
-              'MA-AC-RT01', 'MA-AC-RT02', 'PA-CAS-RT01', 'PA-CAS-RT02',
-              'MA-IPZ-RT01', 'MA-IPZ-RT02', 'PA-MBA-RT01', 'PA-MBA-RT02',
-              'MA-PDU-RT01', 'MA-PDU-RT02', 'PA-TUC-RT01', 'PA-TUC-RT02',
-              'PA-VDC-RT01', 'PA-VDC-RT02', 'MA-AC-SDWAN02', 'PA-CAS-SDWAN02',
-            ].map((device) => (
-              <div key={device} className='p-2 rounded border bg-card/50 hover:border-brand-cyan/50 transition-all'>
-                <div className='text-xs font-mono text-muted-foreground'>{device}</div>
-              </div>
-            ))}
-            <div className='p-2 rounded border bg-card/50'>
-              <div className='text-xs text-muted-foreground'>+ 24 switches L3</div>
+          {analysis.routers && analysis.routers.length > 0 ? (
+            <div className='grid grid-cols-2 md:grid-cols-4 gap-2'>
+              {analysis.routers.slice(0, 16).map((router: any) => (
+                <div key={router.id} className='p-2 rounded border bg-card/50 hover:border-brand-cyan/50 transition-all'>
+                  <div className='text-xs font-mono text-muted-foreground'>{router.name}</div>
+                  {router.ip && (
+                    <div className='text-xs text-muted-foreground mt-1'>{router.ip}</div>
+                  )}
+                </div>
+              ))}
+              {analysis.routers.length > 16 && (
+                <div className='p-2 rounded border bg-card/50'>
+                  <div className='text-xs text-muted-foreground'>+ {analysis.routers.length - 16} dispositivos</div>
+                </div>
+              )}
             </div>
-          </div>
+          ) : (
+            <div className='flex flex-col items-center justify-center py-12'>
+              <Network className='w-12 h-12 text-muted-foreground mb-4' />
+              <p className='text-muted-foreground'>Nenhum roteador encontrado</p>
+              <p className='text-sm text-muted-foreground mt-2'>Adicione roteadores e switches L3 em Assets & Inventário</p>
+            </div>
+          )}
         </div>
       </div>
 

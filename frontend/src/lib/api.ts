@@ -173,15 +173,65 @@ export async function getAneelRequirements() {
 
 // Routing API functions
 export async function getRoutingAnalysis() {
-  const res = await fetch(`${API_BASE_URL}/api/routing/analysis-summary`, { cache: 'no-store' });
-  if (!res.ok) throw new Error('Failed to fetch routing analysis');
-  return res.json();
+  // Use Supabase API route
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+    const res = await fetch(`${baseUrl}/api/network/routing`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('Failed to fetch routing analysis');
+    return res.json();
+  } catch (error) {
+    // Fallback to FastAPI if available
+    if (API_BASE_URL) {
+      const res = await fetch(`${API_BASE_URL}/api/routing/analysis-summary`, { cache: 'no-store' });
+      if (res.ok) return res.json();
+    }
+    // Return default values
+    return {
+      devices_analyzed: 0,
+      routes_analyzed: 0,
+      total_vulnerabilities: 0,
+      high_risk: 0,
+      medium_risk: 0,
+      low_risk: 0,
+      routes_by_type: {
+        connected: 0,
+        static: 0,
+        dynamic: 0,
+        total: 0,
+      },
+      graph: {
+        nodes: 0,
+        edges: 0,
+        components: 'None',
+      },
+      routers: [],
+    };
+  }
 }
 
 export async function getRoutingVulnerabilities() {
-  const res = await fetch(`${API_BASE_URL}/api/routing/vulnerabilities`, { cache: 'no-store' });
-  if (!res.ok) throw new Error('Failed to fetch routing vulnerabilities');
-  return res.json();
+  // Use Supabase API route
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+    const res = await fetch(`${baseUrl}/api/network/routing`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('Failed to fetch routing vulnerabilities');
+    const data = await res.json();
+    return {
+      vulnerabilities: [],
+      total: data.total_vulnerabilities || 0,
+    };
+  } catch (error) {
+    // Fallback to FastAPI if available
+    if (API_BASE_URL) {
+      const res = await fetch(`${API_BASE_URL}/api/routing/vulnerabilities`, { cache: 'no-store' });
+      if (res.ok) return res.json();
+    }
+    // Return default values
+    return {
+      vulnerabilities: [],
+      total: 0,
+    };
+  }
 }
 
 export async function getRoutingGraph() {

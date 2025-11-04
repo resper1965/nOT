@@ -1,11 +1,17 @@
 // API Route for Compliance Frameworks
 // Returns frameworks from compliance.frameworks table
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase';
+import { getServerSupabaseClient } from '@/lib/supabase-server';
 
 export async function GET() {
   try {
-    const supabase = createServerClient();
+    const supabase = await getServerSupabaseClient();
+    
+    // Verificar autenticação
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     // Get frameworks
     const { data: frameworks, error: frameworksError } = await supabase
