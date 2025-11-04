@@ -1,6 +1,8 @@
 # Roadmap - ness. OT GRC
 
-> **Nota**: Para o plano detalhado de melhorias e implementação, veja `.spec/enhancements-plan.md`
+> **Nota**: 
+> - Para o plano detalhado de melhorias e implementação, veja `.spec/enhancements-plan.md`
+> - Para direções evolutivas 2026+, veja `.spec/evolution-roadmap-2026.md`
 
 ## 🚀 Plano de Melhorias Prioritárias
 
@@ -17,8 +19,8 @@ Um plano completo de implementação foi criado em `.spec/enhancements-plan.md` 
 
 # Roadmap - ness. OT GRC (Continuação)
 
-**Última Atualização**: 2025-01-03  
-**Versão**: 1.0.0
+**Última Atualização**: 2025-01-04  
+**Versão**: 1.1.0
 
 ## 📅 Q1 2025 (Jan - Mar)
 
@@ -277,12 +279,50 @@ Um plano completo de implementação foi criado em `.spec/enhancements-plan.md` 
 - Compliance Scoring (P3)
 - Testes Automatizados (P2)
 
+## 🚀 Direções Evolutivas (2026+)
+
+Para visão estratégica de longo prazo e evolução contínua do sistema, consulte:
+
+**📄 `.spec/evolution-roadmap-2026.md`**
+
+### Resumo das Direções Evolutivas
+
+1. **🔹 Camada Semântica de Conhecimento**
+   - Base vetorial (Supabase + pgvector)
+   - Regulações, históricos de incidentes e avaliações IA
+   - Respostas contextualizadas a perguntas normativas
+
+2. **🔹 Loop de Aprendizado do Agente**
+   - Armazenamento de decisões humanas (aceite/rejeição)
+   - Treinamento adaptativo do agente
+   - GRC adaptativo baseado em feedback
+
+3. **🔹 Crosswalk Automático de Frameworks**
+   - Mapeamento automático de novos requisitos ANEEL/ONS
+   - Atualizações regulatórias auto-mapeáveis
+   - Redução de esforço manual
+
+4. **🔹 Integração com Detecção Preditiva**
+   - Conexão com dados históricos OT
+   - Previsão de falhas de conformidade
+   - Alertas preditivos baseados em padrões
+
+5. **🔹 Interface Executiva**
+   - Painel "Trustness OT Insight"
+   - Visão regulatória + cibernética unificada
+   - KPIs de risco, conformidade, impacto e eficácia
+
+**Cronograma**: Q1-Q4 2026 (detalhado no documento)
+
+---
+
 ## 📝 Notas
 
 - Roadmap pode ser ajustado baseado em feedback de clientes
 - Prioridades podem mudar conforme necessidade
 - Estimativas são aproximadas e podem variar
 - Features podem ser adicionadas ou removidas conforme necessário
+- Direções evolutivas 2026+ são visão estratégica e podem ser ajustadas conforme necessário
 
 ---
 
@@ -291,4 +331,5 @@ Um plano completo de implementação foi criado em `.spec/enhancements-plan.md` 
 2. Marque features como concluídas quando implementadas
 3. Ajuste estimativas baseado em velocidade real
 4. Priorize features baseado em feedback de clientes
+5. Revise direções evolutivas trimestralmente
 
