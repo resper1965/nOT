@@ -256,7 +256,7 @@ SELECT
     ep.updated_at,
     c.id AS control_id,
     c.control_code,
-    c.control_name,
+    c.control_title AS control_name,
     a.id AS assessment_id,
     a.assessment_name,
     a.assessment_date,
@@ -307,7 +307,7 @@ GROUP BY
     ep.updated_at,
     c.id,
     c.control_code,
-    c.control_name,
+    c.control_title,
     a.id,
     a.assessment_name,
     a.assessment_date,
@@ -337,7 +337,7 @@ SELECT
     u.raw_user_meta_data->>'name' AS owner_name,
     -- Scope details
     CASE
-        WHEN a.scope = 'control' THEN c.control_code || ' - ' || c.control_name
+        WHEN a.scope = 'control' THEN c.control_code || ' - ' || c.control_title
         WHEN a.scope = 'assessment' THEN a2.assessment_name
         WHEN a.scope = 'installation' THEN 'Instalação ' || a.scope_id::TEXT
         WHEN a.scope = 'framework' THEN f.framework_name
