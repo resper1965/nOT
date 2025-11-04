@@ -339,7 +339,7 @@ SELECT
     -- Scope details
     CASE
         WHEN a.scope = 'control' THEN c.control_code || ' - ' || c.control_title
-        WHEN a.scope = 'assessment' THEN a2.assessment_name
+        WHEN a.scope = 'assessment' THEN f2.framework_name || ' - ' || TO_CHAR(a2.assessment_date, 'DD/MM/YYYY')
         WHEN a.scope = 'installation' THEN 'Instalação ' || a.scope_id::TEXT
         WHEN a.scope = 'framework' THEN f.framework_name
         ELSE a.scope || ' ' || a.scope_id::TEXT
