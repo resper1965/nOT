@@ -1,11 +1,11 @@
 // API Route for Compliance Frameworks
 // Returns frameworks from compliance.frameworks table
 import { NextResponse } from 'next/server';
-import { getAdminSupabaseClient } from '@/lib/supabase-admin';
+import { createServerClient } from '@/lib/supabase';
 
 export async function GET() {
   try {
-    const supabase = getAdminSupabaseClient();
+    const supabase = createServerClient();
 
     // Get frameworks
     const { data: frameworks, error: frameworksError } = await supabase
