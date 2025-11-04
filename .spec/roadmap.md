@@ -1,5 +1,22 @@
 # Roadmap - ness. OT GRC
 
+> **Nota**: Para o plano detalhado de melhorias e implementação, veja `.spec/enhancements-plan.md`
+
+## 🚀 Plano de Melhorias Prioritárias
+
+Um plano completo de implementação foi criado em `.spec/enhancements-plan.md` com:
+
+- ✅ **10 blocos de melhorias** organizados em fases
+- ✅ **Fase 0 (30-60 dias)**: 5 blocos críticos (P0)
+- ✅ **Fases 1-7**: Melhorias de médio/longo prazo
+- ✅ **Modelo de dados completo**: Todas as tabelas necessárias
+- ✅ **Cronograma detalhado**: 55 semanas com 1 pessoa, 27 semanas com 2, 14 semanas com 4
+- ✅ **Entregas por fase**: SQL, APIs, Frontend, Seed data
+
+---
+
+# Roadmap - ness. OT GRC (Continuação)
+
 **Última Atualização**: 2025-01-03  
 **Versão**: 1.0.0
 
