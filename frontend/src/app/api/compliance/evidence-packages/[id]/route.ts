@@ -12,7 +12,7 @@ import { getServerSupabaseClient } from '@/lib/supabase-server';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await getServerSupabaseClient();
@@ -23,7 +23,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await context.params;
 
     // Obter pacote
     const { data: evidencePackage, error } = await supabase
@@ -99,7 +99,7 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await getServerSupabaseClient();
@@ -110,7 +110,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await context.params;
     const body = await request.json();
     const { package_name, description, metadata } = body;
 
@@ -183,7 +183,7 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await getServerSupabaseClient();
@@ -194,7 +194,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await context.params;
 
     // Verificar se o pacote existe e está em draft
     const { data: existingPackage, error: fetchError } = await supabase

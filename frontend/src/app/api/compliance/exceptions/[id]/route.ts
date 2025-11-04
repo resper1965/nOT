@@ -12,7 +12,7 @@ import { getServerSupabaseClient } from '@/lib/supabase-server';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await getServerSupabaseClient();
@@ -23,7 +23,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await context.params;
 
     // Obter exceção com informações do controle e framework
     const { data: exception, error } = await supabase
@@ -91,7 +91,7 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await getServerSupabaseClient();
@@ -102,7 +102,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await context.params;
     const body = await request.json();
     const { exception_reason, justification, expires_at, risk_residual, metadata } = body;
 
@@ -187,7 +187,7 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await getServerSupabaseClient();
@@ -198,7 +198,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await context.params;
 
     // Verificar se a exceção existe e está pendente
     const { data: existingException, error: fetchError } = await supabase

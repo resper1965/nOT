@@ -11,7 +11,7 @@ import { getServerSupabaseClient } from '@/lib/supabase-server';
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await getServerSupabaseClient();

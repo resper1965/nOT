@@ -13,7 +13,7 @@ import crypto from 'crypto';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await getServerSupabaseClient();
@@ -24,7 +24,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await context.params;
 
     // Obter backup com informações do asset
     const { data: backup, error } = await supabase
@@ -80,7 +80,7 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await getServerSupabaseClient();
@@ -91,7 +91,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await context.params;
     const body = await request.json();
     const { 
       backup_location,
@@ -207,7 +207,7 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await getServerSupabaseClient();
@@ -218,7 +218,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await context.params;
 
     // Verificar se o backup existe
     const { data: existingBackup, error: fetchError } = await supabase

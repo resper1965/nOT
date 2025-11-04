@@ -12,7 +12,7 @@ import crypto from 'crypto';
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await getServerSupabaseClient();
@@ -23,7 +23,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await context.params;
 
     // Verificar se a attestation existe
     const { data: attestation, error: fetchError } = await supabase
