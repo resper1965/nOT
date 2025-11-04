@@ -68,9 +68,10 @@ const getStatusText = (status: string | null) => {
 export default async function FrameworkDetailsPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const data = await getFrameworkDetails(params.id);
+  const { id } = await params;
+  const data = await getFrameworkDetails(id);
   const { framework, controls, controls_by_category, statistics } = data;
 
   if (!framework) {
