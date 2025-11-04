@@ -32,12 +32,13 @@ export function generateCSV(report: any): string {
   if (report.controls && Array.isArray(report.controls)) {
     report.controls.forEach((control: any) => {
       const status = control.assessment_result?.status || 'Não avaliado';
-      const statusLabel = {
+      const statusLabels: Record<string, string> = {
         compliant: 'Conforme',
         partially_compliant: 'Parcialmente Conforme',
         non_compliant: 'Não Conforme',
         not_applicable: 'Não Aplicável',
-      }[status] || status;
+      };
+      const statusLabel = statusLabels[status] || status;
       
       const evidenceCount = control.evidence_count || 0;
       const hasException = control.has_exception ? 'Sim' : 'Não';
