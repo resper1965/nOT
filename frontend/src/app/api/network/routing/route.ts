@@ -31,13 +31,11 @@ export async function GET(request: NextRequest) {
       
       if (!routersError && routersData) {
         routers = routersData;
+      } else if (routersError) {
+        console.warn('Error fetching routers:', routersError);
       }
     } catch (e) {
       console.warn('Error fetching routers from assets table:', e);
-    }
-
-    if (routersError) {
-      console.warn('Error fetching routers:', routersError);
     }
 
     // Buscar routing tables (se existir tabela topology.routing_tables)
@@ -100,13 +98,11 @@ export async function GET(request: NextRequest) {
       
       if (!connectionsError && connectionsData) {
         connections = connectionsData;
+      } else if (connectionsError) {
+        console.warn('Error fetching connections:', connectionsError);
       }
     } catch (e) {
       console.warn('Error fetching connections:', e);
-    }
-
-    if (connectionsError) {
-      console.warn('Error fetching connections:', connectionsError);
     }
 
     // Calcular estatísticas
