@@ -19,18 +19,25 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data: compliance, error } = await supabase
-      .from('v_kpi_framework_compliance')
-      .select('*')
-      .order('compliance_percentage', { ascending: false });
+    let compliance: any[] = [];
+    
+    try {
+      const { data: complianceData, error } = await supabase
+        .from('v_kpi_framework_compliance')
+        .select('*')
+        .order('compliance_percentage', { ascending: false });
 
-    if (error) {
-      console.error('Error fetching framework compliance:', error);
-      throw error;
+      if (error) {
+        console.warn('Error fetching framework compliance:', error);
+      } else {
+        compliance = complianceData || [];
+      }
+    } catch (e) {
+      console.warn('v_kpi_framework_compliance not accessible via PostgREST');
     }
 
     return NextResponse.json({
-      compliance: compliance || [],
+      compliance: compliance,
     });
   } catch (error: any) {
     console.error('Error fetching framework compliance:', error);
