@@ -8,7 +8,48 @@
 -- ONS RO-CB.BR.01 Rev. 02, incluindo todos os 18 controles com resultados
 
 -- ============================================================================
--- 1. Criar Avaliação de Conformidade
+-- 1. Criar Tabelas de Avaliação de Conformidade (se não existirem)
+-- ============================================================================
+
+-- Tabela de Avaliações de Conformidade
+CREATE TABLE IF NOT EXISTS compliance.assessments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    framework_id UUID REFERENCES compliance.frameworks(id) ON DELETE CASCADE,
+    assessment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(20) CHECK (status IN ('compliant', 'partially_compliant', 'non_compliant', 'not_applicable')),
+    compliance_percentage DECIMAL(5,2),
+    gaps_identified INTEGER,
+    notes TEXT,
+    assessed_by VARCHAR(255),
+    metadata JSONB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_assessments_framework ON compliance.assessments(framework_id);
+CREATE INDEX IF NOT EXISTS idx_assessments_date ON compliance.assessments(assessment_date DESC);
+
+-- Tabela de Resultados de Controles
+CREATE TABLE IF NOT EXISTS compliance.control_results (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    assessment_id UUID REFERENCES compliance.assessments(id) ON DELETE CASCADE,
+    control_id UUID REFERENCES compliance.controls(id) ON DELETE CASCADE,
+    status VARCHAR(20) CHECK (status IN ('compliant', 'partially_compliant', 'non_compliant', 'not_applicable')),
+    evidence TEXT,
+    gap_description TEXT,
+    remediation_plan TEXT,
+    target_date DATE,
+    metadata JSONB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_control_results_assessment ON compliance.control_results(assessment_id);
+CREATE INDEX IF NOT EXISTS idx_control_results_control ON compliance.control_results(control_id);
+CREATE INDEX IF NOT EXISTS idx_control_results_status ON compliance.control_results(status);
+
+-- ============================================================================
+-- 2. Criar Avaliação de Conformidade
 -- ============================================================================
 
 DO $$
