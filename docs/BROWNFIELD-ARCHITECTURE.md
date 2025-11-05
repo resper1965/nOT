@@ -70,56 +70,73 @@ Gerenciar conformidade regulatória e segurança cibernética de redes OT atrav�
 │                   APPLICATION LAYER                      │
 │                                                          │
 │  ┌────────────────────────────────────────────────┐    │
-│  │  FastAPI Backend (Python 3.11)                  │    │
+│  │  Next.js API Routes (TypeScript)                │    │
 │  │  • REST API endpoints                           │    │
 │  │  • Business logic                               │    │
 │  │  • Workflows de aprovação                       │    │
-│  │  • Port: 8000                                   │    │
+│  │  • Integrado com frontend                       │    │
+│  └────────────────────────────────────────────────┘    │
+│                                                          │
+│  ┌────────────────────────────────────────────────┐    │
+│  │  Supabase Edge Functions (Deno/TypeScript)      │    │
+│  │  • ingest_wazuh                                 │    │
+│  │  • ingest_zabbix                                │    │
+│  │  • ingest_rmm                                   │    │
+│  │  • agent_evaluate (AI)                          │    │
 │  └────────────────────────────────────────────────┘    │
 │                                                          │
 └───────────────────────┬──────────────────────────────────┘
-                        │ SQL Queries
+                        │ SQL Queries / Supabase Client
                         ▼
 ┌─────────────────────────────────────────────────────────┐
-│                   DATA LAYER                             │
+│                   DATA LAYER (Supabase Cloud)            │
 │                                                          │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
-│  │ PostgreSQL   │  │   Redis      │  │ File Storage │  │
-│  │   16         │  │     7        │  │   (Local)    │  │
-│  │              │  │              │  │              │  │
-│  │ • security   │  │ • Cache      │  │ • Documents  │  │
-│  │ • topology   │  │ • Sessions   │  │ • Evidence   │  │
-│  │ • compliance │  │              │  │ • Uploads    │  │
-│  │ • audit      │  │              │  │              │  │
-│  │              │  │              │  │              │  │
-│  │ Port: 5432   │  │ Port: 6379   │  │ Volume mount │  │
-│  └──────────────┘  └──────────────┘  └──────────────┘  │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │  Supabase PostgreSQL (Neon)                      │  │
+│  │  • security.* (assets, vulnerabilities)          │  │
+│  │  • topology.* (zones, connections)               │  │
+│  │  • compliance.* (frameworks, controls)           │  │
+│  │  • integration.* (events)                        │  │
+│  │  • audit.* (activity logs)                       │  │
+│  │  • ops.* (changes, backups)                      │  │
+│  │  • Row Level Security (RLS)                      │  │
+│  └──────────────────────────────────────────────────┘  │
+│                                                          │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │  Supabase Storage                                 │  │
+│  │  • evidence bucket (PDFs, logs, prints)          │  │
+│  │  • RLS policies para arquivos                    │  │
+│  └──────────────────────────────────────────────────┘  │
+│                                                          │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │  Supabase Auth                                    │  │
+│  │  • JWT authentication                            │  │
+│  │  • OAuth providers                               │  │
+│  │  • Magic links                                   │  │
+│  └──────────────────────────────────────────────────┘  │
 │                                                          │
 └──────────────────────────────────────────────────────────┘
 ```
 
 ### Deployment Architecture (Current State)
 
-**Status**: 🐳 Docker Compose Local  
-**Ambiente**: Desenvolvimento (Docker Desktop)  
-**Produção**: Não configurado ainda  
+**Status**: ✅ Produção - Vercel + Supabase Cloud  
+**Ambiente Produção**: 
+- Frontend: Vercel (https://ngrcot.vercel.app)
+- Database: Supabase Cloud (Neon PostgreSQL)
+- Storage: Supabase Storage
+- Edge Functions: Supabase Cloud
 
-```yaml
-Services:
-  • frontend       (ness-ot-grc-frontend)   :3000
-  • backend        (ness-ot-grc-backend)    :8000
-  • postgres       (ness-ot-grc-db)         :5432
-  • pgadmin        (ness-ot-grc-pgadmin)    :5050
-  • redis          (ness-ot-grc-redis)      :6379
+**Ambiente Desenvolvimento**: 
+- Frontend: Local (Next.js dev server :3000)
+- Database: Supabase Cloud (mesmo ambiente, diferentes credenciais)
+- Storage: Supabase Cloud
+- Edge Functions: Local (Supabase CLI) ou Cloud
 
-Networks:
-  • ness_ot_grc_network (bridge)
-
-Volumes:
-  • ness_ot_grc_postgres_data
-  • ness_ot_grc_pgadmin_data
-  • ness_ot_grc_redis_data
-```
+**CI/CD**:
+- Deploy automático via Vercel Git Integration
+- Preview deployments para cada PR
+- Migrations via Supabase CLI
 
 ---
 
@@ -176,35 +193,50 @@ frontend/
 
 **Status de Implementação Frontend**: ~20% (base criada, features pendentes)
 
-### Backend Stack
+### Backend Stack (Supabase-First Architecture)
+
+**Decisão Arquitetural**: Backend gerenciado via Supabase (sem FastAPI/Python separado).
 
 | Category | Technology | Version | Purpose | Notes |
 |----------|-----------|---------|---------|-------|
-| **Framework** | FastAPI | 0.109.0 | API REST | Async support |
-| **Server** | Uvicorn | 0.27.0 | ASGI server | Com reload |
-| **Language** | Python | 3.11 | Backend language | |
-| **Database** | PostgreSQL | 16 | Primary DB | Alpine image |
-| **ORM** | SQLAlchemy | 2.0.25 | Database ORM | Async support |
-| **Migrations** | Alembic | 1.13.1 | DB migrations | Não iniciado ainda |
-| **Cache** | Redis | 7 | Cache/Sessions | Alpine image |
-| **Validation** | Pydantic | 2.5.3 | Data validation | Settings v2 |
-| **Auth** | python-jose | 3.3.0 | JWT tokens | Não implementado |
+| **API Layer** | Next.js API Routes | 15.1.0 | REST endpoints | TypeScript, integrado com frontend |
+| **Serverless Functions** | Supabase Edge Functions | Latest | Async functions | Deno runtime, TypeScript |
+| **Database** | Supabase PostgreSQL | 15+ | Primary DB | Managed, Neon database |
+| **Auth** | Supabase Auth | Latest | Authentication | JWT, OAuth, RLS |
+| **Storage** | Supabase Storage | Latest | File storage | Buckets, RLS policies |
+| **Database Client** | @supabase/supabase-js | 2.39.3 | Client library | Type-safe, SSR support |
+| **Migrations** | Supabase Migrations | - | DB migrations | SQL migrations versionadas |
 
-**Estrutura Atual**:
+**Edge Functions Implementadas**:
 ```
-backend/
-├── main.py                 ✅ API principal (básico)
-├── requirements.txt        ✅ Dependências
-├── Dockerfile              ✅ Container
-└── [MISSING]
-    ├── models/             ❌ SQLAlchemy models
-    ├── routes/             ❌ API endpoints
-    ├── services/           ❌ Business logic
-    ├── schemas/            ❌ Pydantic schemas
-    └── core/               ❌ Config, auth, db
+supabase/functions/
+├── ingest_wazuh/          ✅ Ingestão eventos Wazuh
+├── ingest_zabbix/         ✅ Ingestão métricas Zabbix
+├── ingest_rmm/            ✅ Ingestão dados RMM
+└── agent_evaluate/        ✅ Agente AI compliance
 ```
 
-**Status de Implementação Backend**: ~10% (skeleton criado, implementação pendente)
+**Next.js API Routes Implementadas**:
+```
+frontend/src/app/api/
+├── compliance/
+│   ├── frameworks/        ✅ Listar frameworks
+│   ├── evidence-packages/ ✅ CRUD evidências
+│   ├── attestations/      ✅ CRUD attestations
+│   ├── crosswalk/         ✅ CRUD crosswalk mappings
+│   ├── exceptions/        ✅ CRUD exceções
+│   └── reports/           ✅ Relatórios ANEEL/ONS
+├── ops/
+│   ├── ot-changes/        ✅ Mudanças OT
+│   ├── ot-backups/        ✅ Backups OT
+│   └── ot-baselines/      ✅ Baselines OT
+├── kpis/
+│   └── dashboard/         ✅ KPIs dashboard
+└── network/
+    └── routing/           ✅ Análise de roteamento
+```
+
+**Status de Implementação Backend**: ~80% (Supabase configurado, APIs principais implementadas)
 
 ### Database Stack
 
